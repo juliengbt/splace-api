@@ -4,10 +4,10 @@ import City from './city';
 interface IInstallation {
   id: string;
   name: string;
-  car_park: boolean;
-  disabled_access: boolean;
-  address: Address | null;
-  city: City | null;
+  car_park: boolean | null;
+  disabled_access: boolean | null;
+  address: Address | null | undefined;
+  city: City | null | undefined;
 }
 
 class Installation {
@@ -17,16 +17,16 @@ class Installation {
 
   public name: string;
 
-  public car_park: boolean;
+  public car_park: boolean | null;
 
-  public disabled_access: boolean;
+  public disabled_access: boolean | null;
 
-  public address: Address | null;
+  public address: Address | null | undefined;
 
-  public city: City | null;
+  public city: City | null | undefined;
 
   // eslint-disable-next-line max-len
-  constructor(id: string, name: string, car_park: boolean, disabled_access: boolean, address: Address | null, city: City | null) {
+  constructor(id: string, name: string, car_park: boolean | null, disabled_access: boolean | null, address: Address | null | undefined, city: City | null | undefined) {
     this.id = id;
     this.name = name;
     this.car_park = car_park;
@@ -35,17 +35,17 @@ class Installation {
     this.city = city;
   }
 
-  public static fromQuery(obj: any): Installation | null {
+  public static fromQuery(obj: any): Installation | undefined {
     if (obj && this.tName in obj) {
       return new Installation(obj[this.tName].id.toString('hex'),
         obj[this.tName].name,
-        obj[this.tName].car_park,
-        obj[this.tName].disabled_access,
-        Address.fromQuery(obj),
-        City.fromQuery(obj));
+        obj[this.tName].car_park === null ? null : Boolean(obj[this.tName].car_park),
+        obj[this.tName].disabled_access === null ? null : Boolean(obj[this.tName].disabled_access),
+        obj[this.tName].id_address === null ? null : Address.fromQuery(obj),
+        obj[this.tName].id_city === null ? null : City.fromQuery(obj));
     }
 
-    return null;
+    return undefined;
   }
 }
 

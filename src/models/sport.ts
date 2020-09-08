@@ -1,20 +1,32 @@
 import Category from './category';
 
-export default class Sport {
+interface ISport {
+  code: string;
+
+  name: string;
+
+  description: string | null;
+
+  federation: string | null;
+
+  category: Category | null | undefined;
+}
+
+class Sport {
   public static tName = 'Sport';
 
   code: string;
 
   name: string;
 
-  description: string;
+  description: string | null;
 
-  federation: string;
+  federation: string | null;
 
   category: Category | null | undefined;
 
   // eslint-disable-next-line max-len
-  constructor(code: string, name: string, description: string, federation: string, category: Category | null | undefined) {
+  constructor(code: string, name: string, description: string | null, federation: string | null, category: Category | null | undefined) {
     this.code = code;
     this.name = name;
     this.description = description;
@@ -34,3 +46,5 @@ export default class Sport {
     return undefined;
   }
 }
+
+export { Sport, ISport };

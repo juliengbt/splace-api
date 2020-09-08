@@ -10,7 +10,7 @@ export default class EquipmentType {
     this.label = label;
   }
 
-  public static fromQuery(obj: any): EquipmentType | null {
+  public static fromQuery(obj: any): EquipmentType | undefined {
     if (obj && this.tName in obj) {
       return new EquipmentType(
         obj[this.tName].code,
@@ -18,6 +18,6 @@ export default class EquipmentType {
       );
     }
 
-    return null;
+    return undefined;
   }
 }

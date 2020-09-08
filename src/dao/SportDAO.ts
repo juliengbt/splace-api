@@ -1,5 +1,5 @@
 import DAO from './DAO';
-import Sport from '../models/sport';
+import { Sport } from '../models/sport';
 import Category from '../models/category';
 
 export default class SportDAO extends DAO {

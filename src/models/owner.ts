@@ -10,7 +10,7 @@ export default class Owner {
     this.label = label;
   }
 
-  public static fromQuery(obj: any): Owner | null {
+  public static fromQuery(obj: any): Owner | undefined {
     if (obj && this.tName in obj) {
       return new Owner(
         obj[this.tName].code,
@@ -18,6 +18,6 @@ export default class Owner {
       );
     }
 
-    return null;
+    return undefined;
   }
 }

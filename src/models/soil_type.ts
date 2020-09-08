@@ -10,7 +10,7 @@ export default class SoilType {
     this.label = label;
   }
 
-  public static fromQuery(obj: any): SoilType | null {
+  public static fromQuery(obj: any): SoilType | undefined {
     if (obj && this.tName in obj) {
       return new SoilType(
         obj[this.tName].code,
@@ -18,6 +18,6 @@ export default class SoilType {
       );
     }
 
-    return null;
+    return undefined;
   }
 }

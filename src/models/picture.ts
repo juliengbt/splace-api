@@ -10,7 +10,7 @@ export default class Picture {
     this.path = path;
   }
 
-  public static fromQuery(obj: any): Picture | null {
+  public static fromQuery(obj: any): Picture | undefined {
     if (obj && this.tName in obj) {
       return new Picture(
         obj[this.tName].id,
@@ -18,6 +18,6 @@ export default class Picture {
       );
     }
 
-    return null;
+    return undefined;
   }
 }

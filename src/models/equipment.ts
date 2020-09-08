@@ -4,29 +4,31 @@ import EquipmentNature from './equipment_nature';
 import EquipmentType from './equipment_type';
 import { Installation } from './installation';
 import EquipmentLevel from './equipment_level';
-import Sport from './sport';
+import { Sport } from './sport';
 import Picture from './picture';
+import Owner from './owner';
 
 interface IEquipment {
   id: string;
   name: string;
-  other_info: string;
-  open_access: boolean;
-  locker: boolean;
-  lighting: boolean;
-  shower: boolean;
+  other_info: string | null;
+  open_access: boolean | null;
+  locker: boolean | null;
+  lighting: boolean | null;
+  shower: boolean | null;
   amount: number;
-  longitude: number;
-  latitude: number;
-  installation: Installation | null;
-  soil_type: SoilType | null;
-  equipment_nature: EquipmentNature | null;
-  equipment_type: EquipmentType | null;
-  equipment_level: EquipmentLevel | null;
-  sports: Sport[] | null;
-  pictures: Picture[] | null;
-  rating: number | null;
-  distance: number | null;
+  longitude: number | null;
+  latitude: number | null;
+  owner: Owner | null | undefined;
+  installation: Installation | null | undefined;
+  soil_type: SoilType | null | undefined;
+  equipment_nature: EquipmentNature | null | undefined;
+  equipment_type: EquipmentType | null | undefined;
+  equipment_level: EquipmentLevel | null | undefined;
+  sports: Sport[] | undefined;
+  pictures: Picture[] | undefined;
+  rating: number | null | undefined;
+  distance: number | undefined;
 }
 
 class Equipment {
@@ -48,27 +50,29 @@ class Equipment {
 
   amount: number;
 
-  longitude: number;
+  longitude: number | null;
 
-  latitude: number;
+  latitude: number | null;
 
-  installation: Installation | null;
+  installation: Installation | null | undefined;
 
-  soil_type: SoilType | null;
+  owner: Owner | null | undefined;
 
-  equipment_nature: EquipmentNature | null;
+  soil_type: SoilType | null | undefined;
 
-  equipment_type: EquipmentType | null;
+  equipment_nature: EquipmentNature | null | undefined;
 
-  equipment_level: EquipmentLevel | null;
+  equipment_type: EquipmentType | null | undefined;
 
-  sports: Sport[];
+  equipment_level: EquipmentLevel | null | undefined;
 
-  pictures: Picture[];
+  sports: Sport[] | undefined;
 
-  rating: number | null;
+  pictures: Picture[] | undefined;
 
-  distance: number | null;
+  rating: number | null | undefined;
+
+  distance: number | undefined;
 
   constructor(id: string,
     name: string,
@@ -78,13 +82,14 @@ class Equipment {
     lighting: boolean | null,
     shower: boolean | null,
     amount: number,
-    longitude: number,
-    latitude: number,
-    installation: Installation | null,
-    soil_type: SoilType | null,
-    equipment_nature: EquipmentNature | null,
-    equipment_type: EquipmentType | null,
-    equipment_level: EquipmentLevel | null) {
+    longitude: number | null,
+    latitude: number | null,
+    installation: Installation | null | undefined,
+    owner: Owner | null | undefined,
+    soil_type: SoilType | null | undefined,
+    equipment_nature: EquipmentNature | null | undefined,
+    equipment_type: EquipmentType | null | undefined,
+    equipment_level: EquipmentLevel | null | undefined) {
     this.id = id;
     this.name = name;
     this.other_info = other_info;
@@ -96,17 +101,18 @@ class Equipment {
     this.longitude = longitude;
     this.latitude = latitude;
     this.installation = installation;
+    this.owner = owner;
     this.soil_type = soil_type;
     this.equipment_nature = equipment_nature;
     this.equipment_type = equipment_type;
-    this.sports = [];
-    this.pictures = [];
-    this.rating = null;
-    this.distance = null;
+    this.sports = undefined;
+    this.pictures = undefined;
+    this.rating = undefined;
+    this.distance = undefined;
     this.equipment_level = equipment_level;
   }
 
-  public static fromQuery(obj: any): Equipment | null {
+  public static fromQuery(obj: any): Equipment | undefined {
     if (obj && this.tName in obj) {
       return new Equipment(
         obj[this.tName].id.toString('hex'),
@@ -119,26 +125,27 @@ class Equipment {
         obj[this.tName].amount,
         obj[this.tName].longitude,
         obj[this.tName].latitude,
-        Installation.fromQuery(obj),
-        SoilType.fromQuery(obj),
-        EquipmentNature.fromQuery(obj),
-        EquipmentType.fromQuery(obj),
-        EquipmentLevel.fromQuery(obj),
+        obj[this.tName].id_installation === null ? null : Installation.fromQuery(obj),
+        obj[this.tName].code_owner === null ? null : Owner.fromQuery(obj),
+        obj[this.tName].code_soil_type === null ? null : SoilType.fromQuery(obj),
+        obj[this.tName].code_equipment_nature === null ? null : EquipmentNature.fromQuery(obj),
+        obj[this.tName].code_equipment_type === null ? null : EquipmentType.fromQuery(obj),
+        obj[this.tName].code_equipment_level === null ? null : EquipmentLevel.fromQuery(obj),
       );
     }
 
-    return null;
+    return undefined;
   }
 
   public setSports(sports: (Sport | undefined)[]): void {
     this.sports = sports.filter((s) => s instanceof Sport).map((s) => s as Sport);
   }
 
-  public setPictures(pictures: Picture[] | undefined): void {
-    this.pictures = pictures || [];
+  public setPictures(pictures: (Picture | undefined)[]): void {
+    this.pictures = pictures.filter((p) => p instanceof Picture).map((p) => p as Picture);
   }
 
-  public setRating(rating: number): void {
+  public setRating(rating: number | null): void {
     this.rating = rating;
   }
 

@@ -13,7 +13,7 @@ export default class Department {
     this.num = num;
   }
 
-  public static fromQuery(obj: any): Department | null {
+  public static fromQuery(obj: any): Department | undefined {
     if (obj && this.tName in obj) {
       return new Department(
         obj[this.tName].id.toString('hex'),
@@ -22,6 +22,6 @@ export default class Department {
       );
     }
 
-    return null;
+    return undefined;
   }
 }
