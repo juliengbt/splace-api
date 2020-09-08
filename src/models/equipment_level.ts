@@ -1,23 +1,23 @@
 export default class EquipmentLevel {
-    public static tName = 'Equipment_Level';
+  public static tName = 'Equipment_Level';
 
-    code: string;
-    label: string;
+  code: string;
 
-    constructor(code: string, label: string) {
-        this.code = code;
-        this.label = label;
+  label: string;
+
+  constructor(code: string, label: string) {
+    this.code = code;
+    this.label = label;
+  }
+
+  public static fromQuery(obj: any): EquipmentLevel | null {
+    if (obj && this.tName in obj) {
+      return new EquipmentLevel(
+        obj[this.tName].code,
+        obj[this.tName].label,
+      );
     }
 
-    public static fromJSON(obj: any): EquipmentLevel | null {
-
-        if (obj && this.tName in obj) {
-            return new EquipmentLevel(
-                obj[this.tName]['code'],
-                obj[this.tName]['label']
-            );
-        }
-
-        return null;
-    }
+    return null;
+  }
 }

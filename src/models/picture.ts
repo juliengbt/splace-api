@@ -1,23 +1,23 @@
 export default class Picture {
-    public static tName = 'Picture';
+  public static tName = 'Picture';
 
-    id: string;
-    path: string;
+  id: string;
 
-    constructor(id: string, path: string) {
-        this.id = id;
-        this.path = path;
+  path: string;
+
+  constructor(id: string, path: string) {
+    this.id = id;
+    this.path = path;
+  }
+
+  public static fromQuery(obj: any): Picture | null {
+    if (obj && this.tName in obj) {
+      return new Picture(
+        obj[this.tName].id,
+        obj[this.tName].path,
+      );
     }
 
-    public static fromJSON(obj: any): Picture | null {
-
-        if (obj && this.tName in obj) {
-            return new Picture(
-                obj[this.tName]['id'],
-                obj[this.tName]['path']
-            );
-        }
-
-        return null;
-    }
+    return null;
+  }
 }
