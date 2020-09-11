@@ -1,18 +1,6 @@
 import Category from './category';
 
-interface ISport {
-  code: string;
-
-  name: string;
-
-  description: string | null;
-
-  federation: string | null;
-
-  category: Category | null | undefined;
-}
-
-class Sport {
+export default class Sport {
   public static tName = 'Sport';
 
   code: string;
@@ -46,5 +34,3 @@ class Sport {
     return undefined;
   }
 }
-
-export { Sport, ISport };

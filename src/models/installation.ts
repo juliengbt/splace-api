@@ -1,16 +1,7 @@
 import Address from './address';
 import City from './city';
 
-interface IInstallation {
-  id: string;
-  name: string;
-  car_park: boolean | null;
-  disabled_access: boolean | null;
-  address: Address | null | undefined;
-  city: City | null | undefined;
-}
-
-class Installation {
+export default class Installation {
   public static tName = 'Installation';
 
   public id: string;
@@ -48,5 +39,3 @@ class Installation {
     return undefined;
   }
 }
-
-export { Installation, IInstallation };

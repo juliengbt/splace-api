@@ -3,16 +3,16 @@ export default class Address {
 
   id: string;
 
-  street_num: string;
+  street_num: string | null;
 
-  street_name: string;
+  street_name: string| null;
 
-  locality: string;
+  locality: string| null;
 
-  district: number;
+  district: number| null;
 
   // eslint-disable-next-line max-len
-  constructor(id: string, street_num: string, street_name: string, locality: string, district: number) {
+  constructor(id: string, street_num: string | null, street_name: string| null, locality: string| null, district: number | null) {
     this.id = id;
     this.street_num = street_num;
     this.street_name = street_name;
