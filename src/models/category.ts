@@ -1,9 +1,9 @@
 export default class Category {
   public static tName = 'Category';
 
-  code: string;
+  code!: string;
 
-  name: string;
+  name!: string;
 
   constructor(code: string, name: string) {
     this.code = code;

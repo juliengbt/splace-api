@@ -1,6 +1,7 @@
 {
-  "watch": [ "src" ],
-  "ext": ".ts,.js",
-  "ignore": [],
-  "exec": "ts-node ./src/index.ts"
+  "exec": "tsoa spec-and-routes && ts-node src/index.ts",
+  "watch": ["src"],
+  "ignore": ["src/app/routes.ts"],
+  "ext": "ts"
 }
+  

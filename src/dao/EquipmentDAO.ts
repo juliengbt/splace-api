@@ -1,5 +1,6 @@
-import { isArray } from 'util';
-import DAO from './DAO';
+/* eslint-disable max-len *//*
+import { QueryBuilder } from 'knex';
+import db from '../app/knexConf';
 import Equipment from '../models/equipment';
 import Sport from '../models/sport';
 import Installation from '../models/installation';
@@ -12,52 +13,31 @@ import EquipmentType from '../models/equipment_type';
 import EquipmentNature from '../models/equipment_nature';
 import EquipmentLevel from '../models/equipment_level';
 import Picture from '../models/picture';
-import IEquipment from '../splace-interfaces/equipment';
 
-export default class EquipmentDAO extends DAO {
-  public all(): Promise<(Equipment | null)[]> {
-    const query = this.db.from(Equipment.tName).limit(10).offset(10000)
-      .options({ nestTables: true, rowMode: 'array' });
+export default class EquipmentDAO {
+  public async all(): Promise<(Equipment)[]> {
+    const query = EquipmentDAO.fullObjectQuery().limit(10).offset(10000);
 
-    return query.then((res) => res.map((x) => Equipment.fromQuery(x)))
-      .then((equips) => Promise.all(equips
+    return query.then((res: any[]) => EquipmentDAO.linkPicturesSports(
+      res.map((x: any) => Equipment.fromQuery(x))
         .filter((e) => e instanceof Equipment)
-        .map((e) => e as Equipment)
-        .map((e) => this.getSports(e)
-          .then((sp) => { e.setSports(sp); })
-          .then(() => e))));
+        .map((e) => e as Equipment),
+    ));
   }
 
-  public findById(id: string) : Promise<Equipment | undefined> {
-    const query = this.db.from(Equipment.tName)
-      .whereRaw(`${Equipment.tName}.id = UUID_TO_BIN(?)`, [id])
-      .leftJoin(Installation.tName, `${Installation.tName}.id`, `${Equipment.tName}.id_installation`)
-      .leftJoin(Address.tName, `${Address.tName}.id`, `${Installation.tName}.id_address`)
-      .leftJoin(City.tName, `${City.tName}.id`, `${Installation.tName}.id_city`)
-      .leftJoin(Department.tName, `${Department.tName}.id`, `${City.tName}.id_department`)
-      .leftJoin(Owner.tName, `${Owner.tName}.code`, `${Equipment.tName}.code_owner`)
-      .leftJoin(SoilType.tName, `${SoilType.tName}.code`, `${Equipment.tName}.code_soil_type`)
-      .leftJoin(EquipmentType.tName, `${EquipmentType.tName}.code`, `${Equipment.tName}.code_equipment_type`)
-      .leftJoin(EquipmentNature.tName, `${EquipmentNature.tName}.code`, `${Equipment.tName}.code_equipment_nature`)
-      .leftJoin(EquipmentLevel.tName, `${EquipmentLevel.tName}.code`, `${Equipment.tName}.code_level`)
-      .select()
-      .options({ nestTables: true, rowMode: 'array' });
+  public async findById(id: string) : Promise<Equipment | undefined> {
+    const query = EquipmentDAO.fullObjectQuery()
+      .whereRaw(`${Equipment.tName}.id = UUID_TO_BIN(?)`, [id]);
 
-    return query.then((res) => Equipment.fromQuery(res[0]))
-      .then((e) => (e instanceof Equipment
-        ? this.getSports(e)
-          .then((s) => e?.setSports(s))
-          .then(() => e)
-        : undefined))
-      .then((e) => (e instanceof Equipment
-        ? this.getPictures(e)
-          .then((p) => e?.setPictures(p))
-          .then(() => e)
-        : undefined));
+    return query.then((res: any[]) => EquipmentDAO.linkPicturesSports(
+      res.map((x: any) => Equipment.fromQuery(x))
+        .filter((e) => e instanceof Equipment)
+        .map((e) => e as Equipment),
+    )[0]);
   }
-
-  public distanceEquipment(equipment: IEquipment, offset: number) : Promise<Equipment[]> {
-    const query = this.db.from(Equipment.tName)
+  /*
+  public async distanceEquipment(equipment: IEquipment, offset: number) : Promise<Equipment[]> {
+    const query = db.from(Equipment.tName)
       .leftJoin(Installation.tName, `${Installation.tName}.id`, `${Equipment.tName}.id_installation`)
       .leftJoin(Address.tName, `${Address.tName}.id`, `${Installation.tName}.id_address`)
       .leftJoin(City.tName, `${City.tName}.id`, `${Installation.tName}.id_city`)
@@ -73,7 +53,8 @@ export default class EquipmentDAO extends DAO {
       .options({ nestTables: true, rowMode: 'array' });
 
     if (equipment.sports && equipment.sports.length > 0) {
-      query.leftJoin('Equipment_Sport', 'Equipment_Sport.id_equipment', `${Equipment.tName}.id`)
+      query.innerJoin('Equipment_Sport', 'Equipment_Sport.id_equipment', `${Equipment.tName}.id`)
+        .innerJoin(Sport.tName, `${Sport.tName}.id`, 'Equipment_Sport.code_sport')
         .whereIn('Equipment_Sport.code_sport', equipment.sports?.filter((s) => s.code !== undefined).map((s) => s.code as string));
     }
 
@@ -101,17 +82,32 @@ export default class EquipmentDAO extends DAO {
     if (isArray(equipment.equipment_nature) && equipment.equipment_nature.length > 0) { query.whereIn(`${EquipmentNature.tName}.code`, equipment.equipment_nature.filter((s) => s.code !== undefined).map((s) => s.code as string)); }
     if (isArray(equipment.equipment_type) && equipment.equipment_type.length > 0) { query.whereIn(`${EquipmentType.tName}.code`, equipment.equipment_type.filter((s) => s.code !== undefined).map((s) => s.code as string)); }
 
-    return query.then((res) => res.map((e) => Equipment.fromQuery(e)))
-      .then((res) => res.filter((e) => e instanceof Equipment))
-      .then((res) => res.map((e) => e as Equipment));
+    return query.then((res: any[]) => res.map((e) => Equipment.fromQuery(e))
+      .filter((e) => e instanceof Equipment)
+      .map((e) => e as Equipment));
   }
 
   private static degToRad(deg: number): number {
     return deg * (Math.PI / 180);
   }
 
-  private getSports(equipment: Equipment): Promise<(Sport | undefined)[]> {
-    const query = this.db.from('Equipment_Sport')
+  private static linkPicturesSports(orignial_list: Equipment[]): Equipment[] {
+    return Object.values(orignial_list.reduce((obj : any, equip : Equipment) => {
+      if (obj[equip.id]) {
+        // eslint-disable-next-line no-param-reassign
+        obj[equip.id].sports = [...obj[equip.id].sports, ...equip.sports];
+        // eslint-disable-next-line no-param-reassign
+        obj[equip.id].pictures = [...obj[equip.id].pictures, ...equip.pictures];
+      } else {
+        // eslint-disable-next-line no-param-reassign
+        obj[equip.id] = equip;
+      }
+      return obj;
+    }, {}));
+  }
+
+  private static getSports(equipment: Equipment): Promise<(Sport | undefined)[]> {
+    const query = db.from('Equipment_Sport')
       .whereRaw('Equipment_Sport.id_equipment = UUID_TO_BIN(?)', [equipment.id])
       .innerJoin(Sport.tName, `${Sport.tName}.code`, 'Equipment_Sport.code_sport')
       .select(`${Sport.tName}.*`)
@@ -120,13 +116,32 @@ export default class EquipmentDAO extends DAO {
     return query.then((res) => res.map((x) => Sport.fromQuery(x)));
   }
 
-  private getPictures(equipment: Equipment): Promise<(Picture | undefined)[]> {
-    const query = this.db.from('Equipment_Picture')
+  private static getPictures(equipment: Equipment): Promise<(Picture | undefined)[]> {
+    const query = db.from('Equipment_Picture')
       .whereRaw('Equipment_Picture.id_equipment = UUID_TO_BIN(?)', [equipment.id])
       .innerJoin(Picture.tName, `${Picture.tName}.id`, 'Equipment_Picture.id_picture')
       .select(`${Picture.tName}.*`)
       .options({ nestTables: true, rowMode: 'array' });
 
-    return query.then((res) => res.map((x) => Picture.fromQuery(x)));
+    return query.then((res: any) => res.map((x: any) => Picture.fromQuery(x)));
+  }
+
+  private static fullObjectQuery(): QueryBuilder<Equipment> {
+    return db.from<Equipment>(Equipment.tName).limit(10).offset(10000)
+      .leftJoin(Installation.tName, `${Installation.tName}.id`, `${Equipment.tName}.id_installation`)
+      .leftJoin(Address.tName, `${Address.tName}.id`, `${Installation.tName}.id_address`)
+      .leftJoin(City.tName, `${City.tName}.id`, `${Installation.tName}.id_city`)
+      .leftJoin(Department.tName, `${Department.tName}.id`, `${City.tName}.id_department`)
+      .leftJoin(Owner.tName, `${Owner.tName}.code`, `${Equipment.tName}.code_owner`)
+      .leftJoin(SoilType.tName, `${SoilType.tName}.code`, `${Equipment.tName}.code_soil_type`)
+      .leftJoin(EquipmentType.tName, `${EquipmentType.tName}.code`, `${Equipment.tName}.code_equipment_type`)
+      .leftJoin(EquipmentNature.tName, `${EquipmentNature.tName}.code`, `${Equipment.tName}.code_equipment_nature`)
+      .leftJoin(EquipmentLevel.tName, `${EquipmentLevel.tName}.code`, `${Equipment.tName}.code_level`)
+      .innerJoin(Equipment.SportJoinTable, `${Equipment.PictureJoinTable}.id_equipment`, `${Equipment.tName}.id`)
+      .innerJoin(Sport.tName, `${Sport.tName}.id`, `${Equipment.PictureJoinTable}.code_sport`)
+      .innerJoin(Equipment.PictureJoinTable, `${Equipment.PictureJoinTable}.id_equipment`, `${Equipment.tName}.id`)
+      .innerJoin(Picture.tName, `${Picture.tName}.id`, `${Equipment.PictureJoinTable}.id_picture`)
+      .options({ nestTables: true, rowMode: 'array' });
   }
 }
+*/

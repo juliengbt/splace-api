@@ -1,9 +1,9 @@
 export default class EquipmentNature {
   public static tName = 'Equipment_Nature';
 
-  code: string;
+  code!: string;
 
-  label: string;
+  label!: string;
 
   constructor(code: string, label: string) {
     this.code = code;

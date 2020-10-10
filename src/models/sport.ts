@@ -3,18 +3,18 @@ import Category from './category';
 export default class Sport {
   public static tName = 'Sport';
 
-  code: string;
+  code!: string;
 
-  name: string;
+  name!: string;
 
   description: string | null;
 
   federation: string | null;
 
-  category: Category | null | undefined;
+  category?: Category | null;
 
   // eslint-disable-next-line max-len
-  constructor(code: string, name: string, description: string | null, federation: string | null, category: Category | null | undefined) {
+  constructor(code: string, name: string, description: string | null, federation: string | null, category?: Category | null) {
     this.code = code;
     this.name = name;
     this.description = description;

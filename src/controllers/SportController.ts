@@ -1,34 +1,37 @@
-import { Request, Response, Router } from 'express';
-import Knex from 'knex';
+import { getReasonPhrase, StatusCodes } from 'http-status-codes';
+import {
+  Controller,
+  Get,
+  Response,
+  Path,
+  Query,
+  Route,
+  SuccessResponse,
+} from 'tsoa';
 import SportDAO from '../dao/SportDAO';
-import Controller from './Controller';
+import Sport from '../models/sport';
+import ErrorResponse from '../ts/interfaces/errors';
+import ErrorCodes from '../ts/types/errorCodes';
 
-export default class SportController extends Controller {
-  public sportDao: SportDAO;
-
-  constructor(router: Router, db: Knex) {
-    super(router);
-    this.sportDao = new SportDAO(db);
+@Route('sport')
+export class SportController extends Controller {
+  @SuccessResponse(200, 'OK')
+  @Get()
+  public getSports(@Query() category?: string): Promise<Sport[]> {
+    if (category) return SportDAO.all(category);
+    return SportDAO.all();
   }
 
-  protected initRoutes() {
-    this.router.get('/sport', (req: Request, res: Response, next: Function) => this.getSports(req, res, next));
-    this.router.get('/sport/:code', (req: Request, res: Response, next: Function) => this.getSport(req, res, next));
-  }
-
-  public getSports(req: Request, res: Response, next: Function): void {
-    let category: string | undefined;
-    if (typeof req.query.category === 'string') {
-      category = req.query.category;
+  @Response<ErrorResponse>(StatusCodes.NOT_FOUND, getReasonPhrase(StatusCodes.NOT_FOUND))
+  @Get('{code}')
+  public async getSport(@Path() code: string): Promise<Sport> {
+    const res = await SportDAO.findByCode(code);
+    if (!res) {
+      throw new ErrorResponse(StatusCodes.NOT_FOUND, ErrorCodes.STATUS);
     }
-    this.sportDao.all(category, req.query.lazy !== 'false')
-      .then((sports) => Promise.resolve(res.status(200).json(sports)))
-      .catch((err) => { res.status(400); next(err); });
-  }
 
-  public getSport(req: Request, res: Response, next: Function): void {
-    this.sportDao.findByCode(req.params.code, req.query.lazy !== 'false')
-      .then((sport) => { Promise.resolve(res.status(200).json(sport)); })
-      .catch((err) => { res.status(400); next(err); });
+    return res;
   }
 }
+
+export default SportController;

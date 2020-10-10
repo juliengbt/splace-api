@@ -1,3 +1,0 @@
-[submodule "splace-interfaces"]
-	path = src/splace-interfaces
-	url = git@gitlab.com:jgoubet/splace-interfaces.git

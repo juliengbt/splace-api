@@ -12,12 +12,12 @@ export default class Installation {
 
   public disabled_access: boolean | null;
 
-  public address: Address | null | undefined;
+  public address?: Address | null;
 
-  public city: City | null | undefined;
+  public city?: City | null;
 
   // eslint-disable-next-line max-len
-  constructor(id: string, name: string, car_park: boolean | null, disabled_access: boolean | null, address: Address | null | undefined, city: City | null | undefined) {
+  constructor(id: string, name: string, car_park: boolean | null, disabled_access: boolean | null, address?: Address | null, city?: City | null) {
     this.id = id;
     this.name = name;
     this.car_park = car_park;

@@ -1,11 +1,11 @@
 export default class Department {
   public static tName = 'Department';
 
-  id: string;
+  id!: string;
 
-  name: string;
+  name!: string;
 
-  num: string;
+  num!: string;
 
   constructor(id: string, name: string, num: string) {
     this.id = id;

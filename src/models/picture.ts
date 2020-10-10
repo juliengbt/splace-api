@@ -1,9 +1,9 @@
 export default class Picture {
   public static tName = 'Picture';
 
-  id: string;
+  id!: string;
 
-  path: string;
+  path!: string;
 
   constructor(id: string, path: string) {
     this.id = id;

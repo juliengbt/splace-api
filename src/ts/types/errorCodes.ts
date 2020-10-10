@@ -1,0 +1,8 @@
+enum ErrorCodes {
+  STATUS = 'STATUS',
+  EMAIL_ALREADY_TAKEN = 'EMAIL_ALREADY_TAKEN',
+  INVALID_CREDENTIAL = 'INVALID_CREDENTIAL',
+  NOT_FOUND = 'NOT_FOUND'
+}
+
+export default ErrorCodes;

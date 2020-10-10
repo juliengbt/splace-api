@@ -1,9 +1,9 @@
 export default class SoilType {
   public static tName = 'Soil_Type';
 
-  code: string;
+  code!: string;
 
-  label: string;
+  label!: string;
 
   constructor(code: string, label: string) {
     this.code = code;

@@ -1,0 +1,17 @@
+{
+  "entryFile": "./src/index.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["./src/controllers/*Controller.ts"],
+  "schema": {
+    "additionalProperties": false
+  },
+  "spec": {
+    "outputDirectory": "./docs",
+    "specVersion": 3,
+    "basePath": "/"
+  },
+  "routes": {
+    "routesDir": "./src/app",
+    "basePath": "/"
+  }
+}

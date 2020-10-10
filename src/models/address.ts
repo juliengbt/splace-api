@@ -1,15 +1,15 @@
 export default class Address {
   public static tName = 'Address';
 
-  id: string;
+  id!: string;
 
   street_num: string | null;
 
-  street_name: string| null;
+  street_name: string | null;
 
-  locality: string| null;
+  locality: string | null;
 
-  district: number| null;
+  district: number | null;
 
   // eslint-disable-next-line max-len
   constructor(id: string, street_num: string | null, street_name: string| null, locality: string| null, district: number | null) {
@@ -20,7 +20,7 @@ export default class Address {
     this.district = district;
   }
 
-  public static fromQuery(obj: any): Address | null {
+  public static fromQuery(obj: any): Address | undefined {
     if (obj && this.tName in obj) {
       return new Address(
         obj[this.tName].id.toString('hex'),
@@ -31,6 +31,6 @@ export default class Address {
       );
     }
 
-    return null;
+    return undefined;
   }
 }

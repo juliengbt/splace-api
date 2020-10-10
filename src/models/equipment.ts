@@ -11,9 +11,13 @@ import Owner from './owner';
 export default class Equipment {
   public static tName = 'Equipment';
 
-  id: string;
+  public static PictureJoinTable = 'Equipment_Picture';
 
-  name: string;
+  public static SportJoinTable = 'Equipment_Sport';
+
+  id!: string;
+
+  name!: string;
 
   other_info: string | null;
 
@@ -31,25 +35,25 @@ export default class Equipment {
 
   latitude: number | null;
 
-  installation: Installation | null | undefined;
+  installation?: Installation | null;
 
-  owner: Owner | null | undefined;
+  owner?: Owner | null;
 
-  soil_type: SoilType | null | undefined;
+  soil_type?: SoilType | null;
 
-  equipment_nature: EquipmentNature | null | undefined;
+  equipment_nature?: EquipmentNature | null;
 
-  equipment_type: EquipmentType | null | undefined;
+  equipment_type?: EquipmentType | null;
 
-  equipment_level: EquipmentLevel | null | undefined;
+  equipment_level?: EquipmentLevel | null;
 
-  sports: Sport[] | undefined;
+  sports: Sport[];
 
-  pictures: Picture[] | undefined;
+  pictures: Picture[];
 
-  rating: number | null | undefined;
+  rating?: number | null;
 
-  distance: number | undefined;
+  distance?: number;
 
   constructor(id: string,
     name: string,
@@ -61,13 +65,15 @@ export default class Equipment {
     amount: number,
     longitude: number | null,
     latitude: number | null,
-    installation: Installation | null | undefined,
-    owner: Owner | null | undefined,
-    soil_type: SoilType | null | undefined,
-    equipment_nature: EquipmentNature | null | undefined,
-    equipment_type: EquipmentType | null | undefined,
-    equipment_level: EquipmentLevel | null | undefined,
-    distance: number | undefined) {
+    sports: Sport[],
+    pictures: Picture[],
+    installation?: Installation | null,
+    owner?: Owner | null,
+    soil_type?: SoilType | null,
+    equipment_nature?: EquipmentNature | null,
+    equipment_type?: EquipmentType | null,
+    equipment_level?: EquipmentLevel | null,
+    distance?: number) {
     this.id = id;
     this.name = name;
     this.other_info = other_info;
@@ -84,8 +90,8 @@ export default class Equipment {
     this.equipment_nature = equipment_nature;
     this.equipment_type = equipment_type;
     this.equipment_level = equipment_level;
-    this.sports = undefined;
-    this.pictures = undefined;
+    this.sports = sports;
+    this.pictures = pictures;
     this.rating = undefined;
     this.distance = distance;
   }
@@ -103,6 +109,8 @@ export default class Equipment {
         obj[this.tName].amount,
         obj[this.tName].longitude,
         obj[this.tName].latitude,
+        [Sport.fromQuery(obj)].filter((s) => s !== undefined).map((s) => s as Sport),
+        [Picture.fromQuery(obj)].filter((p) => p !== undefined).map((p) => p as Picture),
         obj[this.tName].id_installation === null ? null : Installation.fromQuery(obj),
         obj[this.tName].code_owner === null ? null : Owner.fromQuery(obj),
         obj[this.tName].code_soil_type === null ? null : SoilType.fromQuery(obj),
@@ -114,21 +122,5 @@ export default class Equipment {
     }
 
     return undefined;
-  }
-
-  public setSports(sports: (Sport | undefined)[]): void {
-    this.sports = sports.filter((s) => s instanceof Sport).map((s) => s as Sport);
-  }
-
-  public setPictures(pictures: (Picture | undefined)[]): void {
-    this.pictures = pictures.filter((p) => p instanceof Picture).map((p) => p as Picture);
-  }
-
-  public setRating(rating: number | null): void {
-    this.rating = rating;
-  }
-
-  public setDistance(distance: number): void {
-    this.distance = distance;
   }
 }

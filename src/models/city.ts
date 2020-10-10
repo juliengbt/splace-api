@@ -3,16 +3,16 @@ import Department from './department';
 export default class City {
   public static tName = 'City';
 
-  id: string;
+  id!: string;
 
-  name: string;
+  name!: string;
 
-  zip_code: number;
+  zip_code!: number;
 
-  department: Department | null | undefined;
+  department?: Department | null;
 
   // eslint-disable-next-line max-len
-  constructor(id: string, name: string, zip_code: number, department: Department | null | undefined) {
+  constructor(id: string, name: string, zip_code: number, department?: Department | null) {
     this.id = id;
     this.name = name;
     this.zip_code = zip_code;

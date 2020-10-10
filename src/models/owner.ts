@@ -1,9 +1,9 @@
 export default class Owner {
   public static tName = 'Owner';
 
-  code: string;
+  code!: string;
 
-  label: string;
+  label!: string;
 
   constructor(code: string, label: string) {
     this.code = code;

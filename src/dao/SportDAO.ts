@@ -1,39 +1,43 @@
-import DAO from './DAO';
+import { QueryBuilder } from 'knex';
 import Sport from '../models/sport';
 import Category from '../models/category';
+import db from '../app/knexConf';
 
-export default class SportDAO extends DAO {
-  public all(category: string | undefined, lazy: boolean): Promise<(Sport | undefined)[]> {
-    const query = this.db.from(Sport.tName)
-      .options({ nestTables: true, rowMode: 'array' });
+export default class SportDAO {
+  public static all(category?: string): Promise<Sport[]> {
+    const query = SportDAO.fullObjectQuery();
 
-    if (!lazy) {
-      query.innerJoin(Category.tName, `${Category.tName}.code`, `${Sport.tName}.code_category`);
-    }
     if (category) {
       query.where(`${Sport.tName}.code_category`, category);
     }
 
-    return query.then((res) => res.map((x) => Sport.fromQuery(x)));
+    return query.then(((res: any[]) => {
+      // eslint-disable-next-line no-console
+      console.log(res); return res.map((s: any) => Sport.fromQuery(s))
+        .filter((s: any) => s)
+        .map((s: any) => s as Sport);
+    }));
   }
 
-  public findByCode(code: string, lazy: boolean): Promise<Sport | undefined> {
-    const query = this.db.from(Sport.tName)
-      .where(`${Sport.tName}.code`, code)
-      .options({ nestTables: true, rowMode: 'array' });
+  public static findByCode(code: string): Promise<Sport | undefined> {
+    const query = SportDAO.fullObjectQuery()
+      .where(`${Sport.tName}.code`, code);
 
-    if (!lazy) {
-      query.innerJoin(Category.tName, `${Category.tName}.code`, `${Sport.tName}.code_category`);
-    }
-
-    return query.then((res) => Sport.fromQuery(res[0]));
+    return query.then((res: any) => Sport.fromQuery(res[0]));
   }
 
-  public findByCodes(codes: string[]): Promise<(Sport | undefined)[]> {
-    const query = this.db.from(Sport.tName)
-      .whereIn(`${Sport.tName}.code`, codes)
-      .options({ nestTables: true, rowMode: 'array' });
+  public findByCodes(codes: string[]): Promise<(Sport)[]> {
+    const query = SportDAO.fullObjectQuery()
+      .whereIn(`${Sport.tName}.code`, codes);
 
-    return query.then((res) => res.map((x) => Sport.fromQuery(x)));
+    return query.then((res: any) => res.map((x: any) => Sport.fromQuery(x))
+      .filter((s: any) => s !== undefined)
+      .map((s: any) => s as Sport));
+  }
+
+  public static fullObjectQuery(): QueryBuilder<Sport> {
+    return db.from<Sport>(Sport.tName)
+      .innerJoin(Category.tName, `${Category.tName}.code`, `${Sport.tName}.code_category`)
+      .options({ nestTables: true, rowMode: 'array' });
   }
 }
