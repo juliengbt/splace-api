@@ -56,15 +56,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"ErrorCodes": {
-				"enum": [
-					"STATUS",
-					"EMAIL_ALREADY_TAKEN",
-					"INVALID_CREDENTIAL",
-					"NOT_FOUND"
-				],
-				"type": "string"
-			},
 			"ErrorResponse": {
 				"properties": {
 					"name": {
@@ -77,7 +68,13 @@
 						"type": "string"
 					},
 					"code": {
-						"$ref": "#/components/schemas/ErrorCodes"
+						"type": "string",
+						"enum": [
+							"STATUS",
+							"EMAIL_ALREADY_TAKEN",
+							"INVALID_CREDENTIAL",
+							"NOT_FOUND"
+						]
 					}
 				},
 				"required": [
@@ -92,7 +89,7 @@
 		"securitySchemes": {}
 	},
 	"info": {
-		"title": "tsoa_test",
+		"title": "splace-api",
 		"version": "0.0.0",
 		"license": {
 			"name": "MIT"

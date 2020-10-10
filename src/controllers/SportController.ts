@@ -10,7 +10,7 @@ import {
 } from 'tsoa';
 import SportDAO from '../dao/SportDAO';
 import Sport from '../models/sport';
-import ErrorResponse from '../ts/interfaces/errors';
+import ErrorResponse from '../ts/interfaces/errorResponse';
 import ErrorCodes from '../ts/types/errorCodes';
 
 @Route('sport')

@@ -5,7 +5,7 @@ import {
 import {
   StatusCodes,
 } from 'http-status-codes';
-import ErrorResponse from '../../ts/interfaces/errors';
+import ErrorResponse from '../../ts/interfaces/errorResponse';
 import ErrorCodes from '../../ts/types/errorCodes';
 
 const notFoundHandler = () => (

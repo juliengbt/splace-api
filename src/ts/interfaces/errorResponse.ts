@@ -5,13 +5,13 @@ import ErrorCodes from '../types/errorCodes';
 class ErrorResponse extends Error {
   private status: HttpStatusCodeLiteral;
 
-  public code: ErrorCodes;
+  public code: keyof typeof ErrorCodes;
 
   constructor(status: HttpStatusCodeLiteral, code: ErrorCodes, message?: string) {
     super();
     this.message = message || getReasonPhrase(status);
     this.status = status;
-    this.code = code;
+    this.code = ErrorCodes[code] as keyof typeof ErrorCodes;
   }
 
   public getStatus(): HttpStatusCodeLiteral {

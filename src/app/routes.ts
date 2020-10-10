@@ -30,18 +30,13 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "ErrorCodes": {
-        "dataType": "refEnum",
-        "enums": ["STATUS","EMAIL_ALREADY_TAKEN","INVALID_CREDENTIAL","NOT_FOUND"],
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ErrorResponse": {
         "dataType": "refObject",
         "properties": {
             "name": {"dataType":"string","required":true},
             "message": {"dataType":"string","required":true},
             "stack": {"dataType":"string"},
-            "code": {"ref":"ErrorCodes","required":true},
+            "code": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["STATUS"]},{"dataType":"enum","enums":["EMAIL_ALREADY_TAKEN"]},{"dataType":"enum","enums":["INVALID_CREDENTIAL"]},{"dataType":"enum","enums":["NOT_FOUND"]}],"required":true},
         },
         "additionalProperties": false,
     },
