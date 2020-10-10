@@ -14,7 +14,7 @@ yarn start:dev
 ### Documentation
 Go to [localhost:3000/docs/](https://localhost:3000/docs/)
 
-### Example
+### Examples
 [localhost:3000/sport](https://localhost:3000/sport)
 
 [localhost:3000/sport/tennis](https://localhost:3000/sport/tennis)
