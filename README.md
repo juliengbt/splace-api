@@ -16,5 +16,7 @@ Go to [localhost:3000/docs/](https://localhost:3000/docs/)
 
 ### Example
 [localhost:3000/sport](https://localhost:3000/sport)
+
 [localhost:3000/sport/tennis](https://localhost:3000/sport/tennis)
+
 [localhost:3000/sport?category=escal](https://localhost:3000/sport?category=escal)
