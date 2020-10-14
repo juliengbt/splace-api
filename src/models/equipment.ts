@@ -1,21 +1,64 @@
 /* eslint-disable max-len */
-import SoilType from './soil_type';
-import EquipmentNature from './equipment_nature';
-import EquipmentType from './equipment_type';
-import Installation from './installation';
-import EquipmentLevel from './equipment_level';
-import Sport from './sport';
-import Picture from './picture';
-import Owner from './owner';
+import { ISoilType, SoilType } from './soil_type';
+import { EquipmentNature, IEquipmentNature } from './equipment_nature';
+import { EquipmentType, IEquipmentType } from './equipment_type';
+import { IInstallation, Installation } from './installation';
+import { EquipmentLevel, IEquipmentLevel } from './equipment_level';
+import { ISport, Sport } from './sport';
+import { IPicture, Picture } from './picture';
+import { IOwner, Owner } from './owner';
+import { UUID } from '../ts/types/uuid';
 
-export default class Equipment {
+interface IEquipment {
+  id?: UUID;
+
+  name?: string;
+
+  other_info?: string | null;
+
+  open_access?: boolean | null;
+
+  locker?: boolean | null;
+
+  lighting?: boolean | null;
+
+  shower?: boolean | null;
+
+  amount?: number;
+
+  longitude?: number | null;
+
+  latitude?: number | null;
+
+  installation?: IInstallation | null;
+
+  owner?: IOwner | null;
+
+  soil_type?: ISoilType[] | null;
+
+  equipment_nature?: IEquipmentNature[] | null;
+
+  equipment_type?: IEquipmentType[] | null;
+
+  equipment_level?: IEquipmentLevel[] | null;
+
+  sports?: ISport[];
+
+  pictures?: IPicture[];
+
+  rating?: number | null;
+
+  distance?: number;
+}
+
+class Equipment {
   public static tName = 'Equipment';
 
   public static PictureJoinTable = 'Equipment_Picture';
 
   public static SportJoinTable = 'Equipment_Sport';
 
-  id!: string;
+  id!: UUID;
 
   name!: string;
 
@@ -55,7 +98,7 @@ export default class Equipment {
 
   distance?: number;
 
-  constructor(id: string,
+  constructor(id: UUID,
     name: string,
     other_info: string | null,
     open_access: boolean | null,
@@ -124,3 +167,5 @@ export default class Equipment {
     return undefined;
   }
 }
+
+export { Equipment, IEquipment };

@@ -1,4 +1,10 @@
-export default class EquipmentNature {
+interface IEquipmentNature {
+  code?: string;
+
+  label?: string;
+}
+
+class EquipmentNature {
   public static tName = 'Equipment_Nature';
 
   code!: string;
@@ -21,3 +27,5 @@ export default class EquipmentNature {
     return undefined;
   }
 }
+
+export { EquipmentNature, IEquipmentNature };

@@ -1,7 +1,24 @@
-export default class Address {
+import { UUID } from '../ts/types/uuid';
+
+interface IAddress {
+  id?: UUID;
+
+  street_num?: string | null;
+
+  street_name?: string | null;
+
+  locality?: string | null;
+
+  district?: number | null;
+}
+
+/**
+ * @tsoaModel
+ */
+class Address {
   public static tName = 'Address';
 
-  id!: string;
+  id!: UUID;
 
   street_num: string | null;
 
@@ -12,7 +29,7 @@ export default class Address {
   district: number | null;
 
   // eslint-disable-next-line max-len
-  constructor(id: string, street_num: string | null, street_name: string| null, locality: string| null, district: number | null) {
+  constructor(id: UUID, street_num: string | null, street_name: string| null, locality: string| null, district: number | null) {
     this.id = id;
     this.street_num = street_num;
     this.street_name = street_name;
@@ -34,3 +51,5 @@ export default class Address {
     return undefined;
   }
 }
+
+export { Address, IAddress };

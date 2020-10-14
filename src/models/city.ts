@@ -1,6 +1,16 @@
-import Department from './department';
+import { Department, IDepartment } from './department';
 
-export default class City {
+interface ICity {
+  id?: string;
+
+  name?: string;
+
+  zip_code?: number;
+
+  department?: IDepartment | null;
+}
+
+class City {
   public static tName = 'City';
 
   id!: string;
@@ -32,3 +42,5 @@ export default class City {
     return undefined;
   }
 }
+
+export { City, ICity };

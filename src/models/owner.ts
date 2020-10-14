@@ -1,4 +1,10 @@
-export default class Owner {
+interface IOwner {
+  code?: string;
+
+  label?: string;
+}
+
+class Owner {
   public static tName = 'Owner';
 
   code!: string;
@@ -21,3 +27,5 @@ export default class Owner {
     return undefined;
   }
 }
+
+export { Owner, IOwner };

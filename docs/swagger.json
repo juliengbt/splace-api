@@ -6,6 +6,215 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"UUID": {
+				"type": "string",
+				"description": "Stringified UUIDv4.\nSee [RFC 4112](https://tools.ietf.org/html/rfc4122)",
+				"pattern": "[0-9A-Fa-f]{8}[0-9A-Fa-f]{4}4[0-9A-Fa-f]{3}[89ABab][0-9A-Fa-f]{3}[0-9A-Fa-f]{12}"
+			},
+			"Address": {
+				"properties": {
+					"id": {
+						"$ref": "#/components/schemas/UUID"
+					},
+					"street_num": {
+						"type": "string",
+						"nullable": true
+					},
+					"street_name": {
+						"type": "string",
+						"nullable": true
+					},
+					"locality": {
+						"type": "string",
+						"nullable": true
+					},
+					"district": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"street_num",
+					"street_name",
+					"locality",
+					"district"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Department": {
+				"properties": {
+					"id": {
+						"$ref": "#/components/schemas/UUID"
+					},
+					"name": {
+						"type": "string"
+					},
+					"num": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"num"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"City": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"zip_code": {
+						"type": "number",
+						"format": "double"
+					},
+					"department": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Department"
+							}
+						],
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"zip_code"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Installation": {
+				"properties": {
+					"id": {
+						"$ref": "#/components/schemas/UUID"
+					},
+					"name": {
+						"type": "string"
+					},
+					"car_park": {
+						"type": "boolean",
+						"nullable": true
+					},
+					"disabled_access": {
+						"type": "boolean",
+						"nullable": true
+					},
+					"address": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Address"
+							}
+						],
+						"nullable": true
+					},
+					"city": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/City"
+							}
+						],
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"car_park",
+					"disabled_access"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Owner": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"code",
+					"label"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"SoilType": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"code",
+					"label"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"EquipmentNature": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"code",
+					"label"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"EquipmentType": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"code",
+					"label"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"EquipmentLevel": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"code",
+					"label"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Category": {
 				"properties": {
 					"code": {
@@ -56,6 +265,475 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"Picture": {
+				"properties": {
+					"id": {
+						"$ref": "#/components/schemas/UUID"
+					},
+					"path": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"path"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Equipment": {
+				"properties": {
+					"id": {
+						"$ref": "#/components/schemas/UUID"
+					},
+					"name": {
+						"type": "string"
+					},
+					"other_info": {
+						"type": "string",
+						"nullable": true
+					},
+					"open_access": {
+						"type": "boolean",
+						"nullable": true
+					},
+					"locker": {
+						"type": "boolean",
+						"nullable": true
+					},
+					"lighting": {
+						"type": "boolean",
+						"nullable": true
+					},
+					"shower": {
+						"type": "boolean",
+						"nullable": true
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"longitude": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"latitude": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"installation": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Installation"
+							}
+						],
+						"nullable": true
+					},
+					"owner": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Owner"
+							}
+						],
+						"nullable": true
+					},
+					"soil_type": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/SoilType"
+							}
+						],
+						"nullable": true
+					},
+					"equipment_nature": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/EquipmentNature"
+							}
+						],
+						"nullable": true
+					},
+					"equipment_type": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/EquipmentType"
+							}
+						],
+						"nullable": true
+					},
+					"equipment_level": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/EquipmentLevel"
+							}
+						],
+						"nullable": true
+					},
+					"sports": {
+						"items": {
+							"$ref": "#/components/schemas/Sport"
+						},
+						"type": "array"
+					},
+					"pictures": {
+						"items": {
+							"$ref": "#/components/schemas/Picture"
+						},
+						"type": "array"
+					},
+					"rating": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"distance": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"other_info",
+					"open_access",
+					"locker",
+					"lighting",
+					"shower",
+					"amount",
+					"longitude",
+					"latitude",
+					"sports",
+					"pictures"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IAddress": {
+				"properties": {
+					"id": {
+						"$ref": "#/components/schemas/UUID"
+					},
+					"street_num": {
+						"type": "string",
+						"nullable": true
+					},
+					"street_name": {
+						"type": "string",
+						"nullable": true
+					},
+					"locality": {
+						"type": "string",
+						"nullable": true
+					},
+					"district": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IDepartment": {
+				"properties": {
+					"id": {
+						"$ref": "#/components/schemas/UUID"
+					},
+					"name": {
+						"type": "string"
+					},
+					"num": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ICity": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"zip_code": {
+						"type": "number",
+						"format": "double"
+					},
+					"department": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/IDepartment"
+							}
+						],
+						"nullable": true
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IInstallation": {
+				"properties": {
+					"id": {
+						"$ref": "#/components/schemas/UUID"
+					},
+					"name": {
+						"type": "string"
+					},
+					"car_park": {
+						"type": "boolean",
+						"nullable": true
+					},
+					"disabled_access": {
+						"type": "boolean",
+						"nullable": true
+					},
+					"address": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/IAddress"
+							}
+						],
+						"nullable": true
+					},
+					"city": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/ICity"
+							}
+						],
+						"nullable": true
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IOwner": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ISoilType": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IEquipmentNature": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IEquipmentType": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IEquipmentLevel": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ICategory": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ISport": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string",
+						"nullable": true
+					},
+					"federation": {
+						"type": "string",
+						"nullable": true
+					},
+					"category": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/ICategory"
+							}
+						],
+						"nullable": true
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IPicture": {
+				"properties": {
+					"id": {
+						"$ref": "#/components/schemas/UUID"
+					},
+					"path": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IEquipment": {
+				"properties": {
+					"id": {
+						"$ref": "#/components/schemas/UUID"
+					},
+					"name": {
+						"type": "string"
+					},
+					"other_info": {
+						"type": "string",
+						"nullable": true
+					},
+					"open_access": {
+						"type": "boolean",
+						"nullable": true
+					},
+					"locker": {
+						"type": "boolean",
+						"nullable": true
+					},
+					"lighting": {
+						"type": "boolean",
+						"nullable": true
+					},
+					"shower": {
+						"type": "boolean",
+						"nullable": true
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"longitude": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"latitude": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"installation": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/IInstallation"
+							}
+						],
+						"nullable": true
+					},
+					"owner": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/IOwner"
+							}
+						],
+						"nullable": true
+					},
+					"soil_type": {
+						"items": {
+							"$ref": "#/components/schemas/ISoilType"
+						},
+						"type": "array",
+						"nullable": true
+					},
+					"equipment_nature": {
+						"items": {
+							"$ref": "#/components/schemas/IEquipmentNature"
+						},
+						"type": "array",
+						"nullable": true
+					},
+					"equipment_type": {
+						"items": {
+							"$ref": "#/components/schemas/IEquipmentType"
+						},
+						"type": "array",
+						"nullable": true
+					},
+					"equipment_level": {
+						"items": {
+							"$ref": "#/components/schemas/IEquipmentLevel"
+						},
+						"type": "array",
+						"nullable": true
+					},
+					"sports": {
+						"items": {
+							"$ref": "#/components/schemas/ISport"
+						},
+						"type": "array"
+					},
+					"pictures": {
+						"items": {
+							"$ref": "#/components/schemas/IPicture"
+						},
+						"type": "array"
+					},
+					"rating": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"distance": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
 			"ErrorResponse": {
 				"properties": {
 					"name": {
@@ -98,6 +776,48 @@
 	},
 	"openapi": "3.0.0",
 	"paths": {
+		"/equipment": {
+			"post": {
+				"operationId": "GetEquipments",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Equipment"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "offset",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IEquipment"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/sport": {
 			"get": {
 				"operationId": "GetSports",

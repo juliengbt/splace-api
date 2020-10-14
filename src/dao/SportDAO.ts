@@ -1,6 +1,6 @@
 import { QueryBuilder } from 'knex';
-import Sport from '../models/sport';
-import Category from '../models/category';
+import { Sport } from '../models/sport';
+import { Category } from '../models/category';
 import db from '../app/knexConf';
 
 export default class SportDAO {
@@ -11,12 +11,10 @@ export default class SportDAO {
       query.where(`${Sport.tName}.code_category`, category);
     }
 
-    return query.then(((res: any[]) => {
-      // eslint-disable-next-line no-console
-      console.log(res); return res.map((s: any) => Sport.fromQuery(s))
-        .filter((s: any) => s)
-        .map((s: any) => s as Sport);
-    }));
+    return query.then(((res: any[]) => res.map((s: any) => Sport.fromQuery(s))
+      .filter((s: any) => s)
+      .map((s: any) => s as Sport)
+    ));
   }
 
   public static findByCode(code: string): Promise<Sport | undefined> {

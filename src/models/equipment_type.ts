@@ -1,4 +1,10 @@
-export default class EquipmentType {
+interface IEquipmentType {
+  code?: string;
+
+  label?: string;
+}
+
+class EquipmentType {
   public static tName = 'Equipment_Type';
 
   code!: string;
@@ -21,3 +27,5 @@ export default class EquipmentType {
     return undefined;
   }
 }
+
+export { EquipmentType, IEquipmentType };

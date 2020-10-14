@@ -1,4 +1,10 @@
-export default class Category {
+interface ICategory {
+  code?: string;
+
+  name?: string;
+}
+
+class Category {
   public static tName = 'Category';
 
   code!: string;
@@ -18,3 +24,5 @@ export default class Category {
     return undefined;
   }
 }
+
+export { Category, ICategory };

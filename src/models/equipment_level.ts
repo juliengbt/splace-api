@@ -1,4 +1,10 @@
-export default class EquipmentLevel {
+interface IEquipmentLevel {
+  code?: string;
+
+  label?: string;
+}
+
+class EquipmentLevel {
   public static tName = 'Equipment_Level';
 
   code!: string;
@@ -21,3 +27,5 @@ export default class EquipmentLevel {
     return undefined;
   }
 }
+
+export { EquipmentLevel, IEquipmentLevel };

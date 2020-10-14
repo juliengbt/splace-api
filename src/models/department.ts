@@ -1,13 +1,23 @@
-export default class Department {
+import { UUID } from '../ts/types/uuid';
+
+interface IDepartment {
+  id?: UUID;
+
+  name?: string;
+
+  num?: string;
+}
+
+class Department {
   public static tName = 'Department';
 
-  id!: string;
+  id!: UUID;
 
   name!: string;
 
   num!: string;
 
-  constructor(id: string, name: string, num: string) {
+  constructor(id: UUID, name: string, num: string) {
     this.id = id;
     this.name = name;
     this.num = num;
@@ -25,3 +35,5 @@ export default class Department {
     return undefined;
   }
 }
+
+export { Department, IDepartment };

@@ -1,10 +1,25 @@
-import Address from './address';
-import City from './city';
+import { UUID } from '../ts/types/uuid';
+import { Address, IAddress } from './address';
+import { City, ICity } from './city';
 
-export default class Installation {
+interface IInstallation {
+  id?: UUID;
+
+  name?: string;
+
+  car_park?: boolean | null;
+
+  disabled_access?: boolean | null;
+
+  address?: IAddress | null;
+
+  city?: ICity | null;
+}
+
+class Installation {
   public static tName = 'Installation';
 
-  public id: string;
+  public id!: UUID;
 
   public name: string;
 
@@ -17,7 +32,7 @@ export default class Installation {
   public city?: City | null;
 
   // eslint-disable-next-line max-len
-  constructor(id: string, name: string, car_park: boolean | null, disabled_access: boolean | null, address?: Address | null, city?: City | null) {
+  constructor(id: UUID, name: string, car_park: boolean | null, disabled_access: boolean | null, address?: Address | null, city?: City | null) {
     this.id = id;
     this.name = name;
     this.car_park = car_park;
@@ -39,3 +54,5 @@ export default class Installation {
     return undefined;
   }
 }
+
+export { Installation, IInstallation };

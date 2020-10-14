@@ -1,4 +1,10 @@
-export default class SoilType {
+interface ISoilType {
+  code?: string;
+
+  label?: string;
+}
+
+class SoilType {
   public static tName = 'Soil_Type';
 
   code!: string;
@@ -21,3 +27,5 @@ export default class SoilType {
     return undefined;
   }
 }
+
+export { SoilType, ISoilType };

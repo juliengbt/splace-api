@@ -1,7 +1,15 @@
-export default class Picture {
+import { UUID } from '../ts/types/uuid';
+
+interface IPicture {
+  id?: UUID;
+
+  path?: string;
+}
+
+class Picture {
   public static tName = 'Picture';
 
-  id!: string;
+  id!: UUID;
 
   path!: string;
 
@@ -21,3 +29,5 @@ export default class Picture {
     return undefined;
   }
 }
+
+export { Picture, IPicture };
