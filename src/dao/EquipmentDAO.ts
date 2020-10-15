@@ -12,21 +12,21 @@ import { EquipmentType } from '../models/equipment_type';
 import { EquipmentNature } from '../models/equipment_nature';
 import { EquipmentLevel } from '../models/equipment_level';
 import { Picture } from '../models/picture';
+import { Category } from '../models/category';
 
 export default class EquipmentDAO {
   public static async all(): Promise<(Equipment)[]> {
-    const query = EquipmentDAO.fullObjectQuery().limit(10).offset(10000);
+    const query = EquipmentDAO.fullObjectQuery().limit(10).offset(0);
 
-    return query.then((res: any[]) => EquipmentDAO.linkPicturesSports(
-      res.map((x: any) => Equipment.fromQuery(x))
-        .filter((e) => e instanceof Equipment)
-        .map((e) => e as Equipment),
-    ));
+    return query.then((res: any[]) => res.map((x: any) => Equipment.fromQuery(x))
+      .filter((e) => e instanceof Equipment)
+      .map((e) => e as Equipment))
+      .then((res : Equipment[]) => EquipmentDAO.linkPicturesSports(res));
   }
 
   public static async findById(id: string) : Promise<Equipment | undefined> {
     const query = EquipmentDAO.fullObjectQuery()
-      .whereRaw(`${Equipment.tName}.id = UUID_TO_BIN(?)`, [id]);
+      .whereRaw(`${Equipment.tName}.id = UUID_TO_BIN(?)`, id);
 
     return query.then((res: any[]) => EquipmentDAO.linkPicturesSports(
       res.map((x: any) => Equipment.fromQuery(x))
@@ -37,25 +37,13 @@ export default class EquipmentDAO {
 
   public static async distanceEquipment(equipment: IEquipment,
     offset: number) : Promise<Equipment[]> {
-    const query = db.from(Equipment.tName)
-      .leftJoin(Installation.tName, `${Installation.tName}.id`, `${Equipment.tName}.id_installation`)
-      .leftJoin(Address.tName, `${Address.tName}.id`, `${Installation.tName}.id_address`)
-      .leftJoin(City.tName, `${City.tName}.id`, `${Installation.tName}.id_city`)
-      .leftJoin(Department.tName, `${Department.tName}.id`, `${City.tName}.id_department`)
-      .leftJoin(Owner.tName, `${Owner.tName}.code`, `${Equipment.tName}.code_owner`)
-      .leftJoin(SoilType.tName, `${SoilType.tName}.code`, `${Equipment.tName}.code_soil_type`)
-      .leftJoin(EquipmentType.tName, `${EquipmentType.tName}.code`, `${Equipment.tName}.code_equipment_type`)
-      .leftJoin(EquipmentNature.tName, `${EquipmentNature.tName}.code`, `${Equipment.tName}.code_equipment_nature`)
-      .leftJoin(EquipmentLevel.tName, `${EquipmentLevel.tName}.code`, `${Equipment.tName}.code_level`)
+    const query = EquipmentDAO.fullObjectQuery()
       .select('*')
       .limit(25)
-      .offset(offset)
-      .options({ nestTables: true, rowMode: 'array' });
+      .offset(offset);
 
     if (equipment.sports && equipment.sports.length > 0) {
-      query.innerJoin('Equipment_Sport', 'Equipment_Sport.id_equipment', `${Equipment.tName}.id`)
-        .innerJoin(Sport.tName, `${Sport.tName}.code`, 'Equipment_Sport.code_sport')
-        .whereIn('Equipment_Sport.code_sport', equipment.sports.map((s) => s.code).filter((s) => s).map((s) => s as string));
+      query.whereIn('Equipment_Sport.code_sport', equipment.sports.map((s) => s.code).filter((s) => s).map((s) => s as string));
     }
 
     if (equipment.latitude && equipment.longitude) {
@@ -95,9 +83,10 @@ export default class EquipmentDAO {
       }
     }
 
-    return query.then((res: any[]) => res.map((e) => Equipment.fromQuery(e))
+    return query.then((res: any[]) => res.map((e: any) => Equipment.fromQuery(e))
       .filter((e) => e instanceof Equipment)
-      .map((e) => e as Equipment));
+      .map((e) => e as Equipment))
+      .then((res : Equipment[]) => EquipmentDAO.linkPicturesSports(res));
   }
 
   private static degToRad(deg: number): number {
@@ -140,7 +129,7 @@ export default class EquipmentDAO {
     return query.then((res: any) => res.map((x: any) => Picture.fromQuery(x)));
   }
 */
-  private static fullObjectQuery(): QueryBuilder<Equipment> {
+  private static fullObjectQuery(): QueryBuilder<Equipment[]> {
     return db.from<Equipment>(Equipment.tName)
       .leftJoin(Installation.tName, `${Installation.tName}.id`, `${Equipment.tName}.id_installation`)
       .leftJoin(Address.tName, `${Address.tName}.id`, `${Installation.tName}.id_address`)
@@ -151,10 +140,11 @@ export default class EquipmentDAO {
       .leftJoin(EquipmentType.tName, `${EquipmentType.tName}.code`, `${Equipment.tName}.code_equipment_type`)
       .leftJoin(EquipmentNature.tName, `${EquipmentNature.tName}.code`, `${Equipment.tName}.code_equipment_nature`)
       .leftJoin(EquipmentLevel.tName, `${EquipmentLevel.tName}.code`, `${Equipment.tName}.code_level`)
-      .innerJoin(Equipment.SportJoinTable, `${Equipment.PictureJoinTable}.id_equipment`, `${Equipment.tName}.id`)
-      .innerJoin(Sport.tName, `${Sport.tName}.id`, `${Equipment.PictureJoinTable}.code_sport`)
-      .innerJoin(Equipment.PictureJoinTable, `${Equipment.PictureJoinTable}.id_equipment`, `${Equipment.tName}.id`)
-      .innerJoin(Picture.tName, `${Picture.tName}.id`, `${Equipment.PictureJoinTable}.id_picture`)
+      .leftJoin(Equipment.SportJoinTable, `${Equipment.SportJoinTable}.id_equipment`, `${Equipment.tName}.id`)
+      .leftJoin(Sport.tName, `${Sport.tName}.code`, `${Equipment.SportJoinTable}.code_sport`)
+      .leftJoin(Category.tName, `${Category.tName}.code`, `${Sport.tName}.code_category`)
+      .leftJoin(Equipment.PictureJoinTable, `${Equipment.PictureJoinTable}.id_equipment`, `${Equipment.tName}.id`)
+      .leftJoin(Picture.tName, `${Picture.tName}.id`, `${Equipment.PictureJoinTable}.id_picture`)
       .options({ nestTables: true, rowMode: 'array' });
   }
 }
