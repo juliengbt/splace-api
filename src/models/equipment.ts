@@ -106,7 +106,7 @@ class Equipment {
 
   pictures: Picture[];
 
-  rating?: number | null;
+  rating: number | null;
 
   distance?: number;
 
@@ -147,7 +147,7 @@ class Equipment {
     this.equipment_level = equipment_level;
     this.sports = sports;
     this.pictures = pictures;
-    this.rating = undefined;
+    this.rating = null;
     this.distance = distance;
   }
 

@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { UUID } from '../ts/types/uuid';
 import { Address, IAddress } from './address';
 import { City, ICity } from './city';
@@ -45,8 +46,8 @@ class Installation {
     if (obj && this.tName in obj) {
       return new Installation(obj[this.tName].id.toString('hex'),
         obj[this.tName].name,
-        obj[this.tName].car_park === null ? null : Boolean(obj[this.tName].car_park),
-        obj[this.tName].disabled_access === null ? null : Boolean(obj[this.tName].disabled_access),
+        obj[this.tName].car_park === null ? null : Boolean(obj[this.tName].car_park.readUIntLE(0, 1)),
+        obj[this.tName].disabled_access === null ? null : Boolean(obj[this.tName].disabled_access.readUIntLE(0, 1)),
         obj[this.tName].id_address === null ? null : Address.fromQuery(obj),
         obj[this.tName].id_city === null ? null : City.fromQuery(obj));
     }
