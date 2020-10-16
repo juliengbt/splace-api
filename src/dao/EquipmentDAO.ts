@@ -52,6 +52,13 @@ export default class EquipmentDAO {
         .select(db.raw(`get_distance(?,?,${Equipment.tName}.latitude, ${Equipment.tName}.longitude) as distance`, [EquipmentDAO.degToRad(equipment.latitude), EquipmentDAO.degToRad(equipment.longitude)]))
         .orderBy('distance', 'asc');
 
+      if (equipment.gps_area) {
+        query.where(`${Equipment.tName}.latitude`, '<=', equipment.gps_area.max_lat)
+          .andWhere(`${Equipment.tName}.latitude`, '>=', equipment.gps_area.min_lat)
+          .andWhere(`${Equipment.tName}.longitude`, '<=', equipment.gps_area.max_lon)
+          .andWhere(`${Equipment.tName}.longitude`, '>=', equipment.gps_area.min_lon);
+      }
+
       if (equipment.distance) {
         query.having('distance', '<=', equipment.distance);
       }

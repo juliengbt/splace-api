@@ -9,6 +9,16 @@ import { IPicture, Picture } from './picture';
 import { IOwner, Owner } from './owner';
 import { UUID } from '../ts/types/uuid';
 
+interface GPSArea {
+  min_lon: number;
+
+  min_lat: number;
+
+  max_lon: number;
+
+  max_lat: number;
+}
+
 interface IEquipment {
   id?: UUID;
 
@@ -26,9 +36,11 @@ interface IEquipment {
 
   amount?: number;
 
-  longitude?: number | null;
+  latitude?: number;
 
-  latitude?: number | null;
+  longitude?: number;
+
+  gps_area?: GPSArea;
 
   installation?: IInstallation | null;
 
