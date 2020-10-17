@@ -1,5 +1,7 @@
+import { Code } from '../ts/types/code';
+
 interface IOwner {
-  code?: string;
+  code?: Code;
 
   label?: string;
 }
@@ -7,11 +9,11 @@ interface IOwner {
 class Owner {
   public static tName = 'Owner';
 
-  code!: string;
+  code!: Code;
 
   label!: string;
 
-  constructor(code: string, label: string) {
+  constructor(code: Code, label: string) {
     this.code = code;
     this.label = label;
   }

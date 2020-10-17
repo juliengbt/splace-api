@@ -1,5 +1,6 @@
 import pino from 'pino';
+import { pinoConfig } from './globals';
 
-const logger = pino();
+const logger = pino(pinoConfig.pinoOptions);
 
 export default logger;

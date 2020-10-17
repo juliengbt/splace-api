@@ -1,5 +1,7 @@
+import { Code } from '../ts/types/code';
+
 interface IEquipmentLevel {
-  code?: string;
+  code?: Code;
 
   label?: string;
 }
@@ -7,11 +9,11 @@ interface IEquipmentLevel {
 class EquipmentLevel {
   public static tName = 'Equipment_Level';
 
-  code!: string;
+  code!: Code;
 
   label!: string;
 
-  constructor(code: string, label: string) {
+  constructor(code: Code, label: string) {
     this.code = code;
     this.label = label;
   }

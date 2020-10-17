@@ -1,5 +1,7 @@
+import { Code } from '../ts/types/code';
+
 interface IEquipmentNature {
-  code?: string;
+  code?: Code;
 
   label?: string;
 }
@@ -7,11 +9,11 @@ interface IEquipmentNature {
 class EquipmentNature {
   public static tName = 'Equipment_Nature';
 
-  code!: string;
+  code!: Code;
 
   label!: string;
 
-  constructor(code: string, label: string) {
+  constructor(code: Code, label: string) {
     this.code = code;
     this.label = label;
   }

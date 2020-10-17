@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { QueryBuilder } from 'knex';
 import db from '../app/knexConf';
 import { Equipment, IEquipment } from '../models/equipment';
@@ -13,6 +14,7 @@ import { EquipmentNature } from '../models/equipment_nature';
 import { EquipmentLevel } from '../models/equipment_level';
 import { Picture } from '../models/picture';
 import { Category } from '../models/category';
+import { UUID } from '../ts/types/uuid';
 
 export default class EquipmentDAO {
   public static async all(): Promise<(Equipment)[]> {
@@ -24,7 +26,7 @@ export default class EquipmentDAO {
       .then((res : Equipment[]) => EquipmentDAO.linkPicturesSports(res));
   }
 
-  public static async findById(id: string) : Promise<Equipment | undefined> {
+  public static async findById(id: UUID) : Promise<Equipment | undefined> {
     const query = EquipmentDAO.fullObjectQuery()
       .whereRaw(`${Equipment.tName}.id = UUID_TO_BIN(?)`, id);
 

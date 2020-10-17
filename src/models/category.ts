@@ -1,5 +1,7 @@
+import { Code } from '../ts/types/code';
+
 interface ICategory {
-  code?: string;
+  code?: Code;
 
   name?: string;
 }
@@ -7,11 +9,11 @@ interface ICategory {
 class Category {
   public static tName = 'Category';
 
-  code!: string;
+  code!: Code;
 
   name!: string;
 
-  constructor(code: string, name: string) {
+  constructor(code: Code, name: string) {
     this.code = code;
     this.name = name;
   }

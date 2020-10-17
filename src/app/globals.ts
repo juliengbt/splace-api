@@ -23,7 +23,7 @@ const globals = {
     },
   },
   PINO: {
-    PINO_NAME: process.env.PINO_NAME || 'astronef-api',
+    PINO_NAME: process.env.PINO_NAME || 'splace-api',
     PINO_LOGFILE: process.env.PINO_LOGFILE || pino.destination(1),
   },
   DB: {

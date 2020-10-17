@@ -1,7 +1,8 @@
+import { Code } from '../ts/types/code';
 import { Category, ICategory } from './category';
 
 interface ISport {
-  code?: string;
+  code?: Code;
 
   name?: string;
 
@@ -15,7 +16,7 @@ interface ISport {
 class Sport {
   public static tName = 'Sport';
 
-  code!: string;
+  code!: Code;
 
   name!: string;
 
@@ -26,7 +27,7 @@ class Sport {
   category?: Category | null;
 
   // eslint-disable-next-line max-len
-  constructor(code: string, name: string, description: string | null, federation: string | null, category?: Category | null) {
+  constructor(code: Code, name: string, description: string | null, federation: string | null, category?: Category | null) {
     this.code = code;
     this.name = name;
     this.description = description;

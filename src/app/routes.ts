@@ -13,7 +13,7 @@ import * as express from 'express';
 const models: TsoaRoute.Models = {
     "UUID": {
         "dataType": "refAlias",
-        "type": {"dataType":"string","validators":{"pattern":{"value":"[0-9A-Fa-f]{8}[0-9A-Fa-f]{4}4[0-9A-Fa-f]{3}[89ABab][0-9A-Fa-f]{3}[0-9A-Fa-f]{12}"}}},
+        "type": {"dataType":"string","validators":{"pattern":{"value":"^[0-9A-Fa-f]{32}$"}}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Address": {
@@ -62,10 +62,15 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Code": {
+        "dataType": "refAlias",
+        "type": {"dataType":"string","validators":{"pattern":{"value":"^[a-z_]{3,10}$"}}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Owner": {
         "dataType": "refObject",
         "properties": {
-            "code": {"dataType":"string","required":true},
+            "code": {"ref":"Code","required":true},
             "label": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
@@ -74,7 +79,7 @@ const models: TsoaRoute.Models = {
     "SoilType": {
         "dataType": "refObject",
         "properties": {
-            "code": {"dataType":"string","required":true},
+            "code": {"ref":"Code","required":true},
             "label": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
@@ -83,7 +88,7 @@ const models: TsoaRoute.Models = {
     "EquipmentNature": {
         "dataType": "refObject",
         "properties": {
-            "code": {"dataType":"string","required":true},
+            "code": {"ref":"Code","required":true},
             "label": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
@@ -92,7 +97,7 @@ const models: TsoaRoute.Models = {
     "EquipmentType": {
         "dataType": "refObject",
         "properties": {
-            "code": {"dataType":"string","required":true},
+            "code": {"ref":"Code","required":true},
             "label": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
@@ -101,7 +106,7 @@ const models: TsoaRoute.Models = {
     "EquipmentLevel": {
         "dataType": "refObject",
         "properties": {
-            "code": {"dataType":"string","required":true},
+            "code": {"ref":"Code","required":true},
             "label": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
@@ -110,7 +115,7 @@ const models: TsoaRoute.Models = {
     "Category": {
         "dataType": "refObject",
         "properties": {
-            "code": {"dataType":"string","required":true},
+            "code": {"ref":"Code","required":true},
             "name": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
@@ -119,7 +124,7 @@ const models: TsoaRoute.Models = {
     "Sport": {
         "dataType": "refObject",
         "properties": {
-            "code": {"dataType":"string","required":true},
+            "code": {"ref":"Code","required":true},
             "name": {"dataType":"string","required":true},
             "description": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
             "federation": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
@@ -224,7 +229,7 @@ const models: TsoaRoute.Models = {
     "IOwner": {
         "dataType": "refObject",
         "properties": {
-            "code": {"dataType":"string"},
+            "code": {"ref":"Code"},
             "label": {"dataType":"string"},
         },
         "additionalProperties": false,
@@ -233,7 +238,7 @@ const models: TsoaRoute.Models = {
     "ISoilType": {
         "dataType": "refObject",
         "properties": {
-            "code": {"dataType":"string"},
+            "code": {"ref":"Code"},
             "label": {"dataType":"string"},
         },
         "additionalProperties": false,
@@ -242,7 +247,7 @@ const models: TsoaRoute.Models = {
     "IEquipmentNature": {
         "dataType": "refObject",
         "properties": {
-            "code": {"dataType":"string"},
+            "code": {"ref":"Code"},
             "label": {"dataType":"string"},
         },
         "additionalProperties": false,
@@ -251,7 +256,7 @@ const models: TsoaRoute.Models = {
     "IEquipmentType": {
         "dataType": "refObject",
         "properties": {
-            "code": {"dataType":"string"},
+            "code": {"ref":"Code"},
             "label": {"dataType":"string"},
         },
         "additionalProperties": false,
@@ -260,7 +265,7 @@ const models: TsoaRoute.Models = {
     "IEquipmentLevel": {
         "dataType": "refObject",
         "properties": {
-            "code": {"dataType":"string"},
+            "code": {"ref":"Code"},
             "label": {"dataType":"string"},
         },
         "additionalProperties": false,
@@ -269,7 +274,7 @@ const models: TsoaRoute.Models = {
     "ICategory": {
         "dataType": "refObject",
         "properties": {
-            "code": {"dataType":"string"},
+            "code": {"ref":"Code"},
             "name": {"dataType":"string"},
         },
         "additionalProperties": false,
@@ -278,7 +283,7 @@ const models: TsoaRoute.Models = {
     "ISport": {
         "dataType": "refObject",
         "properties": {
-            "code": {"dataType":"string"},
+            "code": {"ref":"Code"},
             "name": {"dataType":"string"},
             "description": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
             "federation": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}]},
@@ -320,6 +325,19 @@ const models: TsoaRoute.Models = {
             "pictures": {"dataType":"array","array":{"ref":"IPicture"}},
             "rating": {"dataType":"union","subSchemas":[{"dataType":"double"},{"dataType":"enum","enums":[null]}]},
             "distance": {"dataType":"double"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Filters": {
+        "dataType": "refObject",
+        "properties": {
+            "soil_types": {"dataType":"array","array":{"ref":"SoilType"},"required":true},
+            "owners": {"dataType":"array","array":{"ref":"Owner"},"required":true},
+            "equipment_types": {"dataType":"array","array":{"ref":"EquipmentType"},"required":true},
+            "equipment_natures": {"dataType":"array","array":{"ref":"EquipmentNature"},"required":true},
+            "equipment_levels": {"dataType":"array","array":{"ref":"EquipmentLevel"},"required":true},
+            "sports": {"dataType":"array","array":{"ref":"Sport"},"required":true},
         },
         "additionalProperties": false,
     },
@@ -368,10 +386,53 @@ export function RegisterRoutes(app: express.Express) {
             promiseHandler(controller, promise, response, next);
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/equipment/filters',
+            function (request: any, response: any, next: any) {
+            const args = {
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+            } catch (err) {
+                return next(err);
+            }
+
+            const controller = new EquipmentController();
+
+
+            const promise = controller.getFilters.apply(controller, validatedArgs as any);
+            promiseHandler(controller, promise, response, next);
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/equipment/:id',
+            function (request: any, response: any, next: any) {
+            const args = {
+                    id: {"in":"path","name":"id","required":true,"ref":"UUID"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+            } catch (err) {
+                return next(err);
+            }
+
+            const controller = new EquipmentController();
+
+
+            const promise = controller.getEquipmentById.apply(controller, validatedArgs as any);
+            promiseHandler(controller, promise, response, next);
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/sport',
             function (request: any, response: any, next: any) {
             const args = {
-                    category: {"in":"query","name":"category","dataType":"string"},
+                    category: {"in":"query","name":"category","ref":"Code"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -393,7 +454,7 @@ export function RegisterRoutes(app: express.Express) {
         app.get('/sport/:code',
             function (request: any, response: any, next: any) {
             const args = {
-                    code: {"in":"path","name":"code","required":true,"dataType":"string"},
+                    code: {"in":"path","name":"code","required":true,"ref":"Code"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
