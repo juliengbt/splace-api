@@ -15,10 +15,10 @@ yarn start:dev
 Go to [localhost:3000/doc/](https://localhost:3000/docs/)
 
 ### Examples
-[localhost:3000/sport](https://localhost:3000/sport)
+[localhost:3000/sports](https://localhost:3000/sport)
 
-[localhost:3000/sport/tennis](https://localhost:3000/sport/tennis)
+[localhost:3000/sports/tennis](https://localhost:3000/sport/tennis)
 
-[localhost:3000/sport?category=escal](https://localhost:3000/sport?category=escal)
+[localhost:3000/sports?category=escal](https://localhost:3000/sport?category=escal)
 
 [localhost:3000/categories](https://localhost:3000/categories)
