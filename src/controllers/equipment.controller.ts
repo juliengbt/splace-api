@@ -5,6 +5,7 @@ import {
   DefaultValuePipe,
   Get,
   NotFoundException,
+  NotAcceptableException,
   Param,
   ParseIntPipe,
   Post,
@@ -13,6 +14,8 @@ import {
 } from '@nestjs/common';
 import {
   ApiBody,
+  ApiNotAcceptableResponse,
+  ApiNotFoundResponse,
   ApiQuery,
   ApiResponse,
   ApiTags
@@ -32,6 +35,7 @@ export default class EquipmentController {
     type: Equipment,
     isArray: true
   })
+  @ApiNotFoundResponse({ description: 'Not found.' })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   async getById(@Param('id') id: string): Promise<Equipment> {
@@ -46,16 +50,13 @@ export default class EquipmentController {
     type: Equipment,
     isArray: true
   })
-  @ApiBody({
-    type: EquipmentDTO
-  })
-  @ApiQuery({
-    name: 'offset',
-    required: false
-  })
+  @ApiNotAcceptableResponse({ description: 'Equipment DTO is not valid.' })
+  @ApiBody({ type: EquipmentDTO })
+  @ApiQuery({ name: 'offset', required: false })
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   async getUsingDTO(@Body() equipmentDTO: EquipmentDTO, @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number): Promise<Equipment[]> {
+    if (Object.keys(equipmentDTO).length === 0 && equipmentDTO.constructor === Object) throw new NotAcceptableException('equipmentDTO is empty');
     return this.equipmentService.findUsingDTO(equipmentDTO, offset || 0);
   }
 }

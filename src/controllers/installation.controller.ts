@@ -7,6 +7,7 @@ import {
   UseInterceptors
 } from '@nestjs/common';
 import {
+  ApiNotFoundResponse,
   ApiResponse,
   ApiTags
 } from '@nestjs/swagger';
@@ -24,6 +25,7 @@ export default class InstallationController {
     type: Installation,
     isArray: true
   })
+  @ApiNotFoundResponse({ description: 'Not found.' })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   async getById(@Param('id') id: string): Promise<Installation> {

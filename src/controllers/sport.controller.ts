@@ -9,6 +9,7 @@ import {
   UseInterceptors
 } from '@nestjs/common';
 import {
+  ApiNotFoundResponse,
   ApiQuery,
   ApiResponse,
   ApiTags
@@ -27,10 +28,7 @@ export default class SportController {
     type: Sport,
     isArray: true
   })
-  @ApiQuery({
-    name: 'category',
-    required: false
-  })
+  @ApiQuery({ name: 'category', required: false })
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   getSports(@Query('category') category?: string): Promise<Sport[]> {
@@ -44,6 +42,7 @@ export default class SportController {
     type: Sport
   })
   @UseInterceptors(ClassSerializerInterceptor)
+  @ApiNotFoundResponse({ description: 'Not found.' })
   @Get(':code')
   async getSportByCode(@Param('code') code:string): Promise<Sport> {
     const sport = await this.sportService.findByCode(code);
