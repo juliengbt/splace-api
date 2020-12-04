@@ -11,13 +11,13 @@ import {
   ApiResponse,
   ApiTags
 } from '@nestjs/swagger';
-import SportService from 'src/services/installation.service';
 import Installation from 'src/entities/installation.entity';
+import InstallationService from 'src/services/installation.service';
 
-@ApiTags('installation')
-@Controller('installations')
+@ApiTags('Installation')
+@Controller('installation')
 export default class InstallationController {
-  constructor(private readonly installationService: SportService) {}
+  constructor(private readonly service: InstallationService) {}
 
   @ApiResponse({
     status: 200,
@@ -29,7 +29,7 @@ export default class InstallationController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   async getById(@Param('id') id: string): Promise<Installation> {
-    const installation = await this.installationService.findById(id);
+    const installation = await this.service.findById(id);
     if (installation === undefined) throw new NotFoundException(`No installation found with id : ${id}`);
     return installation;
   }

@@ -17,10 +17,10 @@ import {
 import SportService from 'src/services/sport.service';
 import Sport from 'src/entities/sport.entity';
 
-@ApiTags('sport')
-@Controller('sports')
+@ApiTags('Sport')
+@Controller('sport')
 export default class SportController {
-  constructor(private readonly sportService: SportService) {}
+  constructor(private readonly service: SportService) {}
 
   @ApiResponse({
     status: 200,
@@ -32,8 +32,8 @@ export default class SportController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   getSports(@Query('category') category?: string): Promise<Sport[]> {
-    if (category) return this.sportService.findByCategory(category);
-    return this.sportService.findAll();
+    if (category) return this.service.findByCategory(category);
+    return this.service.findAll();
   }
 
   @ApiResponse({
@@ -45,7 +45,7 @@ export default class SportController {
   @ApiNotFoundResponse({ description: 'Not found.' })
   @Get(':code')
   async getSportByCode(@Param('code') code:string): Promise<Sport> {
-    const sport = await this.sportService.findByCode(code);
+    const sport = await this.service.findByCode(code);
     if (sport === undefined) throw new NotFoundException(`No sports found with code like ${code}`);
     return sport;
   }

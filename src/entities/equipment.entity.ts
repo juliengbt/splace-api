@@ -3,15 +3,15 @@ import { Transform } from 'class-transformer';
 import {
   Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn
 } from 'typeorm';
-import EquipmentLevel from './equipment_level.entity';
-import EquipmentNature from './equipment_nature.entity';
-import EquipmentType from './equipment_type.entity';
+import EquipmentLevel from './equipmentLevel.entity';
+import EquipmentNature from './equipmentNature.entity';
+import EquipmentType from './equipmentType.entity';
 // eslint-disable-next-line import/no-cycle
 import Installation from './installation.entity';
 import Owner from './owner.entity';
 // eslint-disable-next-line import/no-cycle
 import Picture from './picture.entity';
-import SoilType from './soil_type.entity';
+import SoilType from './soilType.entity';
 import Sport from './sport.entity';
 
 @Entity('Equipment')
@@ -92,7 +92,7 @@ export default class Equipment {
   equipment_level?: EquipmentLevel | null;
 
   @ApiProperty({ type: () => Sport })
-  @ManyToMany(() => Sport, (sports) => sports.code)
+  @ManyToMany(() => Sport, (sport) => sport.code)
   @JoinTable({ name: 'Equipment_Sport', inverseJoinColumn: { name: 'code_sport' }, joinColumn: { name: 'id_equipment' } })
   sports!: Sport[];
 

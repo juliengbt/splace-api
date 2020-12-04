@@ -7,7 +7,7 @@ import { Repository, SelectQueryBuilder } from 'typeorm';
 export default class InstallationService {
   constructor(
     @InjectRepository(Installation)
-    private categoryRepo: Repository<Installation>
+    private repo: Repository<Installation>
   ) {}
 
   async findById(id: string): Promise<Installation | undefined> {
@@ -17,7 +17,7 @@ export default class InstallationService {
   }
 
   private getFullObject(): SelectQueryBuilder<Installation> {
-    return this.categoryRepo.createQueryBuilder('Installation')
+    return this.repo.createQueryBuilder('Installation')
       .leftJoinAndSelect('Installation.city', 'city')
       .leftJoinAndSelect('city.department', 'department')
       .leftJoinAndSelect('Installation.address', 'address')

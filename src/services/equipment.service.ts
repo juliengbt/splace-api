@@ -9,7 +9,7 @@ import { Brackets, Repository, SelectQueryBuilder } from 'typeorm';
 export default class EquipmentService {
   constructor(
     @InjectRepository(Equipment)
-    private equipmentRepo: Repository<Equipment>
+    private repo: Repository<Equipment>
   ) {}
 
   async findUsingDTO(equipmentDTO: EquipmentDTO, offset: number): Promise<Equipment[]> {
@@ -87,7 +87,7 @@ export default class EquipmentService {
   }
 
   private getFullObjectQuery(): SelectQueryBuilder<Equipment> {
-    return this.equipmentRepo.createQueryBuilder('Equipment')
+    return this.repo.createQueryBuilder('Equipment')
       .leftJoinAndSelect('Equipment.installation', 'installation')
       .leftJoinAndSelect('installation.address', 'address')
       .leftJoinAndSelect('installation.city', 'city')

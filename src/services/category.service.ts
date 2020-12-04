@@ -7,11 +7,11 @@ import { Repository } from 'typeorm';
 export default class CategoryService {
   constructor(
     @InjectRepository(Category)
-    private categoryRepo: Repository<Category>
+    private repo: Repository<Category>
   ) {}
 
   async findAll(): Promise<Category[]> {
-    return this.categoryRepo.createQueryBuilder()
+    return this.repo.createQueryBuilder()
       .leftJoinAndSelect('Category.sports', 'sports')
       .getMany();
   }

@@ -7,17 +7,17 @@ import { Repository } from 'typeorm';
 export default class SportService {
   constructor(
     @InjectRepository(Sport)
-    private sportRepo: Repository<Sport>
+    private repo: Repository<Sport>
   ) {}
 
   async findAll(): Promise<Sport[]> {
-    return this.sportRepo.createQueryBuilder()
+    return this.repo.createQueryBuilder()
       .leftJoinAndSelect('Sport.category', 'category')
       .getMany();
   }
 
   async findByCategory(code_category: string): Promise<Sport[]> {
-    return this.sportRepo.createQueryBuilder()
+    return this.repo.createQueryBuilder()
       .leftJoinAndSelect('Sport.category', 'category')
       .where('Sport.code_category like :code')
       .setParameters({ code: `%${code_category}%` })
@@ -25,7 +25,7 @@ export default class SportService {
   }
 
   async findByCode(code_sport: string): Promise<Sport | undefined> {
-    return this.sportRepo.createQueryBuilder()
+    return this.repo.createQueryBuilder()
       .leftJoinAndSelect('Sport.category', 'category')
       .where('Sport.code like %:code%')
       .setParameters({ code: `%${code_sport}%` })

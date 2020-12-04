@@ -3,15 +3,15 @@ import { Type } from 'class-transformer';
 import {
   IsArray, IsBoolean, IsInt, IsLatitude, IsLongitude, IsOptional, IsUUID, Max, Min, ValidateNested
 } from 'class-validator';
-import EquipmentLevelDTO from './equipment_level.dto';
-import EquipmentNatureDTO from './equipment_nature.dto';
-import EquipmentTypeDTO from './equipment_type.dto';
+import EquipmentLevelDTO from './equipmentLevel.dto';
+import EquipmentNatureDTO from './equipmentNature.dto';
+import EquipmentTypeDTO from './equipmentType.dto';
 import GPSAreaDTO from './gps_area.dto';
 import InstallationDTO from './installation.dto';
 import OwnerDTO from './owner.dto';
 // eslint-disable-next-line import/no-cycle
 import PictureDTO from './picture.dto';
-import SoilTypeDTO from './soil_type.dto';
+import SoilTypeDTO from './soilType.dto';
 import SportDTO from './sport.dto';
 
 export default class EquipmentDTO {
