@@ -18,7 +18,7 @@ export default class SoilTypeController {
   })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  getCategories(): Promise<SoilType[]> {
+  getSoilTypes(): Promise<SoilType[]> {
     return this.service.findAll();
   }
 }

@@ -4,13 +4,13 @@ import {
   Controller,
   DefaultValuePipe,
   Get,
-  NotFoundException,
   NotAcceptableException,
   Param,
   ParseIntPipe,
   Post,
   Query,
-  UseInterceptors
+  UseInterceptors,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -23,6 +23,7 @@ import {
 import Equipment from 'src/entities/equipment.entity';
 import EquipmentDTO from 'src/dto/equipment.dto';
 import EquipmentService from 'src/services/equipment.service';
+import UUIDValidationPipe from 'src/validations/uuid.validation.pipe';
 
 @ApiTags('Equipment')
 @Controller('equipment')
@@ -33,12 +34,13 @@ export default class EquipmentController {
     status: 200,
     description: 'Equipment list',
     type: Equipment,
-    isArray: true
+    isArray: false
   })
   @ApiNotFoundResponse({ description: 'Not found.' })
+  @ApiNotAcceptableResponse({ description: 'The parameter id must a uuid' })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
-  async getById(@Param('id') id: string): Promise<Equipment> {
+  async getById(@Param('id', new UUIDValidationPipe()) id: string): Promise<Equipment> {
     const equipment = await this.service.findById(id);
     if (equipment === undefined) throw new NotFoundException(`No equipment found with id : ${id}`);
     return equipment;

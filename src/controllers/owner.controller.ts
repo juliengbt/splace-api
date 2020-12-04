@@ -18,7 +18,7 @@ export default class OwnerController {
   })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  getCategories(): Promise<Owner[]> {
+  getOwners(): Promise<Owner[]> {
     return this.service.findAll();
   }
 }

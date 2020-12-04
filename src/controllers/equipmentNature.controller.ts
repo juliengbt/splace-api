@@ -18,7 +18,7 @@ export default class EquipmentNatureController {
   })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  getCategories(): Promise<EquipmentNature[]> {
+  getEquipmentNatures(): Promise<EquipmentNature[]> {
     return this.service.findAll();
   }
 }

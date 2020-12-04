@@ -18,7 +18,7 @@ export default class EquipmentLevelController {
   })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  getCategories(): Promise<EquipmentLevel[]> {
+  getEquipmentLevels(): Promise<EquipmentLevel[]> {
     return this.service.findAll();
   }
 }

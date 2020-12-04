@@ -7,11 +7,11 @@ import { Repository } from 'typeorm';
 export default class EquipmentTypeService {
   constructor(
     @InjectRepository(EquipmentType)
-    private categoryRepo: Repository<EquipmentType>
+    private repo: Repository<EquipmentType>
   ) {}
 
   async findAll(): Promise<EquipmentType[]> {
-    return this.categoryRepo.createQueryBuilder()
+    return this.repo.createQueryBuilder()
       .getMany();
   }
 }

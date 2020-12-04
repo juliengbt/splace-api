@@ -18,7 +18,7 @@ export default class EquipmentTypeController {
   })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  getCategories(): Promise<EquipmentType[]> {
+  getEquipmentTypes(): Promise<EquipmentType[]> {
     return this.service.findAll();
   }
 }
