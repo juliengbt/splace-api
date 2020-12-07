@@ -14,12 +14,12 @@ export default class EquipmentService {
 
   async findUsingDTO(equipmentDTO: EquipmentDTO, offset: number): Promise<Equipment[]> {
     const query = this.getFullObjectQuery();
-
+    // Sports
     if (equipmentDTO.sports && equipmentDTO.sports.length > 0) {
       query.where('Equipment_sports.code_sport IN (:...sports_code)')
         .setParameters({ sports_code: equipmentDTO.sports.map((s) => s.code).filter((s) => s) });
     }
-
+    // Position
     if (equipmentDTO.latitude && equipmentDTO.longitude) {
       query.andWhere('Equipment.latitude is not null')
         .andWhere('Equipment.longitude is not null')
@@ -33,7 +33,7 @@ export default class EquipmentService {
           .andWhere('Equipment.longitude <= :max_lon', { max_lon: equipmentDTO.gps_area.max_lon })
           .andWhere('Equipment.longitude >= :min_lon', { min_lon: equipmentDTO.gps_area.min_lon });
       }
-    }
+    } else if (equipmentDTO.installation?.city?.id) query.andWhere('installation.city.id is :id_city', { id_city: equipmentDTO.installation?.city?.id });
 
     if (equipmentDTO.open_access !== undefined) query.andWhere('Equipment.open_access is :open_acess', { open_access: equipmentDTO.open_access });
     if (equipmentDTO.lighting !== undefined) query.andWhere('Equipment.lighting is :lighting', { lighting: equipmentDTO.lighting });
