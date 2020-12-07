@@ -17,4 +17,8 @@ export default class GPSAreaDTO {
   @ApiProperty()
   @IsLatitude()
   max_lat!: number;
+
+  @ApiProperty()
+  @IsLatitude()
+  previous_area?: GPSAreaDTO;
 }

@@ -12,7 +12,7 @@ export default class EquipmentService {
     private repo: Repository<Equipment>
   ) {}
 
-  async findUsingDTO(equipmentDTO: EquipmentDTO, offset: number): Promise<Equipment[]> {
+  async findUsingDTO(equipmentDTO: EquipmentDTO): Promise<Equipment[]> {
     const query = this.getFullObjectQuery();
     // Sports
     if (equipmentDTO.sports && equipmentDTO.sports.length > 0) {
@@ -20,27 +20,33 @@ export default class EquipmentService {
         .setParameters({ sports_code: equipmentDTO.sports.map((s) => s.code).filter((s) => s) });
     }
     // Position
-    if (equipmentDTO.latitude && equipmentDTO.longitude) {
-      query.andWhere('Equipment.latitude is not null')
-        .andWhere('Equipment.longitude is not null')
-        .addSelect('get_distance(:lat,:lon,Equipment.latitude, Equipment.longitude)', 'Equipment_distance')
-        .setParameters({ lat: (equipmentDTO.latitude * Math.PI) / 180, lon: (equipmentDTO.longitude * Math.PI) / 180 })
-        .orderBy('Equipment_distance', 'ASC');
 
-      if (equipmentDTO.gps_area) {
-        query.andWhere('Equipment.latitude <= :max_lat', { max_lat: equipmentDTO.gps_area.max_lat })
-          .andWhere('Equipment.latitude >= :min_lat', { min_lat: equipmentDTO.gps_area.min_lat })
-          .andWhere('Equipment.longitude <= :max_lon', { max_lon: equipmentDTO.gps_area.max_lon })
-          .andWhere('Equipment.longitude >= :min_lon', { min_lon: equipmentDTO.gps_area.min_lon });
+    if (equipmentDTO.gps_area) {
+      query.andWhere('Equipment.latitude is not null')
+        .andWhere('Equipment.longitude is not null');
+
+      query.andWhere('Equipment.latitude <= :max_lat', { max_lat: equipmentDTO.gps_area.max_lat })
+        .andWhere('Equipment.latitude >= :min_lat', { min_lat: equipmentDTO.gps_area.min_lat })
+        .andWhere('Equipment.longitude <= :max_lon', { max_lon: equipmentDTO.gps_area.max_lon })
+        .andWhere('Equipment.longitude >= :min_lon', { min_lon: equipmentDTO.gps_area.min_lon });
+      query.andWhere(new Brackets(() => { }));
+
+      if (equipmentDTO.gps_area.previous_area) {
+        query.andWhere(new Brackets((qb) => {
+          qb.where('Equipment.latitude > :prev_max_lat', { max_lat: equipmentDTO.gps_area?.previous_area?.max_lat })
+            .andWhere('Equipment.latitude < :prev_min_lat', { min_lat: equipmentDTO.gps_area?.previous_area?.min_lat })
+            .andWhere('Equipment.longitude > :prev_max_lon', { max_lon: equipmentDTO.gps_area?.previous_area?.max_lon })
+            .andWhere('Equipment.longitude < :prev_min_lon', { min_lon: equipmentDTO.gps_area?.previous_area?.min_lon });
+        }));
       }
     } else if (equipmentDTO.installation?.city?.id) query.andWhere('installation.city.id is :id_city', { id_city: equipmentDTO.installation?.city?.id });
 
-    if (equipmentDTO.open_access !== undefined) query.andWhere('Equipment.open_access is :open_acess', { open_access: equipmentDTO.open_access });
-    if (equipmentDTO.lighting !== undefined) query.andWhere('Equipment.lighting is :lighting', { lighting: equipmentDTO.lighting });
-    if (equipmentDTO.locker !== undefined) query.andWhere('Equipment.locker is :locker', { locker: equipmentDTO.locker });
-    if (equipmentDTO.shower !== undefined) query.andWhere('Equipment.shower is :shower', { shower: equipmentDTO.shower });
-    if (equipmentDTO.installation?.car_park !== undefined) query.andWhere('installation.car_park is :car_park', { car_park: equipmentDTO.installation.car_park });
-    if (equipmentDTO.installation?.disabled_access !== undefined) query.andWhere('installation.disabled_access is :disabled_access', { disabled_access: equipmentDTO.installation.disabled_access });
+    if (equipmentDTO.open_access) query.andWhere('Equipment.open_access is :open_acess', { open_access: equipmentDTO.open_access });
+    if (equipmentDTO.lighting) query.andWhere('Equipment.lighting is :lighting', { lighting: equipmentDTO.lighting });
+    if (equipmentDTO.locker) query.andWhere('Equipment.locker is :locker', { locker: equipmentDTO.locker });
+    if (equipmentDTO.shower) query.andWhere('Equipment.shower is :shower', { shower: equipmentDTO.shower });
+    if (equipmentDTO.installation?.car_park) query.andWhere('installation.car_park is :car_park', { car_park: equipmentDTO.installation.car_park });
+    if (equipmentDTO.installation?.disabled_access) query.andWhere('installation.disabled_access is :disabled_access', { disabled_access: equipmentDTO.installation.disabled_access });
 
     if (equipmentDTO.soil_type && equipmentDTO.soil_type.length > 0) {
       query.andWhere('soil_type.code in (:...soil_types)',
@@ -76,7 +82,7 @@ export default class EquipmentService {
       }
     }
 
-    return query.offset(offset).limit(100).getMany();
+    return query.getMany();
   }
 
   async findById(id: string): Promise<Equipment | undefined> {
