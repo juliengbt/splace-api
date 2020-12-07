@@ -7,7 +7,7 @@ import {
   Param,
   Post,
   UseInterceptors,
-  NotFoundException,
+  NotFoundException
 } from '@nestjs/common';
 import {
   ApiBody,
