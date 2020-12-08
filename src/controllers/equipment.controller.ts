@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import {
   Body,
   ClassSerializerInterceptor,
@@ -7,7 +8,10 @@ import {
   Param,
   Post,
   UseInterceptors,
-  NotFoundException
+  NotFoundException,
+  DefaultValuePipe,
+  Query,
+  ParseIntPipe
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -54,8 +58,17 @@ export default class EquipmentController {
   @ApiQuery({ name: 'offset', required: false })
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
-  async getUsingDTO(@Body() equipmentDTO: EquipmentDTO): Promise<Equipment[]> {
-    if (Object.keys(equipmentDTO).length === 0 && equipmentDTO.constructor === Object) throw new NotAcceptableException('equipmentDTO is empty');
-    return this.service.findUsingDTO(equipmentDTO);
+  async getUsingDTO(@Body() equipmentDTO: EquipmentDTO, @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number): Promise<Equipment[]> {
+    const equipmentParam = equipmentDTO;
+    equipmentParam.name = [...new Set(equipmentParam.name)].flatMap((x) => x.split(' ')).filter((str) => str.length > 2);
+    equipmentParam.name = equipmentParam.name?.length ? equipmentParam.name : undefined;
+
+    if (equipmentParam.installation) {
+      equipmentParam.installation.name = [...new Set(equipmentParam.installation.name)].flatMap((x) => x.split(' ')).filter((str) => str.length > 2);
+      equipmentParam.installation.name = equipmentParam.installation.name?.length ? equipmentParam.installation.name : undefined;
+    }
+
+    if (Object.keys(equipmentParam).length === 0 && equipmentParam.constructor === Object) throw new NotAcceptableException('equipmentDTO is empty');
+    return this.service.findUsingDTO(equipmentParam, offset < 0 ? 0 : offset);
   }
 }

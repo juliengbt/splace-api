@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsLatitude, IsLongitude } from 'class-validator';
+import { IsLatitude, IsLongitude, ValidateNested } from 'class-validator';
 
 export default class GPSAreaDTO {
   @ApiProperty()
@@ -19,6 +19,6 @@ export default class GPSAreaDTO {
   max_lat!: number;
 
   @ApiProperty()
-  @IsLatitude()
+  @ValidateNested()
   previous_area?: GPSAreaDTO;
 }

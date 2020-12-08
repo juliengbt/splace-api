@@ -12,7 +12,7 @@ export default class EquipmentService {
     private repo: Repository<Equipment>
   ) {}
 
-  async findUsingDTO(equipmentDTO: EquipmentDTO): Promise<Equipment[]> {
+  async findUsingDTO(equipmentDTO: EquipmentDTO, offset: number): Promise<Equipment[]> {
     const query = this.getFullObjectQuery();
     // Sports
     if (equipmentDTO.sports && equipmentDTO.sports.length > 0) {
@@ -38,6 +38,12 @@ export default class EquipmentService {
             .andWhere('Equipment.longitude > :prev_max_lon', { max_lon: equipmentDTO.gps_area?.previous_area?.max_lon })
             .andWhere('Equipment.longitude < :prev_min_lon', { min_lon: equipmentDTO.gps_area?.previous_area?.min_lon });
         }));
+      }
+
+      if (equipmentDTO.latitude && equipmentDTO.longitude) {
+        query.addSelect('get_distance(:lat,:lon,Equipment.latitude, Equipment.longitude)', 'Equipment_distance')
+          .setParameters({ lat: (equipmentDTO.latitude * Math.PI) / 180, lon: (equipmentDTO.longitude * Math.PI) / 180 })
+          .orderBy('Equipment_distance', 'ASC');
       }
     } else if (equipmentDTO.installation?.city?.id) query.andWhere('installation.city.id is :id_city', { id_city: equipmentDTO.installation?.city?.id });
 
@@ -70,19 +76,24 @@ export default class EquipmentService {
     }
 
     if (equipmentDTO.name || equipmentDTO.installation?.name) {
-      if (equipmentDTO.name && equipmentDTO.installation?.name) {
-        query.andWhere(new Brackets((builder) => {
-          builder.where('lower(installation.name) like :i_name', { i_name: `%${equipmentDTO.installation?.name?.toLowerCase()}%` })
-            .orWhere('lower(Equipment.name) like :e_name', { e_name: `%${equipmentDTO.name?.toLowerCase()}%` });
-        }));
-      } else if (equipmentDTO.name) {
-        query.andWhere('lower(Equipment.name) like :e_name', { e_name: `%${equipmentDTO.name?.toLowerCase()}%` });
-      } else {
-        query.andWhere('lower(installation.name) like :i_name', { i_name: `%${equipmentDTO.installation?.name?.toLowerCase()}%` });
-      }
+      query.andWhere(new Brackets((builder) => {
+        const equipmentClause = 'MATCH(Equipment.name) AGAINST (:e_name IN BOOLEAN MODE)';
+        const installationClause = 'MATCH(Equipment.name) AGAINST (:e_name IN BOOLEAN MODE)';
+        const both = equipmentDTO.name && equipmentDTO.installation?.name;
+
+        if (equipmentDTO.name) {
+          builder.where(equipmentClause, { e_name: equipmentDTO.name?.join(' ') });
+          if (!both) query.addOrderBy(equipmentClause, 'DESC');
+        }
+        if (equipmentDTO.installation?.name) {
+          builder.orWhere(installationClause, { i_name: equipmentDTO.installation?.name?.join(' ') });
+          if (!both) query.addOrderBy(installationClause, 'DESC');
+        }
+        if (both) query.addOrderBy(`(${equipmentClause} + ${installationClause})`, 'DESC');
+      }));
     }
 
-    return query.getMany();
+    return query.offset(offset).limit(20).getMany();
   }
 
   async findById(id: string): Promise<Equipment | undefined> {
