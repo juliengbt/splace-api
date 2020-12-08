@@ -29,7 +29,6 @@ export default class EquipmentService {
         .andWhere('Equipment.latitude >= :min_lat', { min_lat: equipmentDTO.gps_area.min_lat })
         .andWhere('Equipment.longitude <= :max_lon', { max_lon: equipmentDTO.gps_area.max_lon })
         .andWhere('Equipment.longitude >= :min_lon', { min_lon: equipmentDTO.gps_area.min_lon });
-      query.andWhere(new Brackets(() => { }));
 
       if (equipmentDTO.gps_area.previous_area) {
         query.andWhere(new Brackets((qb) => {
@@ -75,34 +74,28 @@ export default class EquipmentService {
         { equipment_types: equipmentDTO.equipment_type.filter((s) => s.code !== undefined).map((s) => s.code) });
     }
 
-    if (equipmentDTO.name || equipmentDTO.installation?.name) {
+    if (equipmentDTO.name || equipmentDTO.installation?.name || equipmentDTO.installation?.city?.name) {
       query.andWhere(new Brackets((builder) => {
         const equipmentClause = 'MATCH(Equipment.name) AGAINST (:e_name IN BOOLEAN MODE)';
-        const equipmentFieldName = 'equipment_match_rank';
-
         const installationClause = 'MATCH(installation.name) AGAINST (:i_name IN BOOLEAN MODE)';
-        const installationFieldName = 'installation_match_rank';
+        const cityClause = 'MATCH(city.name) AGAINST (:c_name IN BOOLEAN MODE)';
 
-        const both = equipmentDTO.name && equipmentDTO.installation?.name;
+        const useClauses = [];
 
         if (equipmentDTO.name) {
           builder.where(equipmentClause, { e_name: equipmentDTO.name?.join(' ') });
-          if (!both) {
-            query.addSelect(equipmentClause, equipmentFieldName)
-              .addOrderBy(equipmentFieldName, 'DESC');
-          }
+          useClauses.push(equipmentClause);
         }
         if (equipmentDTO.installation?.name) {
           builder.orWhere(installationClause, { i_name: equipmentDTO.installation.name.join(' ') });
-          if (!both) {
-            query.addSelect(installationClause, installationFieldName)
-              .addOrderBy(installationFieldName, 'DESC');
-          }
+          useClauses.push(installationClause);
         }
-        if (both) {
-          query.addSelect(`(${equipmentClause} + ${installationClause})`, equipmentFieldName + installationFieldName)
-            .addOrderBy(equipmentFieldName + installationFieldName, 'DESC');
+        if (equipmentDTO.installation?.city?.name) {
+          useClauses.push(cityClause);
+          query.setParameters({ c_name: equipmentDTO.installation.city.name.join(' ') });
         }
+        query.addSelect(`(${useClauses.join(' + ')})`, 'keyword_rank')
+          .addOrderBy('keyword_rank', 'DESC');
       }));
     }
 

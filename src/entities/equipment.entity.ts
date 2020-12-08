@@ -106,5 +106,6 @@ export default class Equipment {
 
   @ApiProperty()
   @Column('double', { select: false })
-  distance!: number;
+  @Transform((dist) => Math.round(dist))
+  distance?: number;
 }

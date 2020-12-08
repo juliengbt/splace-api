@@ -17,6 +17,7 @@ import SportDTO from './sport.dto';
 export default class EquipmentDTO {
   @ApiProperty({ type: String, required: false, isArray: true })
   @IsArray()
+  @IsOptional()
   @ArrayMinSize(1, { message: 'name must contain at least one object' })
   @IsString({ each: true, message: 'name must contains strings' })
   name?: string[];
