@@ -56,6 +56,7 @@ export default class EquipmentController {
   @ApiNotAcceptableResponse({ description: 'Equipment DTO is not valid.' })
   @ApiBody({ type: EquipmentDTO })
   @ApiQuery({ name: 'offset', required: false })
+  @ApiNotAcceptableResponse()
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   async getUsingDTO(@Body() equipmentDTO: EquipmentDTO, @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number): Promise<Equipment[]> {

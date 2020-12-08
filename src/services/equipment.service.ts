@@ -78,22 +78,35 @@ export default class EquipmentService {
     if (equipmentDTO.name || equipmentDTO.installation?.name) {
       query.andWhere(new Brackets((builder) => {
         const equipmentClause = 'MATCH(Equipment.name) AGAINST (:e_name IN BOOLEAN MODE)';
-        const installationClause = 'MATCH(Equipment.name) AGAINST (:e_name IN BOOLEAN MODE)';
+        const equipmentFieldName = 'equipment_match_rank';
+
+        const installationClause = 'MATCH(installation.name) AGAINST (:i_name IN BOOLEAN MODE)';
+        const installationFieldName = 'installation_match_rank';
+
         const both = equipmentDTO.name && equipmentDTO.installation?.name;
 
         if (equipmentDTO.name) {
           builder.where(equipmentClause, { e_name: equipmentDTO.name?.join(' ') });
-          if (!both) query.addOrderBy(equipmentClause, 'DESC');
+          if (!both) {
+            query.addSelect(equipmentClause, equipmentFieldName)
+              .addOrderBy(equipmentFieldName, 'DESC');
+          }
         }
         if (equipmentDTO.installation?.name) {
-          builder.orWhere(installationClause, { i_name: equipmentDTO.installation?.name?.join(' ') });
-          if (!both) query.addOrderBy(installationClause, 'DESC');
+          builder.orWhere(installationClause, { i_name: equipmentDTO.installation.name.join(' ') });
+          if (!both) {
+            query.addSelect(installationClause, installationFieldName)
+              .addOrderBy(installationFieldName, 'DESC');
+          }
         }
-        if (both) query.addOrderBy(`(${equipmentClause} + ${installationClause})`, 'DESC');
+        if (both) {
+          query.addSelect(`(${equipmentClause} + ${installationClause})`, equipmentFieldName + installationFieldName)
+            .addOrderBy(equipmentFieldName + installationFieldName, 'DESC');
+        }
       }));
     }
 
-    return query.offset(offset).limit(20).getMany();
+    return query.skip(offset).take(20).getMany();
   }
 
   async findById(id: string): Promise<Equipment | undefined> {
@@ -105,17 +118,17 @@ export default class EquipmentService {
 
   private getFullObjectQuery(): SelectQueryBuilder<Equipment> {
     return this.repo.createQueryBuilder('Equipment')
-      .leftJoinAndSelect('Equipment.installation', 'installation')
-      .leftJoinAndSelect('installation.address', 'address')
-      .leftJoinAndSelect('installation.city', 'city')
-      .leftJoinAndSelect('city.department', 'department')
-      .leftJoinAndSelect('Equipment.owner', 'owner')
-      .leftJoinAndSelect('Equipment.soil_type', 'soil_type')
-      .leftJoinAndSelect('Equipment.equipment_nature', 'equipment_nature')
-      .leftJoinAndSelect('Equipment.equipment_type', 'equipment_type')
-      .leftJoinAndSelect('Equipment.equipment_level', 'equipment_level')
-      .leftJoinAndSelect('Equipment.sports', 'sports')
-      .leftJoinAndSelect('sports.category', 'category')
-      .leftJoinAndSelect('Equipment.pictures', 'pictures');
+      .leftJoinAndMapOne('Equipment.installation', 'Equipment.installation', 'installation')
+      .leftJoinAndMapOne('installation.address', 'installation.address', 'address')
+      .leftJoinAndMapOne('installation.city', 'installation.city', 'city')
+      .leftJoinAndMapOne('city.department', 'city.department', 'department')
+      .leftJoinAndMapOne('Equipment.owner', 'Equipment.owner', 'owner')
+      .leftJoinAndMapOne('Equipment.soil_type', 'Equipment.soil_type', 'soil_type')
+      .leftJoinAndMapOne('Equipment.equipment_nature', 'Equipment.equipment_nature', 'equipment_nature')
+      .leftJoinAndMapOne('Equipment.equipment_type', 'Equipment.equipment_type', 'equipment_type')
+      .leftJoinAndMapOne('Equipment.equipment_level', 'Equipment.equipment_level', 'equipment_level')
+      .leftJoinAndMapMany('Equipment.sports', 'Equipment.sports', 'sports')
+      .leftJoinAndMapOne('sports.category', 'sports.category', 'category')
+      .leftJoinAndMapMany('Equipment.pictures', 'Equipment.pictures', 'pictures');
   }
 }
