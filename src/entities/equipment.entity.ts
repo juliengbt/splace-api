@@ -104,7 +104,7 @@ export default class Equipment {
   @ApiProperty({ type: Number })
   rating!: number | null;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @Column('double', { select: false })
   @Transform((dist) => Math.round(dist))
   distance?: number;
