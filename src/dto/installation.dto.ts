@@ -1,9 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayMinSize,
-  IsArray, IsBoolean, IsOptional, ValidateNested
+  IsArray, IsBoolean, IsNotEmptyObject, IsOptional, MinLength, ValidateNested
 } from 'class-validator';
-import AddressDTO from './address.dto';
 import CityDTO from './city.dto';
 
 export default class InstallationDTO {
@@ -11,6 +10,7 @@ export default class InstallationDTO {
   @IsArray({ message: 'name must in an string array' })
   @ArrayMinSize(1, { message: 'name must contain at least one object' })
   @IsOptional()
+  @MinLength(3, { each: true, message: 'Minimum length for names is $value' })
   name?: string[];
 
   @ApiProperty({ type: () => Boolean, required: false })
@@ -23,13 +23,9 @@ export default class InstallationDTO {
   @IsOptional()
   disabled_access?: boolean | null;
 
-  @ApiProperty({ type: () => AddressDTO, required: false })
-  @ValidateNested()
-  @IsOptional()
-  address?: AddressDTO | null;
-
   @ApiProperty({ type: () => CityDTO, required: false })
   @ValidateNested()
   @IsOptional()
+  @IsNotEmptyObject()
   city?: CityDTO | null;
 }

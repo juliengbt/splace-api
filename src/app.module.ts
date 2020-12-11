@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config/dist/config.module';
 import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
 import CategoryModule from './modules/category.module';
+import CityModule from './modules/city.module';
 import EquipmentModule from './modules/equipment.module';
 import EquipmentLevelModule from './modules/equipmentLevel.module';
 import EquipmentNatureModule from './modules/equipmentNature.module';
@@ -35,7 +36,8 @@ import SportModule from './modules/sport.module';
     EquipmentNatureModule,
     EquipmentTypeModule,
     OwnerModule,
-    SoilTypeModule
+    SoilTypeModule,
+    CityModule
   ],
   controllers: [],
   providers: []

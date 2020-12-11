@@ -19,8 +19,8 @@ export default class EquipmentService {
       query.where('Equipment_sports.code_sport IN (:...sports_code)')
         .setParameters({ sports_code: equipmentDTO.sports.map((s) => s.code).filter((s) => s) });
     }
-    // Position
 
+    // Position
     if (equipmentDTO.gps_area) {
       query.andWhere('Equipment.latitude is not null')
         .andWhere('Equipment.longitude is not null');
@@ -38,14 +38,9 @@ export default class EquipmentService {
             .andWhere('Equipment.longitude < :prev_min_lon', { min_lon: equipmentDTO.gps_area?.previous_area?.min_lon });
         }));
       }
-
-      if (equipmentDTO.latitude && equipmentDTO.longitude) {
-        query.addSelect('get_distance(:lat,:lon,Equipment.latitude, Equipment.longitude)', 'Equipment_distance')
-          .setParameters({ lat: (equipmentDTO.latitude * Math.PI) / 180, lon: (equipmentDTO.longitude * Math.PI) / 180 })
-          .orderBy('Equipment_distance', 'ASC');
-      }
     } else if (equipmentDTO.installation?.city?.id) query.andWhere('installation.city.id is :id_city', { id_city: equipmentDTO.installation?.city?.id });
 
+    // Boolean parameters
     if (equipmentDTO.open_access) query.andWhere('Equipment.open_access is :open_acess', { open_access: equipmentDTO.open_access });
     if (equipmentDTO.lighting) query.andWhere('Equipment.lighting is :lighting', { lighting: equipmentDTO.lighting });
     if (equipmentDTO.locker) query.andWhere('Equipment.locker is :locker', { locker: equipmentDTO.locker });
@@ -53,6 +48,7 @@ export default class EquipmentService {
     if (equipmentDTO.installation?.car_park) query.andWhere('installation.car_park is :car_park', { car_park: equipmentDTO.installation.car_park });
     if (equipmentDTO.installation?.disabled_access) query.andWhere('installation.disabled_access is :disabled_access', { disabled_access: equipmentDTO.installation.disabled_access });
 
+    // List parameters
     if (equipmentDTO.soil_type && equipmentDTO.soil_type.length > 0) {
       query.andWhere('soil_type.code in (:...soil_types)',
         { soil_types: equipmentDTO.soil_type.filter((s) => s.code !== undefined).map((s) => s.code) });
@@ -74,6 +70,7 @@ export default class EquipmentService {
         { equipment_types: equipmentDTO.equipment_type.filter((s) => s.code !== undefined).map((s) => s.code) });
     }
 
+    // Keyword research
     if (equipmentDTO.name || equipmentDTO.installation?.name || equipmentDTO.installation?.city?.name) {
       query.andWhere(new Brackets((builder) => {
         const equipmentClause = 'MATCH(Equipment.name) AGAINST (:e_name IN BOOLEAN MODE)';
@@ -95,8 +92,15 @@ export default class EquipmentService {
           query.setParameters({ c_name: equipmentDTO.installation.city.name.join(' ') });
         }
         query.addSelect(`(${useClauses.join(' + ')})`, 'keyword_rank')
-          .addOrderBy('keyword_rank', 'DESC');
+          .orderBy('keyword_rank', 'DESC');
       }));
+    }
+
+    // Distance
+    if (equipmentDTO.latitude && equipmentDTO.longitude) {
+      query.addSelect('get_distance(:lat,:lon,Equipment.latitude, Equipment.longitude)', 'Equipment_distance')
+        .setParameters({ lat: (equipmentDTO.latitude * Math.PI) / 180, lon: (equipmentDTO.longitude * Math.PI) / 180 })
+        .addOrderBy('Equipment_distance', 'ASC', 'NULLS LAST');
     }
 
     return query.skip(offset).take(20).getMany();
