@@ -22,9 +22,6 @@ export default class EquipmentService {
 
     // Position
     if (equipmentDTO.gps_area) {
-      query.andWhere('Equipment.latitude is not null')
-        .andWhere('Equipment.longitude is not null');
-
       query.andWhere('Equipment.latitude <= :max_lat', { max_lat: equipmentDTO.gps_area.max_lat })
         .andWhere('Equipment.latitude >= :min_lat', { min_lat: equipmentDTO.gps_area.min_lat })
         .andWhere('Equipment.longitude <= :max_lon', { max_lon: equipmentDTO.gps_area.max_lon })
@@ -38,7 +35,7 @@ export default class EquipmentService {
             .andWhere('Equipment.longitude < :prev_min_lon', { min_lon: equipmentDTO.gps_area?.previous_area?.min_lon });
         }));
       }
-    } else if (equipmentDTO.installation?.city?.id) query.andWhere('installation.city.id is :id_city', { id_city: equipmentDTO.installation?.city?.id });
+    } else if (equipmentDTO.installation?.city?.ids) query.andWhere('REPLACE(BIN_TO_UUID(installation.city.id), "-", "") in (:...id_city)', { id_city: equipmentDTO.installation.city.ids });
 
     // Boolean parameters
     if (equipmentDTO.open_access) query.andWhere('Equipment.open_access is :open_acess', { open_access: equipmentDTO.open_access });
@@ -87,7 +84,7 @@ export default class EquipmentService {
           builder.orWhere(installationClause, { i_name: equipmentDTO.installation.name.join(' ') });
           useClauses.push(installationClause);
         }
-        if (equipmentDTO.installation?.city?.name) {
+        if (equipmentDTO.installation?.city?.name && !equipmentDTO.installation.city.ids?.length) {
           useClauses.push(cityClause);
           query.setParameters({ c_name: equipmentDTO.installation.city.name.join(' ') });
         }
@@ -99,8 +96,10 @@ export default class EquipmentService {
     // Distance
     if (equipmentDTO.latitude && equipmentDTO.longitude) {
       query.addSelect('get_distance(:lat,:lon,Equipment.latitude, Equipment.longitude)', 'Equipment_distance')
+        .andWhere('Equipment.latitude is not null')
+        .andWhere('Equipment.longitude is not null')
         .setParameters({ lat: (equipmentDTO.latitude * Math.PI) / 180, lon: (equipmentDTO.longitude * Math.PI) / 180 })
-        .addOrderBy('Equipment_distance', 'ASC', 'NULLS LAST');
+        .addOrderBy('Equipment_distance', 'ASC');
     }
 
     return query.skip(offset).take(20).getMany();
@@ -108,7 +107,7 @@ export default class EquipmentService {
 
   async findById(id: string): Promise<Equipment | undefined> {
     return this.getFullObjectQuery()
-      .where('Equipment.id = UUID_TO_BIN(:id_equipment)')
+      .where('REPLACE(UUID_TO_BIN(Equipment.id), "-", "") = :id_equipment)')
       .setParameters({ id_equipment: id })
       .getOne();
   }

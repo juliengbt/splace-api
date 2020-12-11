@@ -36,7 +36,7 @@ export default class EquipmentController {
   async getUsingDTO(@Body() cityDTO: EquipmentDTO): Promise<City[]> {
     const cityParam = cityDTO;
 
-    if (cityDTO.id) throw new NotAcceptableException('It is not allowed to use id property when using DTO');
+    if (cityDTO.ids) throw new NotAcceptableException('It is not allowed to use id property when using DTO');
 
     if (cityParam.name) cityParam.name = cityParam.name.flatMap((x) => x.split(' ')).filter((str) => str.length > 2);
     cityParam.name = cityParam.name?.length ? cityParam.name : undefined;

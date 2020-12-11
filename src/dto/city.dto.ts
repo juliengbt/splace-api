@@ -4,14 +4,16 @@ import {
 } from 'class-validator';
 
 export default class CityDTO {
-  @ApiProperty({ type: String, required: false })
+  @ApiProperty({ type: String, required: false, isArray: true })
   @IsOptional()
-  id?: string;
+  @IsArray()
+  @ArrayMinSize(1, { message: 'ids must contain at least $value object' })
+  ids?: string[];
 
   @ApiProperty({ type: String, required: false, isArray: true })
   @IsArray()
   @IsOptional()
-  @ArrayMinSize(1, { message: 'name must contain at least $value object' })
+  @ArrayMinSize(1, { message: 'names must contain at least $value object' })
   @IsString({ each: true, message: 'name must contains strings' })
   @MinLength(3, { each: true, message: 'Minimum length for names is $value' })
   name?: string[];

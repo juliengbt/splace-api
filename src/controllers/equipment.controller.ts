@@ -24,7 +24,6 @@ import {
 import Equipment from 'src/entities/equipment.entity';
 import EquipmentDTO from 'src/dto/equipment.dto';
 import EquipmentService from 'src/services/equipment.service';
-import UUIDValidationPipe from 'src/validations/uuid.validation.pipe';
 import { validate } from 'class-validator';
 
 @ApiTags('Equipment')
@@ -42,7 +41,7 @@ export default class EquipmentController {
   @ApiNotAcceptableResponse({ description: 'The parameter id must a uuid' })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
-  async getById(@Param('id', new UUIDValidationPipe()) id: string): Promise<Equipment> {
+  async getById(@Param('id') id: string): Promise<Equipment> {
     const equipment = await this.service.findById(id);
     if (equipment === undefined) throw new NotFoundException(`No equipment found with id : ${id}`);
     return equipment;
@@ -75,10 +74,15 @@ export default class EquipmentController {
         equipmentParam.installation.city.name = [...new Set(equipmentParam.installation.city.name)].flatMap((x) => x.split(' ')).filter((str) => str.length > 2);
       }
       if (equipmentParam.installation?.city?.zip_code) throw new NotAcceptableException('Zip code is not allowed here');
+      if (equipmentParam.installation.city.ids) {
+        equipmentParam.installation.city.name = [...new Set(equipmentParam.installation.city.name)].map((s) => s.replace('-', ''));
+      }
     }
 
     await validate(equipmentParam).then((errors) => {
-      throw new NotAcceptableException(errors.map((err) => err.toString()));
+      if (errors.length > 0) {
+        throw new NotAcceptableException(errors.map((err) => err.toString()));
+      }
     });
     if (Object.keys(equipmentParam).length === 0 && equipmentParam.constructor === Object) throw new NotAcceptableException('equipmentDTO is empty');
     return this.service.findUsingDTO(equipmentParam, offset < 0 ? 0 : offset);
