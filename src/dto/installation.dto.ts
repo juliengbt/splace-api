@@ -4,6 +4,7 @@ import {
   IsArray, IsBoolean, IsNotEmptyObject, IsOptional, MinLength, ValidateNested
 } from 'class-validator';
 import CityDTO from './city.dto';
+import CitySearchDTO from './city.search.dto';
 
 export default class InstallationDTO {
   @ApiProperty({ type: () => String, isArray: true, required: false })
@@ -23,7 +24,7 @@ export default class InstallationDTO {
   @IsOptional()
   disabled_access?: boolean | null;
 
-  @ApiProperty({ type: () => CityDTO, required: false })
+  @ApiProperty({ type: () => CitySearchDTO, required: false })
   @ValidateNested()
   @IsOptional()
   @IsNotEmptyObject()

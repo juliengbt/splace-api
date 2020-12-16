@@ -55,10 +55,12 @@ export default class Equipment {
 
   @ApiProperty({ type: Number })
   @Column({ type: 'decimal', precision: 10, scale: 7 })
+  @Transform((val: string) => Number(val))
   longitude!: number | null;
 
   @ApiProperty({ type: Number })
   @Column({ type: 'decimal', precision: 10, scale: 7 })
+  @Transform((val: string) => Number(val))
   latitude!: number | null;
 
   @ApiProperty({ type: () => Installation })

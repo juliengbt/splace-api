@@ -15,6 +15,7 @@ export default class CityDTO {
   @IsOptional()
   @ArrayMinSize(1, { message: 'names must contain at least $value object' })
   @IsString({ each: true, message: 'name must contains strings' })
+  @ArrayMinSize(1, { message: 'name must contain at least $value object' })
   @MinLength(3, { each: true, message: 'Minimum length for names is $value' })
   name?: string[];
 

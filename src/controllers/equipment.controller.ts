@@ -75,10 +75,9 @@ export default class EquipmentController {
       }
       if (equipmentParam.installation?.city?.zip_code) throw new NotAcceptableException('Zip code is not allowed here');
       if (equipmentParam.installation.city.ids) {
-        equipmentParam.installation.city.name = [...new Set(equipmentParam.installation.city.name)].map((s) => s.replace('-', ''));
+        equipmentParam.installation.city.ids = [...new Set(equipmentParam.installation.city.ids)];
       }
     }
-
     await validate(equipmentParam).then((errors) => {
       if (errors.length > 0) {
         throw new NotAcceptableException(errors.map((err) => err.toString()));

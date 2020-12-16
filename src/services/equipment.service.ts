@@ -35,7 +35,16 @@ export default class EquipmentService {
             .andWhere('Equipment.longitude < :prev_min_lon', { min_lon: equipmentDTO.gps_area?.previous_area?.min_lon });
         }));
       }
-    } else if (equipmentDTO.installation?.city?.ids) query.andWhere('REPLACE(BIN_TO_UUID(installation.city.id), "-", "") in (:...id_city)', { id_city: equipmentDTO.installation.city.ids });
+    } else if (equipmentDTO.installation?.city?.ids) query.andWhere('BIN_TO_UUID(installation.city.id) in (:...id_city)', { id_city: equipmentDTO.installation.city.ids });
+
+    // Distance
+    if (equipmentDTO.latitude && equipmentDTO.longitude) {
+      query.addSelect('get_distance(:lat,:lon,Equipment.latitude, Equipment.longitude)', 'Equipment_distance')
+        .andWhere('Equipment.latitude is not null')
+        .andWhere('Equipment.longitude is not null')
+        .setParameters({ lat: (equipmentDTO.latitude * Math.PI) / 180, lon: (equipmentDTO.longitude * Math.PI) / 180 })
+        .addOrderBy('Equipment_distance', 'ASC');
+    }
 
     // Boolean parameters
     if (equipmentDTO.open_access) query.andWhere('Equipment.open_access is :open_acess', { open_access: equipmentDTO.open_access });
@@ -89,17 +98,8 @@ export default class EquipmentService {
           query.setParameters({ c_name: equipmentDTO.installation.city.name.join(' ') });
         }
         query.addSelect(`(${useClauses.join(' + ')})`, 'keyword_rank')
-          .orderBy('keyword_rank', 'DESC');
+          .addOrderBy('keyword_rank', 'DESC');
       }));
-    }
-
-    // Distance
-    if (equipmentDTO.latitude && equipmentDTO.longitude) {
-      query.addSelect('get_distance(:lat,:lon,Equipment.latitude, Equipment.longitude)', 'Equipment_distance')
-        .andWhere('Equipment.latitude is not null')
-        .andWhere('Equipment.longitude is not null')
-        .setParameters({ lat: (equipmentDTO.latitude * Math.PI) / 180, lon: (equipmentDTO.longitude * Math.PI) / 180 })
-        .addOrderBy('Equipment_distance', 'ASC');
     }
 
     return query.skip(offset).take(20).getMany();
