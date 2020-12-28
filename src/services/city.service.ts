@@ -24,6 +24,7 @@ export default class CityService {
     if (cityDTO.name) {
       const cityClause = 'MATCH(City.name) AGAINST (:c_name IN BOOLEAN MODE)';
       query.where(cityClause, { c_name: cityDTO.name.join(' ') })
+        .andWhere('City.name LIKE :first_city_name', { first_city_name: `${cityDTO.name[0].replace('>', '')}%` })
         .orderBy(cityClause, 'DESC');
     }
 

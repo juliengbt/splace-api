@@ -86,7 +86,7 @@ export default class EquipmentService {
         const useClauses = [];
 
         if (equipmentDTO.name) {
-          builder.where(equipmentClause, { e_name: equipmentDTO.name?.join(' ') });
+          builder.andWhere(equipmentClause, { e_name: equipmentDTO.name?.join(' ') });
           useClauses.push(equipmentClause);
         }
         if (equipmentDTO.installation?.name) {

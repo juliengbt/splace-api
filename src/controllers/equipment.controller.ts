@@ -61,28 +61,33 @@ export default class EquipmentController {
   @Post()
   async getUsingDTO(@Body() equipmentDTO: EquipmentDTO, @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number): Promise<Equipment[]> {
     const equipmentParam = equipmentDTO;
+    const installationDTO = equipmentDTO.installation;
     if (equipmentParam.name) {
       equipmentParam.name = [...new Set(equipmentParam.name)].flatMap((x) => x.split(' ')).filter((str) => str.length > 2);
     }
 
-    if (equipmentParam.installation?.name) {
-      equipmentParam.installation.name = [...new Set(equipmentParam.installation.name)].flatMap((x) => x.split(' ')).filter((str) => str.length > 2);
+    if (installationDTO?.name) {
+      installationDTO.name = [...new Set(installationDTO.name)].flatMap((x) => x.split(' ')).filter((str) => str.length > 2);
     }
 
-    if (equipmentParam.installation?.city) {
-      if (equipmentParam.installation.city.name) {
-        equipmentParam.installation.city.name = [...new Set(equipmentParam.installation.city.name)].flatMap((x) => x.split(' ')).filter((str) => str.length > 2);
+    if (installationDTO?.city) {
+      if (installationDTO.city.name) {
+        installationDTO.city.name = [...new Set(installationDTO.city.name)].flatMap((x) => x.split(' ')).filter((str) => str.length > 2);
       }
-      if (equipmentParam.installation?.city?.zip_code) throw new NotAcceptableException('Zip code is not allowed here');
-      if (equipmentParam.installation.city.ids) {
-        equipmentParam.installation.city.ids = [...new Set(equipmentParam.installation.city.ids)];
+      if (installationDTO?.city?.zip_code) throw new NotAcceptableException('Zip code is not allowed here');
+      if (installationDTO.city.ids) {
+        installationDTO.city.ids = [...new Set(installationDTO.city.ids)];
       }
     }
+
+    equipmentParam.installation = installationDTO;
+
     await validate(equipmentParam).then((errors) => {
       if (errors.length > 0) {
         throw new NotAcceptableException(errors.map((err) => err.toString()));
       }
     });
+
     if (Object.keys(equipmentParam).length === 0 && equipmentParam.constructor === Object) throw new NotAcceptableException('equipmentDTO is empty');
     return this.service.findUsingDTO(equipmentParam, offset < 0 ? 0 : offset);
   }
