@@ -27,7 +27,7 @@ export default class SportService {
   async findByCode(code_sport: string): Promise<Sport | undefined> {
     return this.repo.createQueryBuilder()
       .leftJoinAndSelect('Sport.category', 'category')
-      .where('Sport.code like %:code%')
+      .where('Sport.code like :code')
       .setParameters({ code: `%${code_sport}%` })
       .getOne();
   }
