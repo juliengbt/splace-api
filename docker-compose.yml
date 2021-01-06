@@ -34,8 +34,8 @@ services:
       - splace_bridge
 
     volumes:
-      - splace_db_volume:/var/lib/mysql
-      - ../splace-db/:/docker-entrypoint-initdb.d
+      - splace_db_volume:/config
+      - ../splace-db/:/config/initdb.d/
 
     environment:
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
