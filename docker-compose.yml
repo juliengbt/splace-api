@@ -18,8 +18,15 @@ services:
     environment:
       - DB_HOST: splace_db
 
+    command: sh -c "cd /usr/src/app && yarn install --network-timeout 100000 && yarn start"
+
+    depends_on: [splace_db]
+
   splace_db:
     image: mariadb
+
+    ports:
+      - 3306:3306
 
     restart: always
 
