@@ -1,0 +1,43 @@
+version: "3.1"     
+services:
+
+  splace_api:
+    image: node:slim
+
+    ports:
+      - 8080:8080
+
+    restart: always
+
+    networks:
+      - splace_bridge
+
+    volumes:
+      - ./:/usr/src/app
+
+    environment:
+      - DB_HOST: splace_db
+
+  splace_db:
+    image: mariadb
+
+    restart: always
+
+    networks:
+      - splace_bridge
+
+    volumes:
+      - splace_db_volume:/var/lib/mysql
+      - ../splace_db/:/docker-entrypoint-initdb.d
+
+    environment:
+      - MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      - MYSQL_DATABASE: ${DB_NAME}
+      - MYSQL_USER: ${DB_USER}
+      - MYSQL_PASSWORD: ${DB_PASSWORD}
+
+networks:
+  splace_bridge:
+    
+volumes:
+  splace_db_volume:
