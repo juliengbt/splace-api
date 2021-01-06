@@ -16,7 +16,7 @@ services:
       - ./:/usr/src/app
 
     environment:
-      - DB_HOST: "splace_db"
+      - DB_HOST=splace_db
 
     command: sh -c "cd /usr/src/app && yarn install --network-timeout 100000 && yarn start"
 
@@ -38,10 +38,10 @@ services:
       - ../splace-db/:/docker-entrypoint-initdb.d
 
     environment:
-      - MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
-      - MYSQL_DATABASE: "${DB_NAME}"
-      - MYSQL_USER: "${DB_USER}"
-      - MYSQL_PASSWORD: "${DB_PASSWORD}"
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
 
 networks:
   splace_bridge:
