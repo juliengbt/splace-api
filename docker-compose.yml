@@ -23,7 +23,7 @@ services:
     depends_on: [splace_db]
 
   splace_db:
-    image: linuxserver/mariadb:arm32v6-latest
+    image: linuxserver/mariadb:arm32v7-latest
 
     ports:
       - 3306:3306
