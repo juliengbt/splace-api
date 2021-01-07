@@ -25,15 +25,16 @@ export default class CityService {
       const cityClause = 'MATCH(City.name) AGAINST (:c_name IN BOOLEAN MODE)';
       query.where(cityClause, { c_name: cityDTO.name.join(' ') })
         .andWhere('City.name LIKE :first_city_name', { first_city_name: `${cityDTO.name[0].replace('>', '')}%` })
-        .orderBy(cityClause, 'DESC');
+        .orderBy(cityClause, 'DESC')
+        .addOrderBy('LENGTH(City.name)', 'ASC');
+    } else {
+      query.orderBy('City.name', 'ASC');
     }
 
     if (cityDTO.zip_code) {
       query
         .having("GROUP_CONCAT(City.zip_code SEPARATOR ' ') LIKE :zip_code", { zip_code: `%${cityDTO.zip_code}%` });
     }
-
-    query.addOrderBy('City.name', 'ASC');
 
     return query.limit(5).getRawMany().then((values) => values.map((value) => {
       const citySearchDTO = new CitySearchDTO();
