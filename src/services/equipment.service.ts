@@ -107,7 +107,7 @@ export default class EquipmentService {
 
   async findById(id: string): Promise<Equipment | undefined> {
     return this.getFullObjectQuery()
-      .where('REPLACE(UUID_TO_BIN(Equipment.id), "-", "") = :id_equipment')
+      .where('Equipment.id = UUID_TO_BIN(:id_equipment)')
       .setParameters({ id_equipment: id })
       .getOne();
   }

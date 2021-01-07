@@ -12,6 +12,7 @@ import {
   ApiTags
 } from '@nestjs/swagger';
 import Installation from 'src/entities/installation.entity';
+import ParseUUIDPipe from 'src/pipes/parse-uuid.pipe';
 import InstallationService from 'src/services/installation.service';
 
 @ApiTags('Installation')
@@ -28,7 +29,7 @@ export default class InstallationController {
   @ApiNotFoundResponse({ description: 'Not found.' })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
-  async getById(@Param('id') id: string): Promise<Installation> {
+  async getById(@Param('id', new ParseUUIDPipe()) id: string): Promise<Installation> {
     const installation = await this.service.findById(id);
     if (installation === undefined) throw new NotFoundException(`No installation found with id : ${id}`);
     return installation;
