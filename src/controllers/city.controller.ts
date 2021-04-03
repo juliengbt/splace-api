@@ -38,7 +38,7 @@ export default class CityController {
 
     if (cityDTO.ids) throw new NotAcceptableException('It is not allowed to use id property when using DTO');
 
-    if (cityParam.name) cityParam.name = cityParam.name.flatMap((x) => x.split(' ')).filter((str) => str.length > 2);
+    if (cityParam.name) cityParam.name = cityParam.name.flatMap((x) => x.split(' ')).filter((str) => str.length > 1);
     cityParam.name = cityParam.name?.length ? cityParam.name : undefined;
 
     if (cityParam.name) {
