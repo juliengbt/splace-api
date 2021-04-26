@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn
 } from 'typeorm';
@@ -18,7 +18,8 @@ import Sport from './sport.entity';
 export default class Equipment {
   @ApiProperty()
   @PrimaryColumn('varbinary')
-  @Transform((buf: Buffer) => buf.toString('hex'))
+  
+  @Transform(({ value: buf }) => buf.toString('hex'))
   id!: string;
 
   @ApiProperty()
@@ -31,22 +32,26 @@ export default class Equipment {
 
   @ApiProperty({ type: Boolean })
   @Column({ type: 'bit' })
-  @Transform((buf: Buffer) => (buf ? buf.readUIntBE(0, 1) : buf))
+  
+  @Transform(({ value: buf }) => (buf ? buf.readUIntBE(0, 1) : buf))
   open_access!: boolean | null;
 
   @ApiProperty({ type: Boolean })
   @Column({ type: 'bit' })
-  @Transform((buf: Buffer) => (buf ? buf.readUIntBE(0, 1) : buf))
+  
+  @Transform(({ value: buf }) => (buf ? buf.readUIntBE(0, 1) : buf))
   locker!: boolean | null;
 
   @ApiProperty({ type: Boolean })
   @Column({ type: 'bit' })
-  @Transform((buf: Buffer) => (buf ? buf.readUIntBE(0, 1) : buf))
+  
+  @Transform(({ value: buf }) => (buf ? buf.readUIntBE(0, 1) : buf))
   lighting!: boolean | null;
 
   @ApiProperty({ type: Boolean })
   @Column({ type: 'bit' })
-  @Transform((buf: Buffer) => (buf ? buf.readUIntBE(0, 1) : buf))
+  
+  @Transform(({ value: buf }) => (buf ? buf.readUIntBE(0, 1) : buf))
   shower!: boolean | null;
 
   @ApiProperty({ type: Number })
@@ -55,12 +60,14 @@ export default class Equipment {
 
   @ApiProperty({ type: Number })
   @Column({ type: 'decimal', precision: 10, scale: 7 })
-  @Transform((val: string) => Number(val))
+  @Type(() => Number)
+  @Transform(({ value: val }) => Number(val))
   longitude!: number | null;
 
   @ApiProperty({ type: Number })
   @Column({ type: 'decimal', precision: 10, scale: 7 })
-  @Transform((val: string) => Number(val))
+  @Type(() => Number)
+  @Transform(({ value: val }) => Number(val))
   latitude!: number | null;
 
   @ApiProperty({ type: () => Installation })
@@ -108,6 +115,7 @@ export default class Equipment {
 
   @ApiProperty({ required: false })
   @Column('double', { select: false })
-  @Transform((dist) => Math.round(dist))
+  @Type(() => Number)
+  @Transform(({ value: dist }) => Math.round(dist))
   distance?: number;
 }

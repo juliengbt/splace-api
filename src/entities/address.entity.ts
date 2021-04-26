@@ -6,7 +6,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export default class Address {
   @ApiProperty()
   @PrimaryColumn('varbinary')
-  @Transform((buf: Buffer) => buf.toString('hex'))
+  @Transform(({ value: buf }) => buf.toString('hex'))
   id!: string;
 
   @ApiProperty()

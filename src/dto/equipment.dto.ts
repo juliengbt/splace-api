@@ -29,9 +29,9 @@ export default class EquipmentDTO {
   @ApiProperty({ type: String, required: false, isArray: true })
   @IsArray()
   @IsOptional()
-  @ArrayMinSize(1, { message: 'name must contain at least one object' })
+  @ArrayMinSize(1, { message: 'name must contain at least $constraint1 object' })
   @IsString({ each: true, message: 'name must contains strings' })
-  @MinLength(3, { each: true, message: 'Minimum length for names is $value' })
+  @MinLength(3, { each: true, message: 'Minimum length for names is $constraint1' })
   name?: string[];
 
   @ApiProperty({ type: Boolean, required: false })
@@ -77,51 +77,51 @@ export default class EquipmentDTO {
 
   @ApiProperty({ type: () => OwnerDTO, required: false, isArray: true })
   @IsArray()
-  @ArrayMinSize(1, { message: 'owner must contain at least one object' })
+  @ArrayMinSize(1, { message: 'owner must contain at least $constraint1 object' })
   @ValidateNested({ each: true })
   @IsOptional()
-  @IsNotEmptyObject({ each: true })
+  @IsNotEmptyObject({}, { each: true })
   owner?: OwnerDTO[];
 
   @ApiProperty({ type: () => SoilTypeDTO, required: false, isArray: true })
   @IsArray()
-  @ArrayMinSize(1, { message: 'soil_type must contain at least one object' })
+  @ArrayMinSize(1, { message: 'soil_type must contain at least $constraint1 object' })
   @ValidateNested({ each: true })
   @IsOptional()
-  @IsNotEmptyObject({ each: true })
+  @IsNotEmptyObject({}, { each: true })
   soil_type?: SoilTypeDTO[];
 
   @ApiProperty({ type: () => EquipmentNatureDTO, required: false, isArray: true })
   @IsArray()
-  @ArrayMinSize(1, { message: 'equipment_nature must contain at least one object' })
+  @ArrayMinSize(1, { message: 'equipment_nature must contain at least $constraint1 object' })
   @ValidateNested({ each: true })
   @IsOptional()
-  @IsNotEmptyObject({ each: true })
+  @IsNotEmptyObject({}, { each: true })
   equipment_nature?: EquipmentNatureDTO[];
 
   @ApiProperty({ type: () => EquipmentTypeDTO, required: false, isArray: true })
   @IsArray()
-  @ArrayMinSize(1, { message: 'equipment_type must contain at least one object' })
+  @ArrayMinSize(1, { message: 'equipment_type must contain at least $constraint1 object' })
   @ValidateNested({ each: true })
   @IsOptional()
-  @IsNotEmptyObject({ each: true })
+  @IsNotEmptyObject({}, { each: true })
   equipment_type?: EquipmentTypeDTO[];
 
   @ApiProperty({ type: () => EquipmentLevelDTO, required: false, isArray: true })
   @IsArray()
-  @ArrayMinSize(1, { message: 'equipment_level must contain at least one object' })
+  @ArrayMinSize(1, { message: 'equipment_level must contain at least $constraint1 object' })
   @ValidateNested({ each: true })
   @IsOptional()
-  @IsNotEmptyObject({ each: true })
+  @IsNotEmptyObject({}, { each: true })
   equipment_level?: EquipmentLevelDTO[] | null;
 
   @ApiProperty({ type: () => SportDTO, required: false, isArray: true })
   @IsArray()
-  @ArrayMinSize(1, { message: 'sports must contain at least one object' })
+  @ArrayMinSize(1, { message: 'sports must contain at least $constraint1 object' })
   @ValidateNested({ each: true })
   @IsOptional()
   @Type(() => SportDTO)
-  @IsNotEmptyObject({ each: true })
+  @IsNotEmptyObject({}, { each: true })
   sports?: SportDTO[];
 
   @ApiProperty({ type: () => Number, required: false })

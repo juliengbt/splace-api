@@ -9,9 +9,9 @@ import CitySearchDTO from './city.search.dto';
 export default class InstallationDTO {
   @ApiProperty({ type: () => String, isArray: true, required: false })
   @IsArray({ message: 'name must in an string array' })
-  @ArrayMinSize(1, { message: 'name must contain at least one object' })
+  @ArrayMinSize(1, { message: 'name must contain at least $constraint1 object' })
   @IsOptional()
-  @MinLength(3, { each: true, message: 'Minimum length for names is $value' })
+  @MinLength(3, { each: true, message: 'Minimum length for names is $constraint1' })
   name?: string[];
 
   @ApiProperty({ type: () => Boolean, required: false })

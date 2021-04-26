@@ -43,7 +43,9 @@ export default class CityController {
 
     if (cityParam.name) {
       const last = cityParam.name.pop();
-      cityParam.name.push(`>${last}`, `${last}*`);
+      if (cityParam.name[0]) cityParam.name[0] = `>${cityParam.name[0]}`; // First word is important
+      cityParam.name.map((s) => (s.length < 4 ? `<${s}` : s)); // Little words are not really important
+      cityParam.name.push(`>${last}*`); // Last word is important
     }
 
     if (Object.keys(cityParam).length === 0 && cityParam.constructor === Object) throw new NotAcceptableException('cityDTO is empty');
