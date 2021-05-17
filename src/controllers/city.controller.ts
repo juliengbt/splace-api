@@ -45,8 +45,8 @@ export default class CityController {
 
   @ApiResponse({
     status: 200,
-    description: 'CityDTO list',
-    type: CityDTO,
+    description: 'City list',
+    type: City,
     isArray: true
   })
   @ApiNotAcceptableResponse({ description: 'City DTO is not valid.' })
