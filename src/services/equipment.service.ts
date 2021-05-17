@@ -35,7 +35,7 @@ export default class EquipmentService {
             .andWhere('Equipment.longitude < :prev_min_lon', { min_lon: equipmentDTO.gps_area?.previous_area?.min_lon });
         }));
       }
-    } else if (equipmentDTO.installation?.city?.ids) query.andWhere('BIN_TO_UUID(installation.city.id) in (:...id_city)', { id_city: equipmentDTO.installation.city.ids });
+    } else if (equipmentDTO.installation?.address?.city?.ids) query.andWhere('BIN_TO_UUID(installation.address.zipcode.city) in (:...id_city)', { id_city: equipmentDTO.installation.address.city.ids });
 
     // Distance
     if (equipmentDTO.latitude && equipmentDTO.longitude) {
@@ -77,7 +77,7 @@ export default class EquipmentService {
     }
 
     // Keyword research
-    if (equipmentDTO.name || equipmentDTO.installation?.name || equipmentDTO.installation?.city?.name) {
+    if (equipmentDTO.name || equipmentDTO.installation?.name || equipmentDTO.installation?.address?.city?.names) {
       query.andWhere(new Brackets((builder) => {
         const equipmentClause = 'MATCH(Equipment.name) AGAINST (:e_name IN BOOLEAN MODE)';
         const installationClause = 'MATCH(installation.name) AGAINST (:i_name IN BOOLEAN MODE)';
@@ -93,9 +93,9 @@ export default class EquipmentService {
           builder.orWhere(installationClause, { i_name: equipmentDTO.installation.name.join(' ') });
           useClauses.push(installationClause);
         }
-        if (equipmentDTO.installation?.city?.name && !equipmentDTO.installation.city.ids?.length) {
+        if (equipmentDTO.installation?.address?.city?.names && !equipmentDTO.installation.address?.city?.ids?.length) {
           useClauses.push(cityClause);
-          query.setParameters({ c_name: equipmentDTO.installation.city.name.join(' ') });
+          query.setParameters({ c_name: equipmentDTO.installation.address.city.names.join(' ') });
         }
         query.addSelect(`(${useClauses.join(' + ')})`, 'keyword_rank')
           .addOrderBy('keyword_rank', 'DESC');
@@ -116,7 +116,8 @@ export default class EquipmentService {
     return this.repo.createQueryBuilder('Equipment')
       .leftJoinAndMapOne('Equipment.installation', 'Equipment.installation', 'installation')
       .leftJoinAndMapOne('installation.address', 'installation.address', 'address')
-      .leftJoinAndMapOne('installation.city', 'installation.city', 'city')
+      .leftJoinAndMapOne('address.zipcode', 'address.zipcode', 'zipcode')
+      .leftJoinAndMapOne('zipcode.city', 'zipcode.city', 'city')
       .leftJoinAndMapOne('city.department', 'city.department', 'department')
       .leftJoinAndMapOne('Equipment.owner', 'Equipment.owner', 'owner')
       .leftJoinAndMapOne('Equipment.soil_type', 'Equipment.soil_type', 'soil_type')

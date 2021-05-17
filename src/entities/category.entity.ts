@@ -15,7 +15,7 @@ export default class Category {
   @Column({ type: 'varchar', length: 50 })
   name!: string;
 
-  @ApiProperty({ type: () => Sport })
+  @ApiProperty({ type: () => Sport, isArray: true })
   @OneToMany(() => Sport, (sport) => sport.category)
   sports?: Sport[];
 }

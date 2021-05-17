@@ -6,7 +6,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export default class Department {
   @ApiProperty()
   @PrimaryColumn('varbinary')
-  
+
   @Transform(({ value: buf }) => buf.toString('hex'))
   id!: string;
 

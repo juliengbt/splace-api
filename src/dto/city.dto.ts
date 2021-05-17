@@ -10,17 +10,16 @@ export default class CityDTO {
   @ArrayMinSize(1, { message: 'ids must contain at least $constraint1 object' })
   ids?: string[];
 
-  @ApiProperty({ type: String, required: false, isArray: true })
-  @IsArray()
+  @ApiProperty({ type: String, required: false })
   @IsOptional()
+  @IsString({ message: 'name must be string', each: true })
+  @IsArray()
   @ArrayMinSize(1, { message: 'names must contain at least $constraint1 object' })
-  @IsString({ each: true, message: 'name must contains strings' })
-  @ArrayMinSize(1, { message: 'name must contain at least $constraint1 object' })
   @MinLength(2, { each: true, message: 'Minimum length for names is $constraint1' })
-  name?: string[];
+  names?: string[];
 
   @ApiProperty({ type: Number, required: false })
   @IsOptional()
   @Min(1000, { message: 'zip code contains at least 4 digit' })
-  zip_code?: number;
+  zipcode?: number;
 }
