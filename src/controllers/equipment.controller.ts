@@ -71,13 +71,13 @@ export default class EquipmentController {
       installationDTO.name = [...new Set(installationDTO.name)].flatMap((x) => x.split(' ')).filter((str) => str.length > 2);
     }
 
-    if (installationDTO?.city) {
-      if (installationDTO.city.name) {
-        installationDTO.city.name = [...new Set(installationDTO.city.name)].flatMap((x) => x.split(' ')).filter((str) => str.length > 2);
+    if (installationDTO?.address?.city) {
+      if (installationDTO.address?.city?.names) {
+        installationDTO.address.city.names = [...new Set(installationDTO.address.city.names)].flatMap((x) => x.split(' ')).filter((str) => str.length > 2);
       }
-      if (installationDTO?.city?.zip_code) throw new NotAcceptableException('Zip code is not allowed here');
-      if (installationDTO.city.ids) {
-        installationDTO.city.ids = [...new Set(installationDTO.city.ids)];
+      if (installationDTO?.address.city.zipcode) throw new NotAcceptableException('Zip code is not allowed here');
+      if (installationDTO.address.city.ids) {
+        installationDTO.address.city.ids = [...new Set(installationDTO.address.city.ids)];
       }
     }
 

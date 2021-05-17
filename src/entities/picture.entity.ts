@@ -13,7 +13,7 @@ export default class Picture {
   name!: string;
 
   @ApiProperty({ type: () => Equipment })
-  @PrimaryColumn({ type: 'varchar', name: 'id_equipment' })
+  @PrimaryColumn({ type: 'varbinary', name: 'id_equipment' })
   @ManyToOne(() => Equipment, (equipment) => equipment.id, { primary: true })
   @JoinColumn({ name: 'id_equipment' })
   equipment!: Equipment;

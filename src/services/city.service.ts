@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import CityDTO from 'src/dto/city.dto';
-import CitySearchDTO from 'src/dto/city.search.dto';
 import City from 'src/entities/city.entity';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 
@@ -12,36 +11,24 @@ export default class CityService {
     private repo: Repository<City>
   ) {}
 
-  async findUsingDTO(cityDTO: CityDTO): Promise<CitySearchDTO[]> {
-    const query = this.getFullObjectQuery();
+  async findUsingDTO(cityDTO: CityDTO): Promise<City[]> {
+    const query = this.getFullObjectQuery()
+      .addSelect('LENGTH(City.name)', 'len_name')
+      .orderBy('len_name', 'ASC')
+      .addOrderBy('City.name', 'ASC');
 
-    query.select("GROUP_CONCAT(bin_to_uuid(City.id) SEPARATOR ';') as ids")
-      .addSelect('City.name as city_name')
-      .addSelect('department.num as department_num')
-      .groupBy('City.name')
-      .addGroupBy('department.id');
-
-    if (cityDTO.name) {
+    if (cityDTO.names) {
       const cityClause = 'MATCH(City.name) AGAINST (:c_name IN BOOLEAN MODE)';
-      query.where(cityClause, { c_name: cityDTO.name.join(' ') })
-        .orderBy(cityClause, 'DESC')
-        .addOrderBy('LENGTH(City.name)', 'ASC');
-    } else {
-      query.orderBy('City.name', 'ASC');
+      query.where(cityClause, { c_name: cityDTO.names.join(' ') })
+        .addSelect(`${cityClause}`, 'keyword_rank')
+        .addOrderBy('keyword_rank', 'DESC');
     }
 
-    if (cityDTO.zip_code) {
-      query
-        .having("GROUP_CONCAT(City.zip_code SEPARATOR ' ') LIKE :zip_code", { zip_code: `%${cityDTO.zip_code}%` });
+    if (cityDTO.zipcode) {
+      query.where('zipcodes.code = :zip_code', { zip_code: `${cityDTO.zipcode}` });
     }
 
-    return query.limit(15).getRawMany().then((values) => values.map((value) => {
-      const citySearchDTO = new CitySearchDTO();
-      citySearchDTO.ids = value.ids.split(';');
-      citySearchDTO.city_name = value.city_name;
-      citySearchDTO.department_num = value.department_num;
-      return citySearchDTO;
-    }));
+    return query.take(15).getMany();
   }
 
   async findAll(): Promise<City[]> {
@@ -49,8 +36,16 @@ export default class CityService {
       .getMany();
   }
 
+  async findById(id: string): Promise<City | undefined> {
+    return this.getFullObjectQuery()
+      .where('City.id = UUID_TO_BIN(:id_city)')
+      .setParameters({ id_city: id })
+      .getOne();
+  }
+
   private getFullObjectQuery(): SelectQueryBuilder<City> {
     return this.repo.createQueryBuilder('City')
-      .leftJoinAndMapOne('City.department', 'City.department', 'department');
+      .leftJoinAndMapOne('City.department', 'City.department', 'department')
+      .leftJoinAndMapMany('City.zipcodes', 'City.zipcodes', 'zipcodes');
   }
 }

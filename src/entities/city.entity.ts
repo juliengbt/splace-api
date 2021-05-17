@@ -1,9 +1,11 @@
 import { Transform } from 'class-transformer';
 import {
-  Column, Entity, JoinColumn, ManyToOne, PrimaryColumn
+  Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import Department from './department.entity';
+// eslint-disable-next-line import/no-cycle
+import Zipcode from './zipcode.entity';
 
 @Entity('City')
 export default class City {
@@ -16,9 +18,10 @@ export default class City {
   @Column({ type: 'varchar', length: 45 })
   name!: string;
 
-  @ApiProperty()
-  @Column({ type: 'mediumint' })
-  zip_code!: number;
+  @ApiProperty({ type: () => Number, isArray: true })
+  @OneToMany(() => Zipcode, (zipcode) => zipcode.city)
+  @Transform(({ value: zips }) => zips.map((z: Zipcode) => z.code))
+  zipcodes?: number[];
 
   @ApiProperty({ type: () => Department })
   @ManyToOne(() => Department, (department) => department.id)

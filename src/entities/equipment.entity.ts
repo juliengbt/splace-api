@@ -18,7 +18,7 @@ import Sport from './sport.entity';
 export default class Equipment {
   @ApiProperty()
   @PrimaryColumn('varbinary')
-  
+
   @Transform(({ value: buf }) => buf.toString('hex'))
   id!: string;
 
@@ -32,25 +32,25 @@ export default class Equipment {
 
   @ApiProperty({ type: Boolean })
   @Column({ type: 'bit' })
-  
+
   @Transform(({ value: buf }) => (buf ? buf.readUIntBE(0, 1) : buf))
   open_access!: boolean | null;
 
   @ApiProperty({ type: Boolean })
   @Column({ type: 'bit' })
-  
+
   @Transform(({ value: buf }) => (buf ? buf.readUIntBE(0, 1) : buf))
   locker!: boolean | null;
 
   @ApiProperty({ type: Boolean })
   @Column({ type: 'bit' })
-  
+
   @Transform(({ value: buf }) => (buf ? buf.readUIntBE(0, 1) : buf))
   lighting!: boolean | null;
 
   @ApiProperty({ type: Boolean })
   @Column({ type: 'bit' })
-  
+
   @Transform(({ value: buf }) => (buf ? buf.readUIntBE(0, 1) : buf))
   shower!: boolean | null;
 
@@ -105,7 +105,7 @@ export default class Equipment {
   @JoinTable({ name: 'Equipment_Sport', inverseJoinColumn: { name: 'code_sport' }, joinColumn: { name: 'id_equipment' } })
   sports!: Sport[];
 
-  @ApiProperty({ type: () => Picture })
+  @ApiProperty({ type: () => Picture, isArray: true })
   @OneToMany(() => Picture, (picture) => picture.equipment)
   @JoinColumn({ name: 'id' })
   pictures!: Picture[];

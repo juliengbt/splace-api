@@ -1,6 +1,9 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import {
+  Column, Entity, JoinColumn, ManyToOne, PrimaryColumn
+} from 'typeorm';
 import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import Zipcode from './zipcode.entity';
 
 @Entity('Address')
 export default class Address {
@@ -24,4 +27,9 @@ export default class Address {
   @ApiProperty()
   @Column({ nullable: true, type: 'mediumint' })
   district!: number | null;
+
+  @ApiProperty({ type: () => Zipcode })
+  @ManyToOne(() => Zipcode, (zip) => zip.id)
+  @JoinColumn({ name: 'id_zipcode' })
+  zipcode!: Zipcode;
 }

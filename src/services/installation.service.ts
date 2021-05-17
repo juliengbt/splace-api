@@ -11,15 +11,13 @@ export default class InstallationService {
   ) {}
 
   async findById(id: string): Promise<Installation | undefined> {
-    return this.getFullObject()
+    return this.getFullObjectQuery()
       .where('Installation.id = UUID_TO_BIN(:id_installation)', { id_installation: id })
       .getOne();
   }
 
-  private getFullObject(): SelectQueryBuilder<Installation> {
+  private getFullObjectQuery(): SelectQueryBuilder<Installation> {
     return this.repo.createQueryBuilder('Installation')
-      .leftJoinAndSelect('Installation.city', 'city')
-      .leftJoinAndSelect('city.department', 'department')
       .leftJoinAndSelect('Installation.address', 'address')
       .leftJoinAndSelect('Installation.equipments', 'equipments')
       .leftJoinAndSelect('equipments.owner', 'owner')
@@ -29,6 +27,9 @@ export default class InstallationService {
       .leftJoinAndSelect('equipments.equipment_level', 'equipment_level')
       .leftJoinAndSelect('equipments.sports', 'sports')
       .leftJoinAndSelect('sports.category', 'category')
-      .leftJoinAndSelect('equipments.pictures', 'pictures');
+      .leftJoinAndSelect('equipments.pictures', 'pictures')
+      .leftJoinAndMapOne('address.zipcode', 'address.zipcode', 'zipcode')
+      .leftJoinAndMapOne('zipcode.city', 'zipcode.city', 'city')
+      .leftJoinAndMapOne('city.department', 'city.department', 'department');
   }
 }
