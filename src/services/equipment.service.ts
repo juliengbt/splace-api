@@ -35,7 +35,7 @@ export default class EquipmentService {
             .andWhere('Equipment.longitude < :prev_min_lon', { min_lon: equipmentDTO.gps_area?.previous_area?.min_lon });
         }));
       }
-    } else if (equipmentDTO.installation?.address?.city?.ids) query.andWhere('BIN_TO_UUID(installation.address.zipcode.city) in (:...id_city)', { id_city: equipmentDTO.installation.address.city.ids });
+    } else if (equipmentDTO.installation?.address?.city?.ids) query.andWhere('REPLACE(BIN_TO_UUID(city.id),"-","") in (:...id_city)', { id_city: equipmentDTO.installation.address.city.ids });
 
     // Distance
     if (equipmentDTO.latitude && equipmentDTO.longitude) {
