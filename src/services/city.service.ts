@@ -18,7 +18,7 @@ export default class CityService {
       const cityClause = 'MATCH(City.name) AGAINST (:c_name IN BOOLEAN MODE)';
       query.where(cityClause, { c_name: cityDTO.names.join(' ') })
         .addSelect(`${cityClause}`, 'keyword_rank')
-        .addOrderBy('keyword_rank', 'DESC');
+        .orderBy('keyword_rank', 'DESC');
     }
 
     if (cityDTO.zipcode) {
@@ -26,7 +26,7 @@ export default class CityService {
     }
 
     query.addSelect('LENGTH(City.name)', 'len_name')
-      .orderBy('len_name', 'ASC')
+      .addOrderBy('len_name', 'ASC')
       .addOrderBy('City.name', 'ASC');
 
     return query.take(15).getMany();
