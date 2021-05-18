@@ -12,10 +12,7 @@ export default class CityService {
   ) {}
 
   async findUsingDTO(cityDTO: CityDTO): Promise<City[]> {
-    const query = this.getFullObjectQuery()
-      .addSelect('LENGTH(City.name)', 'len_name')
-      .orderBy('len_name', 'ASC')
-      .addOrderBy('City.name', 'ASC');
+    const query = this.getFullObjectQuery();
 
     if (cityDTO.names) {
       const cityClause = 'MATCH(City.name) AGAINST (:c_name IN BOOLEAN MODE)';
@@ -27,6 +24,10 @@ export default class CityService {
     if (cityDTO.zipcode) {
       query.where('zipcodes.code = :zip_code', { zip_code: `${cityDTO.zipcode}` });
     }
+
+    query.addSelect('LENGTH(City.name)', 'len_name')
+      .orderBy('len_name', 'ASC')
+      .addOrderBy('City.name', 'ASC');
 
     return query.take(15).getMany();
   }
