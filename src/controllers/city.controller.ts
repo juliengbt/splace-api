@@ -60,13 +60,10 @@ export default class CityController {
     if (cityDTO.ids) throw new NotAcceptableException('It is not allowed to use id property when using DTO');
 
     if (cityParam.names) {
-      if (cityParam.names) {
-        const last = cityParam.names.pop();
-        cityParam.names = cityParam.names.filter((str) => str.length > 1);
-        if (cityParam.names[0]) cityParam.names[0] = `>${cityParam.names[0]}`; // First word is important
-        cityParam.names.map((s) => (s.length < 4 ? `<${s}` : s)); // Little words are not really important
-        cityParam.names.push(`>${last}*`); // Last word is important
-      }
+      const last = cityParam.names.pop();
+      cityParam.names = cityParam.names.filter((str) => str.length > 1);
+      if (cityParam.names[0]) cityParam.names[0] = `>${cityParam.names[0]}`; // First word is important
+      cityParam.names.push(`>${last}*`); // Last word is important
     }
 
     if (Object.keys(cityDTO).length === 0 && cityDTO.constructor === Object) throw new NotAcceptableException('cityDTO is empty');
