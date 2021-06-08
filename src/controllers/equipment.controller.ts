@@ -64,11 +64,15 @@ export default class EquipmentController {
     const equipmentParam = equipmentDTO;
     const installationDTO = equipmentDTO.installation;
     if (equipmentParam.name) {
+      const last = `>${equipmentParam.name.pop()}*`;
       equipmentParam.name = [...new Set(equipmentParam.name)].flatMap((x) => x.split(' ')).filter((str) => str.length > 2);
+      equipmentParam.name.push(last);
     }
 
     if (installationDTO?.name) {
+      const last = `>${installationDTO.name.pop()}*`;
       installationDTO.name = [...new Set(installationDTO.name)].flatMap((x) => x.split(' ')).filter((str) => str.length > 2);
+      installationDTO.name.push(last);
     }
 
     if (installationDTO?.address?.city) {
