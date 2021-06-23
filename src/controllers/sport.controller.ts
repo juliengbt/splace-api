@@ -1,4 +1,5 @@
 import {
+  Body,
   ClassSerializerInterceptor,
   Controller,
   Get,
@@ -6,7 +7,9 @@ import {
   Param,
   Post,
   Query,
-  UseInterceptors
+  UseInterceptors,
+  UsePipes,
+  ValidationPipe
 } from '@nestjs/common';
 import {
   ApiNotFoundResponse,
@@ -48,5 +51,17 @@ export default class SportController {
     const sport = await this.service.findByCode(code);
     if (sport === undefined) throw new NotFoundException(`No sports found with code like ${code}`);
     return sport;
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'Sport object',
+    type: Sport
+  })
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Post('/add')
+  @UsePipes(new ValidationPipe())
+  addSport(@Body('sport') sport: Sport): Promise<Partial<Sport>> {
+    return this.service.save(sport);
   }
 }

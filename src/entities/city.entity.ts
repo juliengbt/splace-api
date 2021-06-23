@@ -11,20 +11,19 @@ import Zipcode from './zipcode.entity';
 export default class City {
   @ApiProperty()
   @PrimaryColumn('varbinary')
-  @Transform(({ value: buf }) => buf.toString('hex'))
-  id!: string;
+  readonly id!: Buffer;
 
   @ApiProperty()
   @Column({ type: 'varchar', length: 45 })
   name!: string;
 
   @ApiProperty({ type: () => Number, isArray: true })
-  @OneToMany(() => Zipcode, (zipcode) => zipcode.city)
+  @OneToMany(() => Zipcode, (zipcode) => zipcode.city, { cascade: false })
   @Transform(({ value: zips }) => zips.map((z: Zipcode) => z.code))
   zipcodes?: number[];
 
   @ApiProperty({ type: () => Department })
-  @ManyToOne(() => Department, (department) => department.id)
+  @ManyToOne(() => Department, (department) => department.id, { cascade: ['update'] })
   @JoinColumn({ name: 'id_department' })
   department!: Department;
 }

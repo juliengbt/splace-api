@@ -7,11 +7,11 @@ import Category from './category.entity';
 
 @Entity('Sport')
 export default class Sport {
-  @ApiProperty()
+  @ApiProperty({ type: String })
   @PrimaryColumn({ type: 'varchar', length: 10 })
-  code!: string;
+  readonly code!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: String })
   @Column({ type: 'varchar', length: 100 })
   name!: string;
 
@@ -25,6 +25,6 @@ export default class Sport {
 
   @ApiProperty({ type: () => Category })
   @JoinColumn({ name: 'code_category' })
-  @ManyToOne(() => Category, (category) => category.code)
+  @ManyToOne(() => Category, (category) => category.code, { cascade: ['insert'] })
   category?: Category;
 }

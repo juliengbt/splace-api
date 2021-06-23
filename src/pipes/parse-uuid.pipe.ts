@@ -3,13 +3,16 @@ import {
   PipeTransform, Injectable, NotAcceptableException
 } from '@nestjs/common';
 
+export function isUUID(value: string): boolean {
+  const idValue = value.replace(/-/g, '');
+  return new RegExp('^[0-9A-Fa-f]{32}$').test(idValue);
+}
+
 @Injectable()
 class ParseUUIDPipe implements PipeTransform<string, string> {
   transform(value: string): string {
-    const regex = new RegExp('^[0-9A-Fa-f]{32}$');
-    const idValue = value.replace(/-/g, '');
-    if (!regex.test(idValue)) throw new NotAcceptableException(`${value} is not a valid uuid`);
-    return idValue;
+    if (!isUUID(value)) throw new NotAcceptableException(`${value} is not a valid uuid`);
+    return value.replace(/-/g, '');
   }
 }
 

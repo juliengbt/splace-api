@@ -1,7 +1,6 @@
 import {
   Column, Entity, JoinColumn, ManyToOne, PrimaryColumn
 } from 'typeorm';
-import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import Zipcode from './zipcode.entity';
 
@@ -9,19 +8,18 @@ import Zipcode from './zipcode.entity';
 export default class Address {
   @ApiProperty()
   @PrimaryColumn('varbinary')
-  @Transform(({ value: buf }) => buf.toString('hex'))
-  id!: string;
+  readonly id!: Buffer;
 
   @ApiProperty()
-  @Column({ nullable: true, type: 'varchar' })
+  @Column({ nullable: true, type: 'varchar', length: 10 })
   street_num!: string | null;
 
   @ApiProperty()
-  @Column({ nullable: true, type: 'varchar' })
+  @Column({ nullable: true, type: 'varchar', length: 100 })
   street_name!: string | null;
 
   @ApiProperty()
-  @Column({ nullable: true, type: 'varchar' })
+  @Column({ nullable: true, type: 'varchar', length: 100 })
   locality!: string | null;
 
   @ApiProperty()
@@ -29,7 +27,7 @@ export default class Address {
   district!: number | null;
 
   @ApiProperty({ type: () => Zipcode })
-  @ManyToOne(() => Zipcode, (zip) => zip.id)
+  @ManyToOne(() => Zipcode, (zip) => zip.id, { cascade: false })
   @JoinColumn({ name: 'id_zipcode' })
   zipcode!: Zipcode;
 }

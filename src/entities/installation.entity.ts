@@ -12,9 +12,7 @@ import Equipment from './equipment.entity';
 export default class Installation {
   @ApiProperty()
   @PrimaryColumn('varbinary')
-
-  @Transform(({ value: buf }) => buf.toString('hex'))
-  public id!: string;
+  readonly id!: Buffer;
 
   @ApiProperty()
   @Column({ type: 'varchar', length: 150 })
@@ -34,11 +32,11 @@ export default class Installation {
 
   @ApiProperty({ type: () => Address })
   @JoinColumn({ name: 'id_address' })
-  @ManyToOne(() => Address, (address) => address.id)
+  @ManyToOne(() => Address, (address) => address.id, { cascade: ['insert'] })
   public address?: Address | null;
 
   @ApiProperty({ type: () => Equipment, isArray: true })
-  @OneToMany(() => Equipment, (equipment) => equipment.installation)
+  @OneToMany(() => Equipment, (equipment) => equipment.installation, { cascade: ['insert'] })
   @JoinColumn({ name: 'id' })
   public equipments?: Equipment[];
 }

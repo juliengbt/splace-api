@@ -7,15 +7,15 @@ import Sport from './sport.entity';
 
 @Entity('Category')
 export default class Category {
-  @ApiProperty()
+  @ApiProperty({ type: String })
   @PrimaryColumn({ type: 'varchar', length: 10 })
   code!: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: String, required: true })
   @Column({ type: 'varchar', length: 50 })
   name!: string;
 
   @ApiProperty({ type: () => Sport, isArray: true })
-  @OneToMany(() => Sport, (sport) => sport.category)
+  @OneToMany(() => Sport, (sport) => sport.category, { cascade: false })
   sports?: Sport[];
 }

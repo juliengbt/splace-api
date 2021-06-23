@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
 import {
   Column, Entity, JoinColumn, ManyToOne, PrimaryColumn
 } from 'typeorm';
@@ -10,15 +9,14 @@ import City from './city.entity';
 export default class Zipcode {
   @ApiProperty()
   @PrimaryColumn('varbinary')
-  @Transform(({ value: buf }) => buf.toString('hex'))
-  id!: string;
+  id!: Buffer;
 
   @ApiProperty()
   @Column({ type: 'mediumint' })
   code!: number;
 
   @ApiProperty({ type: () => City })
-  @ManyToOne(() => City, (city) => city.id)
+  @ManyToOne(() => City, (city) => city.id, { cascade: ['insert'] })
   @JoinColumn({ name: 'id_city' })
   city!: City;
 }

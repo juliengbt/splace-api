@@ -1,9 +1,12 @@
 /* eslint-disable max-len */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import EquipmentDTO from 'src/dto/equipment.dto';
+import EquipmentDTO from 'src/dto/search/equipment.dto';
 import Equipment from 'src/entities/equipment.entity';
-import { Brackets, Repository, SelectQueryBuilder } from 'typeorm';
+import Picture from 'src/entities/picture.entity';
+import {
+  Brackets, DeepPartial, Repository, SelectQueryBuilder
+} from 'typeorm';
 
 @Injectable()
 export default class EquipmentService {
@@ -110,6 +113,27 @@ export default class EquipmentService {
       .where('Equipment.id = UUID_TO_BIN(:id_equipment)')
       .setParameters({ id_equipment: id })
       .getOne();
+  }
+
+  async insert(equipment: DeepPartial<Equipment>): Promise<Partial<Equipment>> {
+    return this.repo.createQueryBuilder()
+      .insert()
+      .into(Equipment)
+      .values(equipment)
+      .execute()
+      .then((res) => res.identifiers[0]);
+  }
+
+  async update(equipment: DeepPartial<Equipment>): Promise<Equipment> {
+    return this.repo.save(equipment);
+  }
+
+  addImages(id: string, files: Express.Multer.File[]) : void {
+    const pics: Partial<Picture>[] = files.map((f) => ({ name: f.filename }));
+    this.repo.save({
+      id: Buffer.from(id, 'hex'),
+      pictures: pics
+    });
   }
 
   private getFullObjectQuery(): SelectQueryBuilder<Equipment> {

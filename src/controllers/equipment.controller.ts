@@ -11,10 +11,15 @@ import {
   NotFoundException,
   DefaultValuePipe,
   Query,
-  ParseIntPipe
+  ParseIntPipe,
+  UploadedFiles,
+  Patch,
+  ValidationPipe,
+  UsePipes
 } from '@nestjs/common';
 import {
   ApiBody,
+  ApiConsumes,
   ApiNotAcceptableResponse,
   ApiNotFoundResponse,
   ApiQuery,
@@ -22,16 +27,39 @@ import {
   ApiTags
 } from '@nestjs/swagger';
 import Equipment from 'src/entities/equipment.entity';
-import EquipmentDTO from 'src/dto/equipment.dto';
+import EquipmentDTO from 'src/dto/search/equipment.dto';
 import EquipmentService from 'src/services/equipment.service';
 import { validate } from 'class-validator';
 import ParseUUIDPipe from 'src/pipes/parse-uuid.pipe';
+import EquipmentCU from 'src/dto/cu/equipment.cu';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { nanoid } from 'nanoid';
+import path from 'path';
+import { existsSync, mkdirSync, rename } from 'fs';
+
+const storage = diskStorage({
+  destination: (_req, _file, cb) => {
+    const uploadPath = process.env.IMAGES_LOCATION;
+    // Create folder if doesn't exist
+    if (!existsSync(uploadPath)) {
+      mkdirSync(uploadPath);
+    }
+    cb(null, uploadPath);
+  },
+  filename: (_req, file, cb) => {
+    const filename = nanoid(15);
+    const { ext } = path.parse(file.originalname);
+    cb(null, `${filename}${ext}`);
+  }
+});
 
 @ApiTags('Equipment')
 @Controller('equipment')
 export default class EquipmentController {
   constructor(private readonly service: EquipmentService) {}
 
+  @Get(':id')
   @ApiResponse({
     status: 200,
     description: 'Equipment list',
@@ -41,13 +69,13 @@ export default class EquipmentController {
   @ApiNotFoundResponse({ description: 'Not found.' })
   @ApiNotAcceptableResponse({ description: 'The parameter id must a uuid' })
   @UseInterceptors(ClassSerializerInterceptor)
-  @Get(':id')
   async getById(@Param('id', new ParseUUIDPipe()) id: string): Promise<Equipment> {
     const equipment = await this.service.findById(id);
     if (equipment === undefined) throw new NotFoundException(`No equipment found with id : ${id}`);
     return equipment;
   }
 
+  @Post()
   @ApiResponse({
     status: 200,
     description: 'Equipment list',
@@ -58,8 +86,8 @@ export default class EquipmentController {
   @ApiBody({ type: EquipmentDTO })
   @ApiQuery({ name: 'offset', required: false })
   @ApiNotAcceptableResponse()
+  @UsePipes(new ValidationPipe())
   @UseInterceptors(ClassSerializerInterceptor)
-  @Post()
   async getUsingDTO(@Body() equipmentDTO: EquipmentDTO, @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number): Promise<Equipment[]> {
     const equipmentParam = equipmentDTO;
     const installationDTO = equipmentDTO.installation;
@@ -95,5 +123,47 @@ export default class EquipmentController {
 
     if (Object.keys(equipmentParam).length === 0 && equipmentParam.constructor === Object) throw new NotAcceptableException('equipmentDTO is empty');
     return this.service.findUsingDTO(equipmentParam, offset < 0 ? 0 : offset);
+  }
+
+  @Patch('addImages')
+  @ApiBody({ type: EquipmentCU, required: false })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({
+    status: 201,
+    description: 'Images added'
+  })
+  @ApiNotAcceptableResponse()
+  @UseInterceptors(FilesInterceptor('files', undefined, {
+    storage,
+    fileFilter(_req, file, cb) {
+      const acceptedFiles = ['image/jpeg', 'image/png'];
+      if (!acceptedFiles.includes(file.mimetype)) {
+        return cb(new Error('goes wrong on the mimetype'), false);
+      }
+      if (file.size > parseInt(process.env.IMAGES_MAX_SIZE || '1048576', 10)) {
+        return cb(new Error('size too large'), false);
+      }
+      return cb(null, true);
+    }
+  }))
+  @UsePipes(new ValidationPipe({ skipUndefinedProperties: true }))
+  async addImages(
+    @Query('id', new ParseUUIDPipe()) id: string,
+      @UploadedFiles() files?: Array<Express.Multer.File>
+  ) : Promise<void> {
+    if (!id) throw new NotAcceptableException('id must be provided in order to update equipment');
+
+    if (files) {
+      files.forEach((f) => {
+        const b64id = Buffer.from(id, 'hex').toString('base64url');
+        const uploadPath = path.join(f.destination, b64id);
+        // Create folder if doesn't exist
+        if (!existsSync(uploadPath)) {
+          mkdirSync(uploadPath);
+        }
+        rename(f.path, path.join(uploadPath, f.filename), () => {});
+      });
+      this.service.addImages(id, files);
+    }
   }
 }

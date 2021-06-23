@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import CityDTO from 'src/dto/city.dto';
+import CityDTO from 'src/dto/search/city.dto';
 import City from 'src/entities/city.entity';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 

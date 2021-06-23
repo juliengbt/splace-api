@@ -14,7 +14,7 @@ export default class Picture {
 
   @ApiProperty({ type: () => Equipment })
   @PrimaryColumn({ type: 'varbinary', name: 'id_equipment' })
-  @ManyToOne(() => Equipment, (equipment) => equipment.id, { primary: true })
+  @ManyToOne(() => Equipment, (equipment) => equipment.id, { cascade: ['insert'], primary: true })
   @JoinColumn({ name: 'id_equipment' })
   equipment!: Equipment;
 }

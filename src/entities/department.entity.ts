@@ -1,4 +1,3 @@
-import { Transform } from 'class-transformer';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -6,9 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export default class Department {
   @ApiProperty()
   @PrimaryColumn('varbinary')
-
-  @Transform(({ value: buf }) => buf.toString('hex'))
-  id!: string;
+  readonly id!: Buffer;
 
   @ApiProperty()
   @Column({ type: 'varchar', length: 45 })

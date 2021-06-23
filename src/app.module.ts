@@ -9,6 +9,7 @@ import EquipmentNatureModule from './modules/equipmentNature.module';
 import EquipmentTypeModule from './modules/equipmentType.module';
 import InstallationModule from './modules/installation.module';
 import OwnerModule from './modules/owner.module';
+import PictureModule from './modules/picture.module';
 import SoilTypeModule from './modules/soilType.module';
 import SportModule from './modules/sport.module';
 
@@ -32,6 +33,7 @@ import SportModule from './modules/sport.module';
     CategoryModule,
     InstallationModule,
     EquipmentModule,
+    PictureModule,
     EquipmentLevelModule,
     EquipmentNatureModule,
     EquipmentTypeModule,

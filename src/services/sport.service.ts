@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import Sport from 'src/entities/sport.entity';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 
 @Injectable()
 export default class SportService {
@@ -22,6 +22,15 @@ export default class SportService {
       .where('Sport.code_category like :code')
       .setParameters({ code: `%${code_category}%` })
       .getMany();
+  }
+
+  async save(sport: DeepPartial<Sport>): Promise<Partial<Sport>> {
+    return this.repo.createQueryBuilder()
+      .insert()
+      .into(Sport)
+      .values(sport)
+      .execute()
+      .then((res) => res.identifiers[0]);
   }
 
   async findByCode(code_sport: string): Promise<Sport | undefined> {

@@ -9,7 +9,9 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
-  UseInterceptors
+  UseInterceptors,
+  UsePipes,
+  ValidationPipe
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -19,7 +21,7 @@ import {
   ApiTags
 } from '@nestjs/swagger';
 import CityService from 'src/services/city.service';
-import CityDTO from 'src/dto/city.dto';
+import CityDTO from 'src/dto/search/city.dto';
 import City from 'src/entities/city.entity';
 
 @ApiTags('City')
@@ -52,6 +54,7 @@ export default class CityController {
   @ApiNotAcceptableResponse({ description: 'City DTO is not valid.' })
   @ApiBody({ type: CityDTO })
   @ApiNotAcceptableResponse()
+  @UsePipes(new ValidationPipe())
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   async getUsingDTO(@Body() cityDTO: CityDTO): Promise<City[]> {
