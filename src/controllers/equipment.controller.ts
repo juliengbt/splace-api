@@ -150,7 +150,7 @@ export default class EquipmentController {
   async addImages(
     @Query('id', new ParseUUIDPipe()) id: string,
       @UploadedFiles() files?: Array<Express.Multer.File>
-  ) : Promise<void> {
+  ) : Promise<number> {
     if (!id) throw new NotAcceptableException('id must be provided in order to update equipment');
 
     if (files) {
@@ -163,7 +163,8 @@ export default class EquipmentController {
         }
         rename(f.path, path.join(uploadPath, f.filename), () => {});
       });
-      this.service.addImages(id, files);
+      return this.service.addImages(id, files);
     }
+    return 0;
   }
 }

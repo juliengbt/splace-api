@@ -128,12 +128,12 @@ export default class EquipmentService {
     return this.repo.save(equipment);
   }
 
-  addImages(id: string, files: Express.Multer.File[]) : void {
+  addImages(id: string, files: Express.Multer.File[]) : Promise<number> {
     const pics: Partial<Picture>[] = files.map((f) => ({ name: f.filename }));
-    this.repo.save({
+    return this.repo.save({
       id: Buffer.from(id, 'hex'),
       pictures: pics
-    });
+    }).then((val) => val.pictures.length);
   }
 
   private getFullObjectQuery(): SelectQueryBuilder<Equipment> {

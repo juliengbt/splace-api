@@ -41,6 +41,6 @@ export default class PictureController {
         () => {}
       )
     );
-    return this.service.removeAll(pictures);
+    return this.service.removeAll(Buffer.from(id_equipment, 'hex'), pictures);
   }
 }
