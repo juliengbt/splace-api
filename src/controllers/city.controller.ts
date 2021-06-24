@@ -9,9 +9,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
-  UseInterceptors,
-  UsePipes,
-  ValidationPipe
+  UseInterceptors
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -54,7 +52,6 @@ export default class CityController {
   @ApiNotAcceptableResponse({ description: 'City DTO is not valid.' })
   @ApiBody({ type: CityDTO })
   @ApiNotAcceptableResponse()
-  @UsePipes(new ValidationPipe())
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   async getUsingDTO(@Body() cityDTO: CityDTO): Promise<City[]> {

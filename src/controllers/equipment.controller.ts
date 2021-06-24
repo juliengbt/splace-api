@@ -14,8 +14,6 @@ import {
   ParseIntPipe,
   UploadedFiles,
   Patch,
-  ValidationPipe,
-  UsePipes,
   HttpCode
 } from '@nestjs/common';
 import {
@@ -87,7 +85,6 @@ export default class EquipmentController {
   @ApiBody({ type: EquipmentDTO })
   @ApiQuery({ name: 'offset', required: false })
   @ApiNotAcceptableResponse()
-  @UsePipes(new ValidationPipe())
   @UseInterceptors(ClassSerializerInterceptor)
   async getUsingDTO(@Body() equipmentDTO: EquipmentDTO, @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number): Promise<Equipment[]> {
     const equipmentParam = equipmentDTO;
@@ -136,9 +133,12 @@ export default class EquipmentController {
   @ApiNotAcceptableResponse({ description: 'Equipment CU is not valid.' })
   @ApiBody({ type: EquipmentCU })
   @UseInterceptors(ClassSerializerInterceptor)
-  @UsePipes(new ValidationPipe({ skipUndefinedProperties: true }))
-  async update(@Body() equipmentCU: EquipmentCU) : Promise<Equipment> {
+  async update(@Body() equipmentCU: Partial<EquipmentCU>) : Promise<Equipment> {
     if (!equipmentCU.id) throw new NotAcceptableException('id must be provided in order to update equipment');
+
+    const errors = await validate(equipmentCU, { skipUndefinedProperties: true });
+
+    if (errors.length > 0) throw new NotAcceptableException(errors);
 
     return this.service.update(equipmentCU);
   }
@@ -164,7 +164,6 @@ export default class EquipmentController {
       return cb(null, true);
     }
   }))
-  @UsePipes(new ValidationPipe())
   async addImages(
     @Query('id', new ParseUUIDPipe()) id: string,
       @UploadedFiles() files?: Array<Express.Multer.File>

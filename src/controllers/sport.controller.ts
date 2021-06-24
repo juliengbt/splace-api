@@ -7,9 +7,7 @@ import {
   Param,
   Post,
   Query,
-  UseInterceptors,
-  UsePipes,
-  ValidationPipe
+  UseInterceptors
 } from '@nestjs/common';
 import {
   ApiNotFoundResponse,
@@ -60,7 +58,6 @@ export default class SportController {
   })
   @UseInterceptors(ClassSerializerInterceptor)
   @Post('/add')
-  @UsePipes(new ValidationPipe())
   addSport(@Body('sport') sport: Sport): Promise<Partial<Sport>> {
     return this.service.save(sport);
   }

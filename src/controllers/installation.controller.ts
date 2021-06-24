@@ -8,9 +8,7 @@ import {
   NotFoundException,
   Param,
   Patch,
-  UseInterceptors,
-  UsePipes,
-  ValidationPipe
+  UseInterceptors
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -19,6 +17,7 @@ import {
   ApiResponse,
   ApiTags
 } from '@nestjs/swagger';
+import { validate } from 'class-validator';
 import InstallationCU from 'src/dto/cu/installation.cu';
 import Installation from 'src/entities/installation.entity';
 import ParseUUIDPipe from 'src/pipes/parse-uuid.pipe';
@@ -54,9 +53,12 @@ export default class InstallationController {
   @ApiNotAcceptableResponse({ description: 'Equipment CU is not valid.' })
   @ApiBody({ type: InstallationCU })
   @UseInterceptors(ClassSerializerInterceptor)
-  @UsePipes(new ValidationPipe({ skipUndefinedProperties: true }))
-  async update(@Body() installationCU: InstallationCU) : Promise<Installation> {
+  async update(@Body() installationCU: Partial<InstallationCU>) : Promise<Installation> {
     if (!installationCU.id) throw new NotAcceptableException('id must be provided in order to update installation');
+
+    const errors = await validate(installationCU, { skipUndefinedProperties: true });
+
+    if (errors.length > 0) throw new NotAcceptableException(errors);
 
     return this.service.update(installationCU);
   }

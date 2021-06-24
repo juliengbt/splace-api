@@ -4,9 +4,7 @@ import {
   Controller,
   Delete,
   Query,
-  UseInterceptors,
-  UsePipes,
-  ValidationPipe
+  UseInterceptors
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import PictureCU from 'src/dto/cu/picture.cu';
@@ -29,8 +27,7 @@ export default class PictureController {
     isArray: true
   })
   @UseInterceptors(ClassSerializerInterceptor)
-  @UsePipes(new ValidationPipe())
-  getOwners(
+  remove(
     @Query('id_equipment', new ParseUUIDPipe()) id_equipment: string,
       @Body() pictures: PictureCU[]
   ): Promise<number | null | undefined> {

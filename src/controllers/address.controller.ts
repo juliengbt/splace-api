@@ -4,11 +4,10 @@ import {
   Controller,
   HttpCode,
   NotAcceptableException,
-  Patch, UseInterceptors,
-  UsePipes,
-  ValidationPipe
+  Patch, UseInterceptors
 } from '@nestjs/common';
 import { ApiNotAcceptableResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { validate } from 'class-validator';
 import AddressCU from 'src/dto/cu/address.cu';
 import Address from 'src/entities/address.entity';
 import AddressService from 'src/services/address.service';
@@ -29,9 +28,12 @@ export default class AddressController {
   })
   @ApiNotAcceptableResponse()
   @UseInterceptors(ClassSerializerInterceptor)
-  @UsePipes(new ValidationPipe({ skipUndefinedProperties: true }))
-  async update(@Body() addressCU: AddressCU): Promise<Address> {
+  async update(@Body() addressCU: Partial<AddressCU>): Promise<Address> {
     if (!addressCU.id) throw new NotAcceptableException('id must be provided in order to update address');
+
+    const errors = await validate(addressCU, { skipUndefinedProperties: true });
+
+    if (errors.length > 0) throw new NotAcceptableException(errors);
 
     const address = await this.service.findById(addressCU.id);
     if (!address) throw new NotAcceptableException(`No address with id : ${addressCU.id}`);
