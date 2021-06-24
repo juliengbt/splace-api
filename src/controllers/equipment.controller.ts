@@ -15,7 +15,8 @@ import {
   UploadedFiles,
   Patch,
   ValidationPipe,
-  UsePipes
+  UsePipes,
+  HttpCode
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -69,7 +70,7 @@ export default class EquipmentController {
   @ApiNotFoundResponse({ description: 'Not found.' })
   @ApiNotAcceptableResponse({ description: 'The parameter id must a uuid' })
   @UseInterceptors(ClassSerializerInterceptor)
-  async getById(@Param('id', new ParseUUIDPipe()) id: string): Promise<Equipment> {
+  async getById(@Param('id', new ParseUUIDPipe()) id: string): Promise<Equipment | undefined> {
     const equipment = await this.service.findById(id);
     if (equipment === undefined) throw new NotFoundException(`No equipment found with id : ${id}`);
     return equipment;
@@ -125,8 +126,25 @@ export default class EquipmentController {
     return this.service.findUsingDTO(equipmentParam, offset < 0 ? 0 : offset);
   }
 
+  @Patch()
+  @HttpCode(201)
+  @ApiResponse({
+    status: 201,
+    description: 'Udapted equipment',
+    type: Equipment
+  })
+  @ApiNotAcceptableResponse({ description: 'Equipment CU is not valid.' })
+  @ApiBody({ type: EquipmentCU })
+  @UseInterceptors(ClassSerializerInterceptor)
+  @UsePipes(new ValidationPipe({ skipUndefinedProperties: true }))
+  async update(@Body() equipmentCU: EquipmentCU) : Promise<Equipment> {
+    if (!equipmentCU.id) throw new NotAcceptableException('id must be provided in order to update equipment');
+
+    return this.service.update(equipmentCU);
+  }
+
   @Patch('addImages')
-  @ApiBody({ type: EquipmentCU, required: false })
+  @HttpCode(201)
   @ApiConsumes('multipart/form-data')
   @ApiResponse({
     status: 201,
@@ -146,7 +164,7 @@ export default class EquipmentController {
       return cb(null, true);
     }
   }))
-  @UsePipes(new ValidationPipe({ skipUndefinedProperties: true }))
+  @UsePipes(new ValidationPipe())
   async addImages(
     @Query('id', new ParseUUIDPipe()) id: string,
       @UploadedFiles() files?: Array<Express.Multer.File>

@@ -11,7 +11,10 @@ import { isUUID } from 'src/pipes/parse-uuid.pipe';
 
 @ValidatorConstraint({ name: 'isCustomUUID', async: false })
 export class CustomUUIDConstraint implements ValidatorConstraintInterface {
-  public validate(value: string, _args: ValidationArguments) {
+  public validate(value: string | Buffer, _args: ValidationArguments) {
+    if (value instanceof Buffer) {
+      return isUUID(value.toString('hex'));
+    }
     return typeof value === 'string' && isUUID(value);
   }
 

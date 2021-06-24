@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config/dist/config.module';
 import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
+import AddressModule from './modules/address.module';
 import CategoryModule from './modules/category.module';
 import CityModule from './modules/city.module';
 import EquipmentModule from './modules/equipment.module';
@@ -31,6 +32,7 @@ import SportModule from './modules/sport.module';
     }),
     SportModule,
     CategoryModule,
+    AddressModule,
     InstallationModule,
     EquipmentModule,
     PictureModule,

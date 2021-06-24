@@ -23,7 +23,7 @@ export default class City {
   zipcodes?: number[];
 
   @ApiProperty({ type: () => Department })
-  @ManyToOne(() => Department, (department) => department.id, { cascade: ['update'] })
+  @ManyToOne(() => Department, (department) => department.id, { cascade: false })
   @JoinColumn({ name: 'id_department' })
   department!: Department;
 }

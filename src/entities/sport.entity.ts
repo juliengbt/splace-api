@@ -25,6 +25,6 @@ export default class Sport {
 
   @ApiProperty({ type: () => Category })
   @JoinColumn({ name: 'code_category' })
-  @ManyToOne(() => Category, (category) => category.code, { cascade: ['insert'] })
+  @ManyToOne(() => Category, (category) => category.code, { cascade: false })
   category?: Category;
 }

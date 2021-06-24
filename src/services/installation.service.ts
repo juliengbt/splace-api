@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import Installation from 'src/entities/installation.entity';
-import { Repository, SelectQueryBuilder } from 'typeorm';
+import { DeepPartial, Repository, SelectQueryBuilder } from 'typeorm';
 
 @Injectable()
 export default class InstallationService {
@@ -14,6 +14,10 @@ export default class InstallationService {
     return this.getFullObjectQuery()
       .where('Installation.id = UUID_TO_BIN(:id_installation)', { id_installation: id })
       .getOne();
+  }
+
+  async update(installation: DeepPartial<Installation>): Promise<Installation> {
+    return this.repo.save(installation);
   }
 
   private getFullObjectQuery(): SelectQueryBuilder<Installation> {
