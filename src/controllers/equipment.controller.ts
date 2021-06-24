@@ -23,7 +23,8 @@ import {
   ApiNotFoundResponse,
   ApiQuery,
   ApiResponse,
-  ApiTags
+  ApiTags,
+  PartialType
 } from '@nestjs/swagger';
 import Equipment from 'src/entities/equipment.entity';
 import EquipmentDTO from 'src/dto/search/equipment.dto';
@@ -131,7 +132,7 @@ export default class EquipmentController {
     type: Equipment
   })
   @ApiNotAcceptableResponse({ description: 'Equipment CU is not valid.' })
-  @ApiBody({ type: EquipmentCU })
+  @ApiBody({ type: PartialType(EquipmentCU) })
   @UseInterceptors(ClassSerializerInterceptor)
   async update(@Body() equipmentCU: Partial<EquipmentCU>) : Promise<Equipment> {
     if (!equipmentCU.id) throw new NotAcceptableException('id must be provided in order to update equipment');

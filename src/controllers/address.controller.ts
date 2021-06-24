@@ -6,7 +6,9 @@ import {
   NotAcceptableException,
   Patch, UseInterceptors
 } from '@nestjs/common';
-import { ApiNotAcceptableResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody, ApiNotAcceptableResponse, ApiResponse, ApiTags, PartialType
+} from '@nestjs/swagger';
 import { validate } from 'class-validator';
 import AddressCU from 'src/dto/cu/address.cu';
 import Address from 'src/entities/address.entity';
@@ -23,9 +25,9 @@ export default class AddressController {
   @ApiResponse({
     status: 201,
     description: 'Updated or created address',
-    type: Address,
-    isArray: true
+    type: Address
   })
+  @ApiBody({ type: PartialType(AddressCU) })
   @ApiNotAcceptableResponse()
   @UseInterceptors(ClassSerializerInterceptor)
   async update(@Body() addressCU: Partial<AddressCU>): Promise<Address> {

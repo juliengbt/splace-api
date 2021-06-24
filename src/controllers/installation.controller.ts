@@ -15,7 +15,8 @@ import {
   ApiNotAcceptableResponse,
   ApiNotFoundResponse,
   ApiResponse,
-  ApiTags
+  ApiTags,
+  PartialType
 } from '@nestjs/swagger';
 import { validate } from 'class-validator';
 import InstallationCU from 'src/dto/cu/installation.cu';
@@ -51,7 +52,7 @@ export default class InstallationController {
     type: Installation
   })
   @ApiNotAcceptableResponse({ description: 'Equipment CU is not valid.' })
-  @ApiBody({ type: InstallationCU })
+  @ApiBody({ type: PartialType(InstallationCU) })
   @UseInterceptors(ClassSerializerInterceptor)
   async update(@Body() installationCU: Partial<InstallationCU>) : Promise<Installation> {
     if (!installationCU.id) throw new NotAcceptableException('id must be provided in order to update installation');

@@ -6,9 +6,10 @@ import {
   Query,
   UseInterceptors
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody, ApiResponse, ApiTags, PartialType
+} from '@nestjs/swagger';
 import PictureCU from 'src/dto/cu/picture.cu';
-import Picture from 'src/entities/picture.entity';
 import PictureService from 'src/services/picture.service';
 import { unlink } from 'fs';
 import path from 'path';
@@ -23,14 +24,14 @@ export default class PictureController {
   @ApiResponse({
     status: 200,
     description: 'Removed picture list',
-    type: Picture,
-    isArray: true
+    type: Number
   })
+  @ApiBody({ type: PartialType(PictureCU), isArray: true })
   @UseInterceptors(ClassSerializerInterceptor)
   remove(
     @Query('id_equipment', new ParseUUIDPipe()) id_equipment: string,
       @Body() pictures: PictureCU[]
-  ): Promise<number | null | undefined> {
+  ): Promise<number> {
     const b64id = Buffer.from(id_equipment, 'hex').toString('base64url');
     pictures.forEach(
       (p) => unlink(
@@ -38,6 +39,7 @@ export default class PictureController {
         () => {}
       )
     );
-    return this.service.removeAll(Buffer.from(id_equipment, 'hex'), pictures);
+    return this.service.removeAll(Buffer.from(id_equipment, 'hex'), pictures)
+      .then((v) => (!v && v !== 0 ? 0 : v));
   }
 }
