@@ -1,4 +1,4 @@
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn
 } from 'typeorm';
@@ -9,8 +9,10 @@ import Zipcode from './zipcode.entity';
 
 @Entity('City')
 export default class City {
-  @ApiProperty()
+  @ApiProperty({ type: () => String, readOnly: true })
   @PrimaryColumn('varbinary')
+  @Type(() => String)
+  @Transform(({ value }) => (value as Buffer).toString('base64url'))
   readonly id!: Buffer;
 
   @ApiProperty()

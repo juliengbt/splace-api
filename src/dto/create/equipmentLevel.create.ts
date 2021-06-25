@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsNotEmpty, IsString, Length, MaxLength
+  IsString, IsNotEmpty, Length, MaxLength
 } from 'class-validator';
 
-export default class CategoryCU {
+export default class EquipmentLevelCreate {
   @ApiProperty({ type: String, required: true })
   @IsString()
   @IsNotEmpty()
@@ -13,6 +13,6 @@ export default class CategoryCU {
   @ApiProperty({ type: String, required: true })
   @IsString()
   @IsNotEmpty()
-  @MaxLength(50)
-  name!: string;
+  @MaxLength(45)
+  label!: string;
 }

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, MaxLength } from 'class-validator';
 
-export default class PictureCU {
+export default class PictureCreate {
   @ApiProperty({ type: String, required: true })
   @IsString()
   @IsNotEmpty()

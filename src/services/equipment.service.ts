@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import EquipmentDTO from 'src/dto/search/equipment.dto';
 import Equipment from 'src/entities/equipment.entity';
-import Picture from 'src/entities/picture.entity';
 import {
   Brackets, DeepPartial, Repository, SelectQueryBuilder
 } from 'typeorm';
@@ -38,7 +37,10 @@ export default class EquipmentService {
             .andWhere('Equipment.longitude < :prev_min_lon', { min_lon: equipmentDTO.gps_area?.previous_area?.min_lon });
         }));
       }
-    } else if (equipmentDTO.installation?.address?.city?.ids) query.andWhere('REPLACE(BIN_TO_UUID(city.id),"-","") in (:...id_city)', { id_city: equipmentDTO.installation.address.city.ids });
+    } else if (equipmentDTO.installation?.address?.city?.ids) {
+      query.andWhere('city.id in (:...id_city)',
+        { id_city: equipmentDTO.installation.address.city.ids.map((id) => Buffer.from(id, 'base64url')) });
+    }
 
     // Distance
     if (equipmentDTO.latitude && equipmentDTO.longitude) {
@@ -108,9 +110,9 @@ export default class EquipmentService {
     return query.skip(offset).take(20).getMany();
   }
 
-  async findById(id: string): Promise<Equipment | undefined> {
+  async findById(id: Buffer): Promise<Equipment | undefined> {
     return this.getFullObjectQuery()
-      .where('Equipment.id = UUID_TO_BIN(:id_equipment)')
+      .where('Equipment.id = :id_equipment')
       .setParameters({ id_equipment: id })
       .getOne();
   }
@@ -126,14 +128,6 @@ export default class EquipmentService {
 
   async update(equipment: DeepPartial<Equipment>): Promise<Equipment> {
     return this.repo.save(equipment);
-  }
-
-  addImages(id: string, files: Express.Multer.File[]) : Promise<number> {
-    const pics: Partial<Picture>[] = files.map((f) => ({ name: f.filename }));
-    return this.repo.save({
-      id: Buffer.from(id, 'hex'),
-      pictures: pics
-    }).then((val) => val.pictures.length);
   }
 
   private getFullObjectQuery(): SelectQueryBuilder<Equipment> {

@@ -6,7 +6,7 @@ import EquipmentService from 'src/services/equipment.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Equipment])],
-  exports: [TypeOrmModule],
+  exports: [EquipmentService],
   controllers: [EquipmentController],
   providers: [EquipmentService]
 })

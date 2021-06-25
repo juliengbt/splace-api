@@ -6,7 +6,7 @@ import InstallationService from 'src/services/installation.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Installation])],
-  exports: [TypeOrmModule],
+  exports: [InstallationService],
   controllers: [InstallationController],
   providers: [InstallationService]
 })

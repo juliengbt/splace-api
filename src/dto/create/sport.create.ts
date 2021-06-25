@@ -3,9 +3,9 @@ import { Type } from 'class-transformer';
 import {
   IsNotEmpty, IsNotEmptyObject, IsString, Length, MaxLength, ValidateIf, ValidateNested
 } from 'class-validator';
-import CategoryCU from './category.cu';
+import CategoryCreate from './category.create';
 
-export default class SportCU {
+export default class SportCreate {
   @ApiProperty({ type: String, required: true })
   @IsString()
   @IsNotEmpty()
@@ -32,9 +32,9 @@ export default class SportCU {
   @ValidateIf((_object, value) => value !== null)
   federation!: string | null;
 
-  @ApiProperty({ type: () => CategoryCU, required: true })
+  @ApiProperty({ type: () => CategoryCreate, required: true })
   @IsNotEmptyObject()
   @ValidateNested()
-  @Type(() => CategoryCU)
-  category?: CategoryCU;
+  @Type(() => CategoryCreate)
+  category?: CategoryCreate;
 }

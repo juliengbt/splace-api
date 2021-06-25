@@ -37,9 +37,9 @@ export default class CityService {
       .getMany();
   }
 
-  async findById(id: string): Promise<City | undefined> {
+  async findById(id: Buffer): Promise<City | undefined> {
     return this.getFullObjectQuery()
-      .where('City.id = UUID_TO_BIN(:id_city)')
+      .where('City.id = :id_city')
       .setParameters({ id_city: id })
       .getOne();
   }

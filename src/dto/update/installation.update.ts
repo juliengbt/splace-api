@@ -1,0 +1,44 @@
+/* eslint-disable max-len */
+import { ApiProperty } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
+import {
+  IsBoolean, IsNotEmpty, IsNotEmptyObject, IsOptional, IsString, MaxLength, ValidateIf, ValidateNested
+} from 'class-validator';
+import IsCustomUUID from 'src/validators/uuid.validator';
+import AddressUpdate from './address.update';
+
+export default class InstallationUpdate {
+  @ApiProperty({ type: String, required: false })
+  @Type(() => String)
+  @IsOptional()
+  @IsCustomUUID()
+  @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
+  public id?: Buffer;
+
+  @ApiProperty({ type: String, required: false })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(150)
+  @IsOptional()
+  public name?: string;
+
+  @ApiProperty({ type: Boolean, required: false })
+  @IsBoolean()
+  @IsOptional()
+  @ValidateIf((_object, value) => value !== null)
+  public car_park?: boolean | null;
+
+  @ApiProperty({ type: Boolean, required: false })
+  @IsBoolean()
+  @IsOptional()
+  @ValidateIf((_object, value) => value !== null)
+  public disabled_access?: boolean | null;
+
+  @ApiProperty({ type: () => AddressUpdate, required: false })
+  @Type(() => AddressUpdate)
+  @ValidateNested()
+  @IsNotEmptyObject()
+  @IsOptional()
+  @ValidateIf((_object, value) => value !== null)
+  public address?: AddressUpdate | null;
+}

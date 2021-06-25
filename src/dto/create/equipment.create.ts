@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   ArrayMinSize,
   IsArray,
@@ -15,20 +15,22 @@ import {
   ValidateIf,
   ValidateNested
 } from 'class-validator';
-import IsCustomUUID from 'src/validators/uuid.validators';
-import EquipmentLevelCU from './equipmentLevel.cu';
-import EquipmentNatureCU from './equipmentNature.cu';
-import EquipmentTypeCU from './equipmentType.cu';
-import InstallationCU from './installation.cu';
-import OwnerCU from './owner.cu';
-import PictureCU from './picture.cu';
-import SoilTypeCU from './soilType.cu';
-import SportCU from './sport.cu';
+import IsCustomUUID from 'src/validators/uuid.validator';
+import EquipmentLevelCreate from './equipmentLevel.create';
+import EquipmentNatureCreate from './equipmentNature.create';
+import EquipmentTypeCreate from './equipmentType.create';
+import InstallationCreate from './installation.create';
+import OwnerCreate from './owner.create';
+import PictureCreate from './picture.create';
+import SoilTypeCreate from './soilType.create';
+import SportCreate from './sport.create';
 
-export default class EquipmentCU {
+export default class EquipmentCreate {
   @ApiProperty({ type: String, required: false })
+  @Type(() => String)
   @IsCustomUUID()
   @IsOptional()
+  @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
   id?: Buffer;
 
   @ApiProperty({ type: String, required: true })
@@ -77,57 +79,60 @@ export default class EquipmentCU {
   @IsLatitude()
   latitude!: number;
 
-  @ApiProperty({ type: () => InstallationCU, required: true })
-  installation!: InstallationCU;
+  @ApiProperty({ type: () => InstallationCreate, required: true })
+  @Type(() => InstallationCreate)
+  @ValidateNested()
+  @IsNotEmptyObject()
+  installation!: InstallationCreate;
 
-  @ApiProperty({ type: () => OwnerCU, required: true })
-  @Type(() => OwnerCU)
+  @ApiProperty({ type: () => OwnerCreate, required: true })
+  @Type(() => OwnerCreate)
   @ValidateNested()
   @IsNotEmptyObject()
   @ValidateIf((_object, value) => value !== null)
-  owner!: OwnerCU | null;
+  owner!: OwnerCreate | null;
 
-  @ApiProperty({ type: () => SoilTypeCU, required: true })
-  @Type(() => SoilTypeCU)
+  @ApiProperty({ type: () => SoilTypeCreate, required: true })
+  @Type(() => SoilTypeCreate)
   @ValidateNested()
   @IsNotEmptyObject()
   @ValidateIf((_object, value) => value !== null)
-  soil_type!: SoilTypeCU | null;
+  soil_type!: SoilTypeCreate | null;
 
-  @ApiProperty({ type: () => EquipmentNatureCU, required: true })
-  @Type(() => EquipmentNatureCU)
+  @ApiProperty({ type: () => EquipmentNatureCreate, required: true })
+  @Type(() => EquipmentNatureCreate)
   @ValidateNested()
   @IsNotEmptyObject()
   @ValidateIf((_object, value) => value !== null)
-  equipment_nature!: EquipmentNatureCU | null;
+  equipment_nature!: EquipmentNatureCreate | null;
 
-  @ApiProperty({ type: () => EquipmentTypeCU, required: true })
-  @Type(() => EquipmentTypeCU)
+  @ApiProperty({ type: () => EquipmentTypeCreate, required: true })
+  @Type(() => EquipmentTypeCreate)
   @ValidateNested()
   @IsNotEmptyObject()
   @ValidateIf((_object, value) => value !== null)
-  equipment_type!: EquipmentTypeCU | null;
+  equipment_type!: EquipmentTypeCreate | null;
 
-  @ApiProperty({ type: () => EquipmentLevelCU, required: true })
-  @Type(() => EquipmentLevelCU)
+  @ApiProperty({ type: () => EquipmentLevelCreate, required: true })
+  @Type(() => EquipmentLevelCreate)
   @ValidateNested()
   @IsNotEmptyObject()
   @ValidateIf((_object, value) => value !== null)
-  equipment_level!: EquipmentLevelCU | null;
+  equipment_level!: EquipmentLevelCreate | null;
 
-  @ApiProperty({ type: () => SportCU, required: true, isArray: true })
-  @Type(() => SportCU)
+  @ApiProperty({ type: () => SportCreate, required: true, isArray: true })
+  @Type(() => SportCreate)
   @ValidateNested({ each: true })
   @IsArray()
   @IsNotEmptyObject()
   @ArrayMinSize(1)
-  sports!: SportCU[];
+  sports!: SportCreate[];
 
-  @ApiProperty({ type: () => PictureCU, required: true, isArray: true })
-  @Type(() => PictureCU)
+  @ApiProperty({ type: () => PictureCreate, required: true, isArray: true })
+  @Type(() => PictureCreate)
   @ValidateNested({ each: true })
   @IsArray()
   @IsNotEmptyObject()
   @ValidateIf((_object, value) => value && value.length > 0)
-  pictures!: PictureCU[];
+  pictures!: PictureCreate[];
 }

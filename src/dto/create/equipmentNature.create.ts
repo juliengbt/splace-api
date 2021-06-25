@@ -3,7 +3,7 @@ import {
   IsString, IsNotEmpty, Length, MaxLength
 } from 'class-validator';
 
-export default class EquipmentLevelCU {
+export default class EquipmentNatureCreate {
   @ApiProperty({ type: String, required: true })
   @IsString()
   @IsNotEmpty()

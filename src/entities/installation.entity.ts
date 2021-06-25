@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn
 } from 'typeorm';
@@ -10,8 +10,10 @@ import Equipment from './equipment.entity';
 
 @Entity('Installation')
 export default class Installation {
-  @ApiProperty()
+  @ApiProperty({ type: () => String })
   @PrimaryColumn('varbinary')
+  @Type(() => String)
+  @Transform(({ value }) => (value as Buffer).toString('base64url'))
   readonly id!: Buffer;
 
   @ApiProperty()

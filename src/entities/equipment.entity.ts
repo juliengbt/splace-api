@@ -16,7 +16,9 @@ import Sport from './sport.entity';
 
 @Entity('Equipment')
 export default class Equipment {
-  @ApiProperty()
+  @ApiProperty({ type: String, readOnly: true })
+  @Type(() => String)
+  @Transform(({ value }) => (value as Buffer).toString('base64url'))
   @PrimaryColumn('varbinary')
   readonly id!: Buffer;
 

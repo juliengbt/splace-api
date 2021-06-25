@@ -10,14 +10,22 @@ export default class InstallationService {
     private repo: Repository<Installation>
   ) {}
 
-  async findById(id: string): Promise<Installation | undefined> {
+  async findById(id: Buffer): Promise<Installation | undefined> {
     return this.getFullObjectQuery()
-      .where('Installation.id = UUID_TO_BIN(:id_installation)', { id_installation: id })
+      .where('Installation.id = :id_installation', { id_installation: id })
       .getOne();
   }
 
   async update(installation: DeepPartial<Installation>): Promise<Installation> {
     return this.repo.save(installation);
+  }
+
+  async countInstallationWithAddress(idAddress: Buffer) : Promise<number> {
+    return this.repo.count({
+      where: {
+        address: idAddress
+      }
+    });
   }
 
   private getFullObjectQuery(): SelectQueryBuilder<Installation> {

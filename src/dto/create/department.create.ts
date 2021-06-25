@@ -1,13 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
 import {
   IsNotEmpty, IsOptional, IsString, Length, MaxLength
 } from 'class-validator';
-import IsCustomUUID from 'src/validators/uuid.validators';
+import IsCustomUUID from 'src/validators/uuid.validator';
 
-export default class DepartmentCU {
+export default class DepartmentCreate {
   @ApiProperty({ type: String, required: false })
+  @Type(() => String)
   @IsCustomUUID()
   @IsOptional()
+  @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
   id?: Buffer;
 
   @ApiProperty({ type: String, required: true })

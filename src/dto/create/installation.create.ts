@@ -1,17 +1,19 @@
 /* eslint-disable max-len */
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean, IsNotEmpty, IsNotEmptyObject, IsOptional, IsString, MaxLength, ValidateIf, ValidateNested
 } from 'class-validator';
-import IsCustomUUID from 'src/validators/uuid.validators';
-import AddressCU from './address.cu';
+import IsCustomUUID from 'src/validators/uuid.validator';
+import AddressCreate from './address.create';
 
-export default class InstallationCU {
+export default class InstallationCreate {
   @ApiProperty({ type: String, required: false })
+  @Type(() => String)
   @IsOptional()
   @IsCustomUUID()
-  public id!: Buffer;
+  @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
+  id?: Buffer;
 
   @ApiProperty({ type: String, required: true })
   @IsString()
@@ -29,10 +31,10 @@ export default class InstallationCU {
   @ValidateIf((_object, value) => value !== null)
   public disabled_access!: boolean | null;
 
-  @ApiProperty({ type: () => AddressCU, required: true })
-  @Type(() => AddressCU)
+  @ApiProperty({ type: () => AddressCreate, required: true })
+  @Type(() => AddressCreate)
   @ValidateNested()
   @IsNotEmptyObject()
   @ValidateIf((_object, value) => value !== null)
-  public address!: AddressCU | null;
+  public address!: AddressCreate | null;
 }

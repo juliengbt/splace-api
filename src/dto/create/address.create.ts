@@ -1,18 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsInt,
   IsNotEmpty,
   IsNotEmptyObject,
   IsOptional, IsString, MaxLength, ValidateIf, ValidateNested
 } from 'class-validator';
-import IsCustomUUID from 'src/validators/uuid.validators';
-import ZipcodeCU from './zipcode.cu';
+import IsCustomUUID from 'src/validators/uuid.validator';
+import ZipcodeCreate from './zipcode.create';
 
-export default class AddressCU {
+export default class AddressCreate {
   @ApiProperty({ type: String, required: false })
+  @Type(() => String)
   @IsOptional()
   @IsCustomUUID()
+  @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
   id?: Buffer;
 
   @ApiProperty({ type: String, required: true })
@@ -41,9 +43,9 @@ export default class AddressCU {
   @ValidateIf((value) => value !== null)
   district!: number | null;
 
-  @ApiProperty({ type: () => ZipcodeCU, required: true })
+  @ApiProperty({ type: () => ZipcodeCreate, required: true })
   @IsNotEmptyObject()
   @ValidateNested()
-  @Type(() => ZipcodeCU)
-  zipcode!: ZipcodeCU;
+  @Type(() => ZipcodeCreate)
+  zipcode!: ZipcodeCreate;
 }

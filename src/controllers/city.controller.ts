@@ -15,6 +15,7 @@ import {
   ApiBody,
   ApiNotAcceptableResponse,
   ApiNotFoundResponse,
+  ApiParam,
   ApiResponse,
   ApiTags
 } from '@nestjs/swagger';
@@ -37,9 +38,10 @@ export default class CityController {
   @ApiNotAcceptableResponse({ description: 'The parameter id must a uuid' })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
-  async getById(@Param('id', new ParseUUIDPipe()) id: string): Promise<City> {
+  @ApiParam({ required: true, type: String, name: 'id' })
+  async getById(@Param('id', new ParseUUIDPipe()) id: Buffer): Promise<City> {
     const city = await this.service.findById(id);
-    if (city === undefined) throw new NotFoundException(`No cities found with id : ${id}`);
+    if (city === undefined) throw new NotFoundException(`No cities found with id : ${id.toString('base64url')}`);
     return city;
   }
 
