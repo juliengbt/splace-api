@@ -3,7 +3,7 @@ import {
   IsNotEmpty, IsOptional, IsString, Length, MaxLength
 } from 'class-validator';
 
-export default class SoilType {
+export default class SoilTypeUpdate {
   @ApiProperty({ type: String, required: false })
   @IsString()
   @IsNotEmpty()
