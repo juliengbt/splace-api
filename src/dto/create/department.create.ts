@@ -3,12 +3,10 @@ import { Transform, Type } from 'class-transformer';
 import {
   IsNotEmpty, IsOptional, IsString, Length, MaxLength
 } from 'class-validator';
-import IsCustomUUID from 'src/validators/uuid.validator';
 
 export default class DepartmentCreate {
   @ApiProperty({ type: String, required: false })
   @Type(() => String)
-  @IsCustomUUID()
   @IsOptional()
   @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
   id?: Buffer;

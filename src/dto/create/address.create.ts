@@ -6,14 +6,12 @@ import {
   IsNotEmptyObject,
   IsOptional, IsString, MaxLength, ValidateIf, ValidateNested
 } from 'class-validator';
-import IsCustomUUID from 'src/validators/uuid.validator';
 import ZipcodeCreate from './zipcode.create';
 
 export default class AddressCreate {
   @ApiProperty({ type: String, required: false })
   @Type(() => String)
   @IsOptional()
-  @IsCustomUUID()
   @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
   id?: Buffer;
 

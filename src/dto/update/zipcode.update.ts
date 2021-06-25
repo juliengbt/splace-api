@@ -3,14 +3,12 @@ import { Transform, Type } from 'class-transformer';
 import {
   IsInt, IsNotEmptyObject, IsOptional, Max, ValidateIf, ValidateNested
 } from 'class-validator';
-import IsCustomUUID from 'src/validators/uuid.validator';
 import CityUpdate from './city.update';
 
 export default class ZipcodeUpdate {
   @ApiProperty({ type: String, required: false })
   @Type(() => String)
   @IsOptional()
-  @IsCustomUUID()
   @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
   id?: Buffer;
 

@@ -15,7 +15,6 @@ import {
   ValidateIf,
   ValidateNested
 } from 'class-validator';
-import IsCustomUUID from 'src/validators/uuid.validator';
 import EquipmentLevelCreate from './equipmentLevel.create';
 import EquipmentNatureCreate from './equipmentNature.create';
 import EquipmentTypeCreate from './equipmentType.create';
@@ -28,7 +27,6 @@ import SportCreate from './sport.create';
 export default class EquipmentCreate {
   @ApiProperty({ type: String, required: false })
   @Type(() => String)
-  @IsCustomUUID()
   @IsOptional()
   @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
   id?: Buffer;

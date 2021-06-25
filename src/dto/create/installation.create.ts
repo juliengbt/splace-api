@@ -4,14 +4,12 @@ import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean, IsNotEmpty, IsNotEmptyObject, IsOptional, IsString, MaxLength, ValidateIf, ValidateNested
 } from 'class-validator';
-import IsCustomUUID from 'src/validators/uuid.validator';
 import AddressCreate from './address.create';
 
 export default class InstallationCreate {
   @ApiProperty({ type: String, required: false })
   @Type(() => String)
   @IsOptional()
-  @IsCustomUUID()
   @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
   id?: Buffer;
 
