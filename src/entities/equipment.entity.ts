@@ -32,22 +32,22 @@ export default class Equipment {
 
   @ApiProperty({ type: Boolean })
   @Column({ type: 'bit' })
-  @Transform(({ value: buf }) => (buf ? buf.readUIntBE(0, 1) : buf))
+  @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
   open_access!: boolean | null;
 
   @ApiProperty({ type: Boolean })
   @Column({ type: 'bit' })
-  @Transform(({ value: buf }) => (buf ? buf.readUIntBE(0, 1) : buf))
+  @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
   locker!: boolean | null;
 
   @ApiProperty({ type: Boolean })
   @Column({ type: 'bit' })
-  @Transform(({ value: buf }) => (buf ? buf.readUIntBE(0, 1) : buf))
+  @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
   lighting!: boolean | null;
 
   @ApiProperty({ type: Boolean })
   @Column({ type: 'bit' })
-  @Transform(({ value: buf }) => (buf ? buf.readUIntBE(0, 1) : buf))
+  @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
   shower!: boolean | null;
 
   @ApiProperty({ type: Number })

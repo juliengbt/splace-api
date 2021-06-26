@@ -23,13 +23,13 @@ export default class Installation {
   @ApiProperty({ type: Boolean })
   @Column({ type: 'bit' })
 
-  @Transform(({ value: buf }) => (buf ? buf.readUIntBE(0, 1) : buf))
+  @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
   public car_park!: boolean | null;
 
   @ApiProperty({ type: Boolean })
   @Column({ type: 'bit' })
 
-  @Transform(({ value: buf }) => (buf ? buf.readUIntBE(0, 1) : buf))
+  @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
   public disabled_access!: boolean | null;
 
   @ApiProperty({ type: () => Address })
