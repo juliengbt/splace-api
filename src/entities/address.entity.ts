@@ -13,19 +13,19 @@ export default class Address {
   @Transform(({ value }) => (value as Buffer).toString('base64url'))
   readonly id!: Buffer;
 
-  @ApiProperty()
+  @ApiProperty({ type: String, nullable: true })
   @Column({ nullable: true, type: 'varchar', length: 10 })
   street_num!: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: String, nullable: true })
   @Column({ nullable: true, type: 'varchar', length: 100 })
   street_name!: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: String, nullable: true })
   @Column({ nullable: true, type: 'varchar', length: 100 })
   locality!: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ type: String, nullable: true })
   @Column({ nullable: true, type: 'mediumint' })
   district!: number | null;
 

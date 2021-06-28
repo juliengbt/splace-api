@@ -9,12 +9,12 @@ import {
 import ZipcodeUpdate from './zipcode.update';
 
 export default class AddressUpdate {
-  @ApiProperty({ type: String, required: false })
+  @ApiProperty({ type: String, required: true })
   @Type(() => String)
   @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
   id!: Buffer;
 
-  @ApiProperty({ type: String, required: false })
+  @ApiProperty({ type: String, required: false, nullable: true })
   @IsString()
   @IsNotEmpty()
   @MaxLength(10)
@@ -22,7 +22,7 @@ export default class AddressUpdate {
   @ValidateIf((value) => value !== null)
   street_num?: string | null;
 
-  @ApiProperty({ type: String, required: false })
+  @ApiProperty({ type: String, required: false, nullable: true })
   @IsString()
   @IsNotEmpty()
   @MaxLength(100)
@@ -30,7 +30,7 @@ export default class AddressUpdate {
   @ValidateIf((value) => value !== null)
   street_name?: string | null;
 
-  @ApiProperty({ type: String, required: false })
+  @ApiProperty({ type: String, required: false, nullable: true })
   @IsString()
   @IsNotEmpty()
   @MaxLength(100)
@@ -38,7 +38,7 @@ export default class AddressUpdate {
   @ValidateIf((value) => value !== null)
   locality?: string | null;
 
-  @ApiProperty({ type: Number, required: false })
+  @ApiProperty({ type: Number, required: false, nullable: true })
   @IsInt()
   @IsOptional()
   @ValidateIf((value) => value !== null)

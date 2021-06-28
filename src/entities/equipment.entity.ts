@@ -26,26 +26,26 @@ export default class Equipment {
   @Column({ type: 'varchar', length: 150 })
   name!: string;
 
-  @ApiProperty({ type: String })
+  @ApiProperty({ type: String, nullable: true })
   @Column({ type: 'varchar', length: 256 })
   other_info!: string | null;
 
-  @ApiProperty({ type: Boolean })
+  @ApiProperty({ type: Boolean, nullable: true })
   @Column({ type: 'bit' })
   @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
   open_access!: boolean | null;
 
-  @ApiProperty({ type: Boolean })
+  @ApiProperty({ type: Boolean, nullable: true })
   @Column({ type: 'bit' })
   @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
   locker!: boolean | null;
 
-  @ApiProperty({ type: Boolean })
+  @ApiProperty({ type: Boolean, nullable: true })
   @Column({ type: 'bit' })
   @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
   lighting!: boolean | null;
 
-  @ApiProperty({ type: Boolean })
+  @ApiProperty({ type: Boolean, nullable: true })
   @Column({ type: 'bit' })
   @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
   shower!: boolean | null;
@@ -66,37 +66,37 @@ export default class Equipment {
   @Transform(({ value: val }) => Number(val))
   latitude!: number | null;
 
-  @ApiProperty({ type: () => Installation })
+  @ApiProperty({ type: () => Installation, nullable: true })
   @ManyToOne(() => Installation, (installation) => installation.id, { cascade: ['insert'] })
   @JoinColumn({ name: 'id_installation' })
-  installation?: Installation | null;
+  installation!: Installation | null;
 
   @ApiProperty({ type: () => Owner })
   @ManyToOne(() => Owner, (owner) => owner.code, { cascade: false })
   @JoinColumn({ name: 'code_owner' })
-  owner?: Owner | null;
+  owner!: Owner | null;
 
-  @ApiProperty({ type: () => SoilType })
+  @ApiProperty({ type: () => SoilType, nullable: true })
   @ManyToOne(() => SoilType, (s_t) => s_t.code, { cascade: false })
   @JoinColumn({ name: 'code_soil_type' })
-  soil_type?: SoilType | null;
+  soil_type!: SoilType | null;
 
-  @ApiProperty({ type: () => EquipmentNature })
+  @ApiProperty({ type: () => EquipmentNature, nullable: true })
   @ManyToOne(() => EquipmentNature, (e_n) => e_n.code, { cascade: false })
   @JoinColumn({ name: 'code_equipment_nature' })
-  equipment_nature?: EquipmentNature | null;
+  equipment_nature!: EquipmentNature | null;
 
-  @ApiProperty({ type: () => EquipmentType })
+  @ApiProperty({ type: () => EquipmentType, nullable: true })
   @ManyToOne(() => EquipmentType, (e_t) => e_t.code, { cascade: false })
   @JoinColumn({ name: 'code_equipment_type' })
-  equipment_type?: EquipmentType | null;
+  equipment_type!: EquipmentType | null;
 
-  @ApiProperty({ type: () => EquipmentLevel })
+  @ApiProperty({ type: () => EquipmentLevel, nullable: true })
   @ManyToOne(() => EquipmentLevel, (e_l) => e_l.code, { cascade: false })
   @JoinColumn({ name: 'code_equipment_level' })
-  equipment_level?: EquipmentLevel | null;
+  equipment_level!: EquipmentLevel | null;
 
-  @ApiProperty({ type: () => Sport })
+  @ApiProperty({ type: () => Sport, isArray: true })
   @ManyToMany(() => Sport, (sport) => sport.code, { cascade: false })
   @JoinTable({ name: 'Equipment_Sport', inverseJoinColumn: { name: 'code_sport' }, joinColumn: { name: 'id_equipment' } })
   sports!: Sport[];
@@ -106,6 +106,6 @@ export default class Equipment {
   @JoinColumn({ name: 'id' })
   pictures!: Picture[];
 
-  @ApiProperty({ type: Number })
+  @ApiProperty({ type: Number, nullable: true })
   rating!: number | null;
 }

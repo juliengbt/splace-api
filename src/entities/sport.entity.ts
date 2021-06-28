@@ -15,11 +15,11 @@ export default class Sport {
   @Column({ type: 'varchar', length: 100 })
   name!: string;
 
-  @ApiProperty({ type: String })
+  @ApiProperty({ type: String, nullable: true })
   @Column({ type: 'varchar', length: 256, nullable: true })
   description!: string | null;
 
-  @ApiProperty({ type: String })
+  @ApiProperty({ type: String, nullable: true })
   @Column({ type: 'varchar', length: 256, nullable: true })
   federation!: string | null;
 

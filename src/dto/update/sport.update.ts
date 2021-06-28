@@ -6,12 +6,11 @@ import {
 import CategoryUpdate from './category.update';
 
 export default class SportUpdate {
-  @ApiProperty({ type: String, required: false })
+  @ApiProperty({ type: String, required: true })
   @IsString()
   @IsNotEmpty()
   @Length(3, 10)
-  @IsOptional()
-  code?: string;
+  code!: string;
 
   @ApiProperty({ type: String, required: false })
   @IsString()
@@ -20,7 +19,7 @@ export default class SportUpdate {
   @IsOptional()
   name?: string;
 
-  @ApiProperty({ type: String, required: false })
+  @ApiProperty({ type: String, required: false, nullable: true })
   @IsString()
   @IsNotEmpty()
   @MaxLength(256)
@@ -28,7 +27,7 @@ export default class SportUpdate {
   @ValidateIf((_object, value) => value !== null)
   description?: string | null;
 
-  @ApiProperty({ type: String, required: false })
+  @ApiProperty({ type: String, required: false, nullable: true })
   @IsString()
   @IsNotEmpty()
   @MaxLength(256)

@@ -7,11 +7,10 @@ import {
 import AddressUpdate from './address.update';
 
 export default class InstallationUpdate {
-  @ApiProperty({ type: String, required: false })
+  @ApiProperty({ type: String, required: true })
   @Type(() => String)
-  @IsOptional()
   @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
-  public id?: Buffer;
+  public id!: Buffer;
 
   @ApiProperty({ type: String, required: false })
   @IsString()
@@ -20,19 +19,19 @@ export default class InstallationUpdate {
   @IsOptional()
   public name?: string;
 
-  @ApiProperty({ type: Boolean, required: false })
+  @ApiProperty({ type: Boolean, required: false, nullable: true })
   @IsBoolean()
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)
   public car_park?: boolean | null;
 
-  @ApiProperty({ type: Boolean, required: false })
+  @ApiProperty({ type: Boolean, required: false, nullable: true })
   @IsBoolean()
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)
   public disabled_access?: boolean | null;
 
-  @ApiProperty({ type: () => AddressUpdate, required: false })
+  @ApiProperty({ type: () => AddressUpdate, required: false, nullable: true })
   @Type(() => AddressUpdate)
   @ValidateNested()
   @IsNotEmptyObject()

@@ -6,11 +6,10 @@ import {
 import DepartmentUpdate from './department.update';
 
 export default class CityUpdate {
-  @ApiProperty({ type: String, required: false })
+  @ApiProperty({ type: String, required: true })
   @Type(() => String)
-  @IsOptional()
   @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
-  id?: Buffer;
+  id!: Buffer;
 
   @ApiProperty({ type: String, required: false })
   @IsString()

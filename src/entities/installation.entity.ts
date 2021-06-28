@@ -20,19 +20,17 @@ export default class Installation {
   @Column({ type: 'varchar', length: 150 })
   public name!: string;
 
-  @ApiProperty({ type: Boolean })
+  @ApiProperty({ type: Boolean, nullable: true })
   @Column({ type: 'bit' })
-
   @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
   public car_park!: boolean | null;
 
-  @ApiProperty({ type: Boolean })
+  @ApiProperty({ type: Boolean, nullable: true })
   @Column({ type: 'bit' })
-
   @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
   public disabled_access!: boolean | null;
 
-  @ApiProperty({ type: () => Address })
+  @ApiProperty({ type: () => Address, nullable: true })
   @JoinColumn({ name: 'id_address' })
   @ManyToOne(() => Address, (address) => address.id, { cascade: ['insert'] })
   public address?: Address | null;

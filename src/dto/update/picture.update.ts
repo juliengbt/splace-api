@@ -1,13 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsString, IsNotEmpty, MaxLength, IsOptional
+  IsString, IsNotEmpty, MaxLength
 } from 'class-validator';
 
 export default class PictureUpdate {
-  @ApiProperty({ type: String, required: false })
+  @ApiProperty({ type: String, required: true })
   @IsString()
   @IsNotEmpty()
   @MaxLength(45)
-  @IsOptional()
-  name?: string;
+  name!: string;
 }

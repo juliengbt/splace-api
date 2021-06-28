@@ -6,11 +6,10 @@ import {
 import CityUpdate from './city.update';
 
 export default class ZipcodeUpdate {
-  @ApiProperty({ type: String, required: false })
+  @ApiProperty({ type: String, required: true })
   @Type(() => String)
-  @IsOptional()
   @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
-  id?: Buffer;
+  id!: Buffer;
 
   @ApiProperty({ type: Number, required: false })
   @IsInt()

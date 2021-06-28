@@ -4,12 +4,11 @@ import {
 } from 'class-validator';
 
 export default class EquipmentTypeUpdate {
-  @ApiProperty({ type: String, required: false })
+  @ApiProperty({ type: String, required: true })
   @IsString()
   @IsNotEmpty()
   @Length(3, 10)
-  @IsOptional()
-  code?: string;
+  code!: string;
 
   @ApiProperty({ type: String, required: false })
   @IsString()
