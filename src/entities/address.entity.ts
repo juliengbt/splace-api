@@ -25,11 +25,11 @@ export default class Address {
   @Column({ nullable: true, type: 'varchar', length: 100 })
   locality!: string | null;
 
-  @ApiProperty({ type: String, nullable: true })
+  @ApiProperty({ type: Number, nullable: true })
   @Column({ nullable: true, type: 'mediumint' })
   district!: number | null;
 
-  @ApiProperty({ type: () => Zipcode })
+  @ApiProperty({ type: () => Zipcode, required: true })
   @ManyToOne(() => Zipcode, (zip) => zip.id, { cascade: false })
   @JoinColumn({ name: 'id_zipcode' })
   zipcode!: Zipcode;

@@ -34,5 +34,5 @@ export default class InstallationCreate {
   @ValidateNested()
   @IsNotEmptyObject()
   @ValidateIf((_object, value) => value !== null)
-  public address!: AddressCreate | null;
+  public address!: AddressCreate;
 }

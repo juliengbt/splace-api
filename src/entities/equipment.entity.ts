@@ -66,7 +66,7 @@ export default class Equipment {
   @Transform(({ value: val }) => Number(val))
   latitude!: number | null;
 
-  @ApiProperty({ type: () => Installation, nullable: true })
+  @ApiProperty({ type: () => Installation, nullable: true, required: true })
   @ManyToOne(() => Installation, (installation) => installation.id, { cascade: ['insert'] })
   @JoinColumn({ name: 'id_installation' })
   installation!: Installation | null;

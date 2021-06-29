@@ -44,10 +44,9 @@ export default class AddressUpdate {
   @ValidateIf((value) => value !== null)
   district?: number | null;
 
-  @ApiProperty({ type: () => ZipcodeUpdate, required: false })
+  @ApiProperty({ type: () => ZipcodeUpdate, required: true })
   @IsNotEmptyObject()
   @ValidateNested()
-  @IsOptional()
   @Type(() => ZipcodeUpdate)
-  zipcode?: ZipcodeUpdate;
+  zipcode!: ZipcodeUpdate;
 }

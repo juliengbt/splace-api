@@ -85,12 +85,11 @@ export default class EquipmentUpdate {
   @IsOptional()
   latitude?: number;
 
-  @ApiProperty({ type: () => InstallationUpdate, required: false })
+  @ApiProperty({ type: () => InstallationUpdate, required: true, nullable: true })
   @Type(() => InstallationUpdate)
   @ValidateNested()
   @IsNotEmptyObject()
-  @IsOptional()
-  installation?: InstallationUpdate;
+  installation!: InstallationUpdate | null;
 
   @ApiProperty({ type: () => OwnerUpdate, required: false, nullable: true })
   @Type(() => OwnerUpdate)

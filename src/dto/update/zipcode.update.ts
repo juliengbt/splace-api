@@ -17,11 +17,10 @@ export default class ZipcodeUpdate {
   @IsOptional()
   code?: number;
 
-  @ApiProperty({ type: () => CityUpdate, required: false })
+  @ApiProperty({ type: () => CityUpdate, required: true })
   @Type(() => CityUpdate)
   @ValidateNested()
   @IsNotEmptyObject()
   @ValidateIf((_object, value) => value !== null)
-  @IsOptional()
-  city?: CityUpdate;
+  city!: CityUpdate;
 }

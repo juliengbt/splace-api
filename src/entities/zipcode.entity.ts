@@ -18,7 +18,7 @@ export default class Zipcode {
   @Column({ type: 'mediumint' })
   code!: number;
 
-  @ApiProperty({ type: () => City })
+  @ApiProperty({ type: () => City, required: true })
   @ManyToOne(() => City, (city) => city.id, { cascade: false })
   @JoinColumn({ name: 'id_city' })
   city!: City;

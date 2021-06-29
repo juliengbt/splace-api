@@ -77,11 +77,11 @@ export default class EquipmentCreate {
   @IsLatitude()
   latitude!: number;
 
-  @ApiProperty({ type: () => InstallationCreate, required: true })
+  @ApiProperty({ type: () => InstallationCreate, required: true, nullable: true })
   @Type(() => InstallationCreate)
   @ValidateNested()
   @IsNotEmptyObject()
-  installation!: InstallationCreate;
+  installation!: InstallationCreate | null;
 
   @ApiProperty({ type: () => OwnerCreate, required: true })
   @Type(() => OwnerCreate)

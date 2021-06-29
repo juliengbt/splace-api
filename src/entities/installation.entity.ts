@@ -30,13 +30,13 @@ export default class Installation {
   @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
   public disabled_access!: boolean | null;
 
-  @ApiProperty({ type: () => Address, nullable: true })
+  @ApiProperty({ type: () => Address, required: true })
   @JoinColumn({ name: 'id_address' })
   @ManyToOne(() => Address, (address) => address.id, { cascade: ['insert'] })
-  public address?: Address | null;
+  public address!: Address;
 
   @ApiProperty({ type: () => Equipment, isArray: true })
-  @OneToMany(() => Equipment, (equipment) => equipment.installation, { cascade: ['insert'] })
+  @OneToMany(() => Equipment, (equipment) => equipment.installation, { cascade: false })
   @JoinColumn({ name: 'id' })
   public equipments?: Equipment[];
 }

@@ -31,11 +31,10 @@ export default class InstallationUpdate {
   @ValidateIf((_object, value) => value !== null)
   public disabled_access?: boolean | null;
 
-  @ApiProperty({ type: () => AddressUpdate, required: false, nullable: true })
+  @ApiProperty({ type: () => AddressUpdate, required: true })
   @Type(() => AddressUpdate)
   @ValidateNested()
   @IsNotEmptyObject()
-  @IsOptional()
   @ValidateIf((_object, value) => value !== null)
-  public address?: AddressUpdate | null;
+  public address!: AddressUpdate;
 }

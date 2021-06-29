@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config/dist/config.module';
 import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
+import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import AddressModule from './modules/address.module';
 import CategoryModule from './modules/category.module';
 import CityModule from './modules/city.module';
@@ -13,9 +15,13 @@ import OwnerModule from './modules/owner.module';
 import PictureModule from './modules/picture.module';
 import SoilTypeModule from './modules/soilType.module';
 import SportModule from './modules/sport.module';
+import ZipcodeModule from './modules/zipcode.module';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'public')
+    }),
     ConfigModule.forRoot({
       envFilePath: '.env'
     }),
@@ -41,7 +47,8 @@ import SportModule from './modules/sport.module';
     EquipmentTypeModule,
     OwnerModule,
     SoilTypeModule,
-    CityModule
+    CityModule,
+    ZipcodeModule
   ],
   controllers: [],
   providers: []

@@ -12,6 +12,14 @@ export default class CityService {
   ) {}
 
   async findUsingDTO(cityDTO: CityDTO): Promise<City[]> {
+    return this.find(cityDTO).take(15).getMany();
+  }
+
+  async findOneUsingDTO(cityDTO: CityDTO): Promise<City | undefined> {
+    return this.find(cityDTO).getOne();
+  }
+
+  private find(cityDTO: CityDTO) : SelectQueryBuilder<City> {
     const query = this.getFullObjectQuery();
 
     if (cityDTO.names) {
@@ -28,8 +36,7 @@ export default class CityService {
     query.addSelect('LENGTH(City.name)', 'len_name')
       .addOrderBy('len_name', 'ASC')
       .addOrderBy('City.name', 'ASC');
-
-    return query.take(15).getMany();
+    return query;
   }
 
   async findAll(): Promise<City[]> {
