@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import Address from 'src/entities/address.entity';
 import { DeepPartial, Repository, SelectQueryBuilder } from 'typeorm';
@@ -42,7 +42,10 @@ export default class AddressService {
   }
 
   async save(address: DeepPartial<Address>) : Promise<Address> {
-    return this.repo.save(address.id ? address : this.repo.create(address));
+    const saved = await this.repo.save(address.id ? address : this.repo.create(address));
+    const res = await this.findById(saved.id);
+    if (!res) throw new InternalServerErrorException();
+    return res;
   }
 
   async delete(id: Buffer) : Promise<number> {
