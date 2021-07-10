@@ -1,26 +1,27 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
-  IsNotEmpty, IsOptional, IsString, Length, MaxLength
+  IsNotEmpty, IsString, Length, MaxLength, ValidateIf
 } from 'class-validator';
 
 export default class DepartmentCreate {
   @ApiProperty({ type: String, required: false })
   @Type(() => String)
-  @IsOptional()
-  @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
+  @Transform(({ value }) => (value ? Buffer.from((value as string), 'base64url') : undefined))
   id?: Buffer;
 
-  @ApiProperty({ type: String, required: true })
+  @ApiProperty({ type: String, required: false })
   @IsString()
   @IsNotEmpty()
   @MaxLength(45)
-  name!: string;
+  @ValidateIf((object, _value) => object.id === undefined)
+  name?: string;
 
   @ApiProperty()
-  @ApiProperty({ type: String, required: true })
+  @ApiProperty({ type: String, required: false })
   @IsString()
   @IsNotEmpty()
-  @Length(3, 3)
-  num!: string;
+  @Length(1, 3)
+  @ValidateIf((object, _value) => object.id === undefined)
+  num?: string;
 }

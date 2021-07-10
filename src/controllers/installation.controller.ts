@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  InternalServerErrorException,
   NotAcceptableException,
   NotFoundException,
   Param,
@@ -62,6 +63,10 @@ export default class InstallationController {
 
     if (errors.length > 0) throw new NotAcceptableException(errors);
 
-    return this.service.update(installationU);
+    this.service.update(installationU);
+    const res = await this.service.findById(installationU.id);
+
+    if (!res) throw new InternalServerErrorException();
+    return res;
   }
 }

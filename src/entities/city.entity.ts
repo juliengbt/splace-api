@@ -1,8 +1,10 @@
 import { Transform, Type } from 'class-transformer';
 import {
+  BeforeInsert,
   Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { v4 } from 'uuid';
 import Department from './department.entity';
 // eslint-disable-next-line import/no-cycle
 import Zipcode from './zipcode.entity';
@@ -10,10 +12,15 @@ import Zipcode from './zipcode.entity';
 @Entity('City')
 export default class City {
   @ApiProperty({ type: () => String, readOnly: true })
-  @PrimaryColumn('varbinary')
+  @PrimaryColumn({ type: 'varbinary', length: 16 })
   @Type(() => String)
   @Transform(({ value }) => (value as Buffer).toString('base64url'))
-  readonly id!: Buffer;
+  id!: Buffer;
+
+  @BeforeInsert()
+  uuidToBin() {
+    this.id = Buffer.from(v4().replace(/-/g, ''), 'hex');
+  }
 
   @ApiProperty()
   @Column({ type: 'varchar', length: 45 })

@@ -85,11 +85,13 @@ export default class EquipmentUpdate {
   @IsOptional()
   latitude?: number;
 
-  @ApiProperty({ type: () => InstallationUpdate, required: true, nullable: true })
+  @ApiProperty({ type: () => InstallationUpdate, required: false, nullable: true })
   @Type(() => InstallationUpdate)
   @ValidateNested()
   @IsNotEmptyObject()
-  installation!: InstallationUpdate | null;
+  @IsOptional()
+  @ValidateIf((_object, value) => value !== null)
+  installation?: InstallationUpdate | null;
 
   @ApiProperty({ type: () => OwnerUpdate, required: false, nullable: true })
   @Type(() => OwnerUpdate)
@@ -115,13 +117,12 @@ export default class EquipmentUpdate {
   @ValidateIf((_object, value) => value !== null)
   equipment_nature?: EquipmentNatureUpdate | null;
 
-  @ApiProperty({ type: () => EquipmentTypeUpdate, required: false, nullable: true })
+  @ApiProperty({ type: () => EquipmentTypeUpdate, required: false, nullable: false })
   @Type(() => EquipmentTypeUpdate)
   @ValidateNested()
   @IsNotEmptyObject()
   @IsOptional()
-  @ValidateIf((_object, value) => value !== null)
-  equipment_type?: EquipmentTypeUpdate | null;
+  equipment_type?: EquipmentTypeUpdate;
 
   @ApiProperty({ type: () => EquipmentLevelUpdate, required: false, nullable: true })
   @Type(() => EquipmentLevelUpdate)
@@ -131,19 +132,18 @@ export default class EquipmentUpdate {
   @ValidateIf((_object, value) => value !== null)
   equipment_level?: EquipmentLevelUpdate | null;
 
-  @ApiProperty({ type: () => SportUpdate, required: true, isArray: true })
+  @ApiProperty({ type: () => SportUpdate, required: false, isArray: true })
   @Type(() => SportUpdate)
   @ValidateNested({ each: true })
   @IsArray()
-  @IsNotEmptyObject()
   @ArrayMinSize(1)
-  sports!: SportUpdate[];
+  @IsOptional()
+  sports?: SportUpdate[];
 
-  @ApiProperty({ type: () => PictureUpdate, required: true, isArray: true })
+  @ApiProperty({ type: () => PictureUpdate, required: false, isArray: true })
   @Type(() => PictureUpdate)
   @ValidateNested({ each: true })
   @IsArray()
-  @IsNotEmptyObject()
-  @ValidateIf((_object, value) => value && value.length > 0)
-  pictures!: PictureUpdate[];
+  @IsOptional()
+  pictures?: PictureUpdate[];
 }

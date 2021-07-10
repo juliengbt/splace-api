@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import EquipmentDTO from 'src/dto/search/equipment.dto';
 import Equipment from 'src/entities/equipment.entity';
@@ -107,6 +107,8 @@ export default class EquipmentService {
       }));
     }
 
+    if (Object.keys(equipmentDTO).length === 0) query.addOrderBy('RAND()');
+
     return query.skip(offset).take(20).getMany();
   }
 
@@ -127,7 +129,35 @@ export default class EquipmentService {
   }
 
   async update(equipment: DeepPartial<Equipment>): Promise<Equipment> {
-    return this.repo.save(equipment);
+    const toSave = equipment;
+    if (equipment.id) {
+      const originalEquipment = await this.findById(equipment.id as Buffer);
+      if (originalEquipment && equipment.sports) {
+        await Promise.all(originalEquipment.sports
+          .filter((s) => !equipment.sports?.map((sp) => sp.code).includes(s.code)).map(async (s) => {
+            await this.repo.query('START TRANSACTION');
+            return this.repo.query('DELETE From Equipment_Sport e_s where e_s.id_equipment = ? AND e_s.code_sport = ?',
+              [equipment.id, s.code])
+              .then(() => this.repo.query('COMMIT'))
+              .catch(() => this.repo.query('ROLLBACK'));
+          }));
+        await Promise.all(equipment.sports
+          .filter((s) => s.code && !originalEquipment.sports.map((sp) => sp.code).includes(s.code)).map(async (s) => {
+            await this.repo.query('START TRANSACTION');
+            return this.repo.query('INSERT INTO Equipment_Sport(id_equipment, code_sport) VALUE (?,?)',
+              [equipment.id, s.code])
+              .then(() => this.repo.query('COMMIT'))
+              .catch(() => this.repo.query('ROLLBACK'));
+          }));
+
+        delete toSave.sports;
+      }
+    }
+    const res = await this.repo.save(toSave);
+    return this.findById(res.id).then((e) => {
+      if (!e) throw new InternalServerErrorException();
+      return e;
+    });
   }
 
   private getFullObjectQuery(): SelectQueryBuilder<Equipment> {

@@ -1,8 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
+  BeforeInsert,
   Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn
 } from 'typeorm';
+import { v4 } from 'uuid';
 import EquipmentLevel from './equipmentLevel.entity';
 import EquipmentNature from './equipmentNature.entity';
 import EquipmentType from './equipmentType.entity';
@@ -19,8 +21,13 @@ export default class Equipment {
   @ApiProperty({ type: String, readOnly: true })
   @Type(() => String)
   @Transform(({ value }) => (value as Buffer).toString('base64url'))
-  @PrimaryColumn('varbinary')
-  readonly id!: Buffer;
+  @PrimaryColumn({ type: 'varbinary', length: 16 })
+  id!: Buffer;
+
+  @BeforeInsert()
+  uuidToBin() {
+    this.id = Buffer.from(v4().replace(/-/g, ''), 'hex');
+  }
 
   @ApiProperty()
   @Column({ type: 'varchar', length: 150 })
@@ -86,10 +93,10 @@ export default class Equipment {
   @JoinColumn({ name: 'code_equipment_nature' })
   equipment_nature!: EquipmentNature | null;
 
-  @ApiProperty({ type: () => EquipmentType, nullable: true })
+  @ApiProperty({ type: () => EquipmentType, nullable: false })
   @ManyToOne(() => EquipmentType, (e_t) => e_t.code, { cascade: false })
   @JoinColumn({ name: 'code_equipment_type' })
-  equipment_type!: EquipmentType | null;
+  equipment_type!: EquipmentType;
 
   @ApiProperty({ type: () => EquipmentLevel, nullable: true })
   @ManyToOne(() => EquipmentLevel, (e_l) => e_l.code, { cascade: false })

@@ -19,7 +19,7 @@ export default class AddressUpdate {
   @IsNotEmpty()
   @MaxLength(10)
   @IsOptional()
-  @ValidateIf((value) => value !== null)
+  @ValidateIf((_object, value) => value !== null)
   street_num?: string | null;
 
   @ApiProperty({ type: String, required: false, nullable: true })
@@ -27,7 +27,7 @@ export default class AddressUpdate {
   @IsNotEmpty()
   @MaxLength(100)
   @IsOptional()
-  @ValidateIf((value) => value !== null)
+  @ValidateIf((_object, value) => value !== null)
   street_name?: string | null;
 
   @ApiProperty({ type: String, required: false, nullable: true })
@@ -35,18 +35,19 @@ export default class AddressUpdate {
   @IsNotEmpty()
   @MaxLength(100)
   @IsOptional()
-  @ValidateIf((value) => value !== null)
+  @ValidateIf((_object, value) => value !== null)
   locality?: string | null;
 
   @ApiProperty({ type: Number, required: false, nullable: true })
   @IsInt()
   @IsOptional()
-  @ValidateIf((value) => value !== null)
+  @ValidateIf((_object, value) => value !== null)
   district?: number | null;
 
-  @ApiProperty({ type: () => ZipcodeUpdate, required: true })
+  @ApiProperty({ type: () => ZipcodeUpdate, required: false })
   @IsNotEmptyObject()
   @ValidateNested()
+  @IsOptional()
   @Type(() => ZipcodeUpdate)
-  zipcode!: ZipcodeUpdate;
+  zipcode?: ZipcodeUpdate;
 }

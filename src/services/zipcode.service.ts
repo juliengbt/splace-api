@@ -34,6 +34,6 @@ export default class ZipcodeService {
   private getFullObjectQuery(): SelectQueryBuilder<Zipcode> {
     return this.repo.createQueryBuilder('Zipcode')
       .leftJoinAndMapOne('Zipcode.city', 'Zipcode.city', 'city')
-      .leftJoinAndMapMany('city.department', 'city.department', 'department');
+      .leftJoinAndMapOne('city.department', 'city.department', 'department');
   }
 }

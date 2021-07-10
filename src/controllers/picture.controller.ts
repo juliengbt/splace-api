@@ -1,8 +1,8 @@
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Delete,
+  Get,
   HttpCode,
   NotAcceptableException,
   Post,
@@ -15,7 +15,6 @@ import {
 } from '@nestjs/swagger';
 import PictureService from 'src/services/picture.service';
 import ParseUUIDPipe from 'src/pipes/parse-uuid.pipe';
-import Picture from 'src/entities/picture.entity';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { nanoid } from 'nanoid';
@@ -24,6 +23,7 @@ import {
   existsSync, mkdirSync, rename, unlink
 } from 'fs';
 import EquipmentService from 'src/services/equipment.service';
+import Picture from 'src/entities/picture.entity';
 
 const storage = diskStorage({
   destination: (_req, _file, cb) => {
@@ -53,20 +53,20 @@ export default class PictureController {
     description: 'Removed picture list',
     type: Number
   })
-  @ApiBody({ type: Picture, isArray: true })
-  @UseInterceptors(ClassSerializerInterceptor)
-  remove(
-    @Query('id_equipment', new ParseUUIDPipe()) id_equipment: string,
-      @Body() pictures: Picture[]
+  @ApiBody({ type: String, isArray: true })
+  @ApiQuery({ type: String, required: true, name: 'id_equipment' })
+  async remove(
+    @Query('id_equipment', new ParseUUIDPipe()) id_equipment: Buffer,
+      @Body() pictures: string[]
   ): Promise<number> {
-    const b64id = Buffer.from(id_equipment, 'hex').toString('base64url');
+    const b64id = id_equipment.toString('base64url');
     pictures.forEach(
       (p) => unlink(
-        path.join(process.env.IMAGES_LOCATION, b64id, p.name),
+        path.join(process.env.IMAGES_LOCATION, b64id, p),
         () => {}
       )
     );
-    return this.service.removeAll(Buffer.from(id_equipment, 'hex'), pictures)
+    return this.service.removeAll(id_equipment, pictures)
       .then((v) => (!v && v !== 0 ? 0 : v));
   }
 
@@ -99,10 +99,10 @@ export default class PictureController {
     fileFilter(_req, file, cb) {
       const acceptedFiles = ['image/jpeg', 'image/png'];
       if (!acceptedFiles.includes(file.mimetype)) {
-        return cb(new Error('goes wrong on the mimetype'), false);
+        return cb(new NotAcceptableException('Mimetype not accepted'), false);
       }
       if (file.size > parseInt(process.env.IMAGES_MAX_SIZE || '1048576', 10)) {
-        return cb(new Error('size too large'), false);
+        return cb(new NotAcceptableException('Size too large'), false);
       }
       return cb(null, true);
     }
@@ -129,5 +129,18 @@ export default class PictureController {
       return this.service.addImages(id, files);
     }
     return 0;
+  }
+
+  @Get()
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Picture array',
+    type: Picture,
+    isArray: true
+  })
+  @ApiQuery({ type: String, required: true, name: 'id_equipment' })
+  async pictureOfEquipment(@Query('id_equipment', new ParseUUIDPipe()) id_equipment: Buffer) : Promise<Picture[]> {
+    return this.service.findImages(id_equipment);
   }
 }

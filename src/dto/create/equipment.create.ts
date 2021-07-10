@@ -15,20 +15,19 @@ import {
   ValidateIf,
   ValidateNested
 } from 'class-validator';
+import Default from 'src/decorators';
 import EquipmentLevelCreate from './equipmentLevel.create';
 import EquipmentNatureCreate from './equipmentNature.create';
 import EquipmentTypeCreate from './equipmentType.create';
 import InstallationCreate from './installation.create';
 import OwnerCreate from './owner.create';
-import PictureCreate from './picture.create';
 import SoilTypeCreate from './soilType.create';
 import SportCreate from './sport.create';
 
 export default class EquipmentCreate {
-  @ApiProperty({ type: String, required: false })
+  @ApiProperty({ type: () => String, required: false })
   @Type(() => String)
-  @IsOptional()
-  @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
+  @Transform(({ value }) => (value ? Buffer.from((value as string), 'base64url') : undefined))
   id?: Buffer;
 
   @ApiProperty({ type: String, required: true })
@@ -37,100 +36,113 @@ export default class EquipmentCreate {
   @MaxLength(150)
   name!: string;
 
-  @ApiProperty({ type: String, required: true })
+  @ApiProperty({ type: String, required: false, nullable: true })
   @IsString()
   @IsNotEmpty()
   @MaxLength(256)
+  @IsOptional()
+  @Default(null)
   @ValidateIf((_object, value) => value !== null)
-  other_info!: string | null;
+  other_info?: string | null;
 
-  @ApiProperty({ type: Boolean, required: true })
+  @ApiProperty({ type: Boolean, required: false, nullable: true })
   @IsBoolean()
+  @IsOptional()
+  @Default(null)
   @ValidateIf((_object, value) => value !== null)
-  open_access!: boolean | null;
+  open_access?: boolean | null;
 
-  @ApiProperty({ type: Boolean, required: true })
+  @ApiProperty({ type: Boolean, required: false, nullable: true })
   @IsBoolean()
+  @IsOptional()
+  @Default(null)
   @ValidateIf((_object, value) => value !== null)
-  locker!: boolean | null;
+  locker?: boolean | null;
 
-  @ApiProperty({ type: Boolean, required: true })
+  @ApiProperty({ type: Boolean, required: false, nullable: true })
   @IsBoolean()
+  @IsOptional()
+  @Default(null)
   @ValidateIf((_object, value) => value !== null)
-  lighting!: boolean | null;
+  lighting?: boolean | null;
 
-  @ApiProperty({ type: Boolean, required: true })
+  @ApiProperty({ type: Boolean, required: false, nullable: true })
   @IsBoolean()
+  @IsOptional()
+  @Default(null)
   @ValidateIf((_object, value) => value !== null)
-  shower!: boolean | null;
+  shower?: boolean | null;
 
-  @ApiProperty({ type: Number, required: true })
+  @ApiProperty({ type: Number, required: false })
   @IsInt()
   @MaxLength(1000)
-  amount!: number;
+  @IsOptional()
+  @Default(1)
+  amount?: number;
 
   @ApiProperty({ type: Number, required: true })
   @IsLongitude()
-  longitude!: number;
+  longitude?: number;
 
   @ApiProperty({ type: Number, required: true })
   @IsLatitude()
-  latitude!: number;
+  latitude?: number;
 
-  @ApiProperty({ type: () => InstallationCreate, required: true, nullable: true })
+  @ApiProperty({ type: () => InstallationCreate, required: false, nullable: true })
   @Type(() => InstallationCreate)
   @ValidateNested()
   @IsNotEmptyObject()
-  installation!: InstallationCreate | null;
+  @IsOptional()
+  @Default(null)
+  @ValidateIf((_object, value) => value !== null)
+  installation?: InstallationCreate | null;
 
-  @ApiProperty({ type: () => OwnerCreate, required: true })
+  @ApiProperty({ type: () => OwnerCreate, required: false, nullable: true })
   @Type(() => OwnerCreate)
   @ValidateNested()
   @IsNotEmptyObject()
+  @IsOptional()
+  @Default(null)
   @ValidateIf((_object, value) => value !== null)
-  owner!: OwnerCreate | null;
+  owner?: OwnerCreate | null;
 
-  @ApiProperty({ type: () => SoilTypeCreate, required: true })
+  @ApiProperty({ type: () => SoilTypeCreate, required: false, nullable: true })
   @Type(() => SoilTypeCreate)
   @ValidateNested()
   @IsNotEmptyObject()
+  @IsOptional()
+  @Default(null)
   @ValidateIf((_object, value) => value !== null)
-  soil_type!: SoilTypeCreate | null;
+  soil_type?: SoilTypeCreate | null;
 
-  @ApiProperty({ type: () => EquipmentNatureCreate, required: true })
+  @ApiProperty({ type: () => EquipmentNatureCreate, required: false, nullable: true })
   @Type(() => EquipmentNatureCreate)
   @ValidateNested()
   @IsNotEmptyObject()
+  @IsOptional()
+  @Default(null)
   @ValidateIf((_object, value) => value !== null)
-  equipment_nature!: EquipmentNatureCreate | null;
+  equipment_nature?: EquipmentNatureCreate | null;
 
-  @ApiProperty({ type: () => EquipmentTypeCreate, required: true })
+  @ApiProperty({ type: () => EquipmentTypeCreate, required: true, nullable: false })
   @Type(() => EquipmentTypeCreate)
   @ValidateNested()
   @IsNotEmptyObject()
-  @ValidateIf((_object, value) => value !== null)
-  equipment_type!: EquipmentTypeCreate | null;
+  equipment_type!: EquipmentTypeCreate;
 
-  @ApiProperty({ type: () => EquipmentLevelCreate, required: true })
+  @ApiProperty({ type: () => EquipmentLevelCreate, required: false, nullable: true })
   @Type(() => EquipmentLevelCreate)
   @ValidateNested()
   @IsNotEmptyObject()
+  @IsOptional()
+  @Default(null)
   @ValidateIf((_object, value) => value !== null)
-  equipment_level!: EquipmentLevelCreate | null;
+  equipment_level?: EquipmentLevelCreate | null;
 
   @ApiProperty({ type: () => SportCreate, required: true, isArray: true })
   @Type(() => SportCreate)
   @ValidateNested({ each: true })
   @IsArray()
-  @IsNotEmptyObject()
   @ArrayMinSize(1)
   sports!: SportCreate[];
-
-  @ApiProperty({ type: () => PictureCreate, required: true, isArray: true })
-  @Type(() => PictureCreate)
-  @ValidateNested({ each: true })
-  @IsArray()
-  @IsNotEmptyObject()
-  @ValidateIf((_object, value) => value && value.length > 0)
-  pictures!: PictureCreate[];
 }

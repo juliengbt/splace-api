@@ -10,7 +10,7 @@ export default class PictureService {
     private repo: Repository<Picture>
   ) {}
 
-  addImages(id: Buffer, files: Express.Multer.File[]) : Promise<number> {
+  async addImages(id: Buffer, files: Express.Multer.File[]) : Promise<number> {
     const imgs : DeepPartial<Picture>[] = files.map(
       (f) => ({ name: f.filename, equipment: { id } })
     );
@@ -22,13 +22,19 @@ export default class PictureService {
       .then((res) => res.identifiers.length);
   }
 
-  async removeAll(id_e: Buffer, pictures: Picture[]): Promise<number | null | undefined> {
+  async removeAll(id_e: Buffer, pictures: string[]): Promise<number | null | undefined> {
     return this.repo.createQueryBuilder()
       .delete()
       .from(Picture)
-      .where('name IN (:...names)', { names: pictures.map((p) => p.name) })
+      .where('name IN (:...names)', { names: pictures })
       .andWhere('id_equipment = :id_e', { id_e })
       .execute()
       .then((res) => res.affected);
+  }
+
+  async findImages(equipmentId: Buffer) : Promise<Picture[]> {
+    return this.repo.createQueryBuilder('Picture')
+      .where('Picture.equipment = :id', { id: equipmentId })
+      .getMany();
   }
 }

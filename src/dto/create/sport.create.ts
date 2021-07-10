@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-  IsNotEmpty, IsNotEmptyObject, IsString, Length, MaxLength, ValidateIf, ValidateNested
+  IsNotEmpty, IsNotEmptyObject, IsOptional, IsString, Length, MaxLength, ValidateIf, ValidateNested
 } from 'class-validator';
+import Default from 'src/decorators';
 import CategoryCreate from './category.create';
 
 export default class SportCreate {
@@ -18,23 +19,27 @@ export default class SportCreate {
   @MaxLength(100)
   name!: string;
 
-  @ApiProperty({ type: String, required: true })
+  @ApiProperty({ type: String, required: false, nullable: true })
   @IsString()
   @IsNotEmpty()
   @MaxLength(256)
+  @IsOptional()
+  @Default(null)
   @ValidateIf((_object, value) => value !== null)
-  description!: string | null;
+  description?: string | null;
 
-  @ApiProperty({ type: String, required: true })
+  @ApiProperty({ type: String, required: false, nullable: true })
   @IsString()
   @IsNotEmpty()
   @MaxLength(256)
+  @IsOptional()
+  @Default(null)
   @ValidateIf((_object, value) => value !== null)
-  federation!: string | null;
+  federation?: string | null;
 
   @ApiProperty({ type: () => CategoryCreate, required: true })
   @IsNotEmptyObject()
   @ValidateNested()
   @Type(() => CategoryCreate)
-  category?: CategoryCreate;
+  category!: CategoryCreate;
 }

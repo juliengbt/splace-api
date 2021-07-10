@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import {
-  PipeTransform, Injectable
+  PipeTransform, Injectable, NotAcceptableException
 } from '@nestjs/common';
 
 export function isUUID(value: string): boolean {
@@ -10,6 +10,7 @@ export function isUUID(value: string): boolean {
 @Injectable()
 class ParseUUIDPipe implements PipeTransform<string, Buffer> {
   transform(value: string): Buffer {
+    if (!value) throw new NotAcceptableException(`${value} is not a string`);
     return Buffer.from(value, 'base64url');
   }
 }

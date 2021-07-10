@@ -1,26 +1,27 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
-  IsNotEmpty, IsNotEmptyObject, IsOptional, IsString, MaxLength, ValidateNested
+  IsNotEmpty, IsNotEmptyObject, IsString, MaxLength, ValidateIf, ValidateNested
 } from 'class-validator';
 import DepartmentCreate from './department.create';
 
 export default class CityCreate {
   @ApiProperty({ type: String, required: false })
   @Type(() => String)
-  @IsOptional()
-  @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
+  @Transform(({ value }) => (value ? Buffer.from((value as string), 'base64url') : undefined))
   id?: Buffer;
 
-  @ApiProperty({ type: String, required: true })
+  @ApiProperty({ type: String, required: false })
   @IsString()
   @IsNotEmpty()
   @MaxLength(45)
-  name!: string;
+  @ValidateIf((object, _value) => object.id === undefined)
+  name?: string;
 
-  @ApiProperty({ type: () => DepartmentCreate, required: true })
+  @ApiProperty({ type: () => DepartmentCreate, required: false })
   @IsNotEmptyObject()
   @ValidateNested()
   @Type(() => DepartmentCreate)
-  department!: DepartmentCreate;
+  @ValidateIf((object, _value) => object.id === undefined)
+  department?: DepartmentCreate;
 }

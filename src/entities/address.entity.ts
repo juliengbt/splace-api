@@ -1,17 +1,24 @@
 import {
+  BeforeInsert,
   Column, Entity, JoinColumn, ManyToOne, PrimaryColumn
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
+import { v4 } from 'uuid';
 import Zipcode from './zipcode.entity';
 
 @Entity('Address')
 export default class Address {
   @ApiProperty({ type: () => String, readOnly: true })
-  @PrimaryColumn('varbinary')
+  @PrimaryColumn({ type: 'varbinary', length: 16 })
   @Type(() => String)
   @Transform(({ value }) => (value as Buffer).toString('base64url'))
-  readonly id!: Buffer;
+  id!: Buffer;
+
+  @BeforeInsert()
+  uuidToBin() {
+    this.id = Buffer.from(v4().replace(/-/g, ''), 'hex');
+  }
 
   @ApiProperty({ type: String, nullable: true })
   @Column({ nullable: true, type: 'varchar', length: 10 })

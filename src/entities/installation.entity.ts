@@ -1,9 +1,13 @@
 /* eslint-disable max-len */
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
 import {
+  Transform, Type
+} from 'class-transformer';
+import {
+  BeforeInsert,
   Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn
 } from 'typeorm';
+import { v4 } from 'uuid';
 import Address from './address.entity';
 // eslint-disable-next-line import/no-cycle
 import Equipment from './equipment.entity';
@@ -11,10 +15,15 @@ import Equipment from './equipment.entity';
 @Entity('Installation')
 export default class Installation {
   @ApiProperty({ type: () => String })
-  @PrimaryColumn('varbinary')
+  @PrimaryColumn({ type: 'varbinary', length: 16 })
   @Type(() => String)
   @Transform(({ value }) => (value as Buffer).toString('base64url'))
-  readonly id!: Buffer;
+  id!: Buffer;
+
+  @BeforeInsert()
+  uuidToBin() {
+    this.id = Buffer.from(v4().replace(/-/g, ''), 'hex');
+  }
 
   @ApiProperty()
   @Column({ type: 'varchar', length: 150 })
@@ -32,7 +41,7 @@ export default class Installation {
 
   @ApiProperty({ type: () => Address, required: true })
   @JoinColumn({ name: 'id_address' })
-  @ManyToOne(() => Address, (address) => address.id, { cascade: ['insert'] })
+  @ManyToOne(() => Address, (address) => address.id, { cascade: ['insert'], nullable: false })
   public address!: Address;
 
   @ApiProperty({ type: () => Equipment, isArray: true })

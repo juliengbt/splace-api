@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
-  IsInt, IsNotEmptyObject, IsOptional, Max, ValidateIf, ValidateNested
+  IsInt, IsNotEmptyObject, IsOptional, Max, ValidateNested
 } from 'class-validator';
 import CityUpdate from './city.update';
 
@@ -17,10 +17,10 @@ export default class ZipcodeUpdate {
   @IsOptional()
   code?: number;
 
-  @ApiProperty({ type: () => CityUpdate, required: true })
+  @ApiProperty({ type: () => CityUpdate, required: false })
   @Type(() => CityUpdate)
   @ValidateNested()
   @IsNotEmptyObject()
-  @ValidateIf((_object, value) => value !== null)
-  city!: CityUpdate;
+  @IsOptional()
+  city?: CityUpdate;
 }

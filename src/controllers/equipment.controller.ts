@@ -90,7 +90,7 @@ export default class EquipmentController {
       }
     }
 
-    equipmentParam.installation = installationDTO;
+    if (installationDTO !== undefined) equipmentParam.installation = installationDTO;
 
     await validate(equipmentParam).then((errors) => {
       if (errors.length > 0) {
@@ -98,7 +98,6 @@ export default class EquipmentController {
       }
     });
 
-    if (Object.keys(equipmentParam).length === 0 && equipmentParam.constructor === Object) throw new NotAcceptableException('equipmentDTO is empty');
     return this.service.findUsingDTO(equipmentParam, offset < 0 ? 0 : offset);
   }
 

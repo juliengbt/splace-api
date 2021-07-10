@@ -21,7 +21,7 @@ export default class CityUpdate {
   @ApiProperty({ type: () => DepartmentUpdate, required: false })
   @IsNotEmptyObject()
   @ValidateNested()
-  @Type(() => DepartmentUpdate)
   @IsOptional()
+  @Type(() => DepartmentUpdate)
   department?: DepartmentUpdate;
 }

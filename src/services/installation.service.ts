@@ -17,15 +17,23 @@ export default class InstallationService {
   }
 
   async update(installation: DeepPartial<Installation>): Promise<Installation> {
+    const toUpdate = installation;
+
+    if (installation.address?.id) {
+      await this.repo.query('START TRANSACTION');
+      await this.repo.query('UPDATE Installation i SET i.id_address = ? where i.id = ?', [installation.address.id, installation.id])
+        .then(() => this.repo.query('COMMIT'))
+        .catch(() => this.repo.query('ROLLBACK'));
+      delete toUpdate.address;
+    }
+
     return this.repo.save(installation);
   }
 
   async countInstallationWithAddress(idAddress: Buffer) : Promise<number> {
-    return this.repo.count({
-      where: {
-        address: idAddress
-      }
-    });
+    return this.repo.createQueryBuilder('Installation')
+      .where('Installation.address = :id', { id: idAddress })
+      .getCount();
   }
 
   private getFullObjectQuery(): SelectQueryBuilder<Installation> {

@@ -9,30 +9,32 @@ import AddressCreate from './address.create';
 export default class InstallationCreate {
   @ApiProperty({ type: String, required: false })
   @Type(() => String)
-  @IsOptional()
-  @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
-  id?: Buffer;
+  @Transform(({ value }) => (value ? Buffer.from((value as string), 'base64url') : undefined))
+  public id?: Buffer;
 
-  @ApiProperty({ type: String, required: true })
+  @ApiProperty({ type: String, required: false })
   @IsString()
   @IsNotEmpty()
   @MaxLength(150)
-  public name!: string;
+  @ValidateIf((object, _value) => object.id === undefined)
+  public name?: string;
 
-  @ApiProperty({ type: Boolean, required: true })
+  @ApiProperty({ type: Boolean, required: false, nullable: true })
   @IsBoolean()
-  @ValidateIf((_object, value) => value !== null)
-  public car_park!: boolean | null;
+  @IsOptional()
+  @ValidateIf((object, value) => value !== null && object.id === undefined)
+  public car_park?: boolean | null;
 
-  @ApiProperty({ type: Boolean, required: true })
+  @ApiProperty({ type: Boolean, required: false, nullable: true })
   @IsBoolean()
-  @ValidateIf((_object, value) => value !== null)
-  public disabled_access!: boolean | null;
+  @IsOptional()
+  @ValidateIf((object, value) => value !== null && object.id === undefined)
+  public disabled_access?: boolean | null;
 
   @ApiProperty({ type: () => AddressCreate, required: true })
   @Type(() => AddressCreate)
   @ValidateNested()
   @IsNotEmptyObject()
-  @ValidateIf((_object, value) => value !== null)
-  public address!: AddressCreate;
+  @ValidateIf((object, _value) => object.id === undefined)
+  public address?: AddressCreate;
 }

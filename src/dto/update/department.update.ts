@@ -21,7 +21,7 @@ export default class DepartmentUpdate {
   @ApiProperty({ type: String, required: false })
   @IsString()
   @IsNotEmpty()
-  @Length(3, 3)
+  @Length(1, 3)
   @IsOptional()
   num?: string;
 }

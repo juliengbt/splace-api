@@ -34,7 +34,8 @@ import ZipcodeModule from './modules/zipcode.module';
       database: process.env.DB_NAME,
       entities: ['dist/**/*.entity.js'],
       synchronize: false,
-      retryAttempts: 0
+      retryAttempts: 0,
+      logging: ['query', 'error']
     }),
     SportModule,
     CategoryModule,

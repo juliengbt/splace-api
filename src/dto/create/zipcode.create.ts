@@ -1,26 +1,26 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
-  IsInt, IsNotEmptyObject, IsOptional, Max, ValidateIf, ValidateNested
+  IsInt, IsNotEmptyObject, Max, ValidateIf, ValidateNested
 } from 'class-validator';
 import CityCreate from './city.create';
 
 export default class ZipcodeCreate {
-  @ApiProperty({ type: () => String, required: false })
+  @ApiProperty({ type: String, required: false })
   @Type(() => String)
-  @IsOptional()
-  @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
+  @Transform(({ value }) => (value ? Buffer.from((value as string), 'base64url') : undefined))
   id?: Buffer;
 
-  @ApiProperty({ type: Number, required: true })
+  @ApiProperty({ type: Number, required: false })
   @IsInt()
   @Max(100000)
-  code!: number;
+  @ValidateIf((object, _value) => object.id === undefined)
+  code?: number;
 
-  @ApiProperty({ type: () => CityCreate, required: true })
+  @ApiProperty({ type: () => CityCreate, required: false })
   @Type(() => CityCreate)
   @ValidateNested()
   @IsNotEmptyObject()
-  @ValidateIf((_object, value) => value !== null)
-  city!: CityCreate;
+  @ValidateIf((object, _value) => object.id === undefined)
+  city?: CityCreate;
 }

@@ -6,44 +6,50 @@ import {
   IsNotEmptyObject,
   IsOptional, IsString, MaxLength, ValidateIf, ValidateNested
 } from 'class-validator';
+import Default from 'src/decorators';
 import ZipcodeCreate from './zipcode.create';
 
 export default class AddressCreate {
   @ApiProperty({ type: String, required: false })
   @Type(() => String)
-  @IsOptional()
-  @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
+  @Transform(({ value }) => (value ? Buffer.from((value as string), 'base64url') : undefined))
   id?: Buffer;
 
-  @ApiProperty({ type: String, required: true })
+  @ApiProperty({ type: String, required: false, nullable: true })
   @IsString()
   @IsNotEmpty()
   @MaxLength(10)
-  @ValidateIf((value) => value !== null)
-  street_num!: string | null;
+  @Default(null)
+  @ValidateIf((_object, value) => value !== null)
+  street_num?: string | null;
 
-  @ApiProperty({ type: String, required: true })
+  @ApiProperty({ type: String, required: false, nullable: true })
   @IsString()
   @IsNotEmpty()
   @MaxLength(100)
-  @ValidateIf((value) => value !== null)
-  street_name!: string | null;
+  @Default(null)
+  @ValidateIf((_object, value) => value !== null)
+  street_name?: string | null;
 
-  @ApiProperty({ type: String, required: true })
+  @ApiProperty({ type: String, required: false, nullable: true })
   @IsString()
   @IsNotEmpty()
   @MaxLength(100)
-  @ValidateIf((value) => value !== null)
-  locality!: string | null;
+  @Default(null)
+  @ValidateIf((_object, value) => value !== null)
+  locality?: string | null;
 
-  @ApiProperty({ type: Number, required: true })
+  @ApiProperty({ type: Number, required: false, nullable: true })
   @IsInt()
-  @ValidateIf((value) => value !== null)
-  district!: number | null;
+  @IsOptional()
+  @Default(null)
+  @ValidateIf((_object, value) => value !== null)
+  district?: number | null;
 
-  @ApiProperty({ type: () => ZipcodeCreate, required: true })
+  @ApiProperty({ type: () => ZipcodeCreate, required: false })
   @IsNotEmptyObject()
   @ValidateNested()
   @Type(() => ZipcodeCreate)
-  zipcode!: ZipcodeCreate;
+  @ValidateIf((object, _value) => object.id === undefined)
+  zipcode?: ZipcodeCreate;
 }
