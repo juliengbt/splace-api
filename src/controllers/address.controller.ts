@@ -42,7 +42,7 @@ export default class AddressController {
     if (!address) throw new NotAcceptableException(`No address with id : ${addressU.id.toString('base64url')}`);
 
     const count = await this.installationService.countInstallationWithAddress(addressU.id);
-    console.log(count);
+
     let object: DeepPartial<AddressUpdate> = addressU;
     const existingAdress = await this.service.exists({ ...address, ...addressU });
 

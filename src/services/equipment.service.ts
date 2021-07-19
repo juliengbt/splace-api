@@ -30,12 +30,19 @@ export default class EquipmentService {
         .andWhere('Equipment.longitude >= :min_lon', { min_lon: equipmentDTO.gps_area.min_lon });
 
       if (equipmentDTO.gps_area.previous_area) {
-        query.andWhere(new Brackets((qb) => {
-          qb.where('Equipment.latitude > :prev_max_lat', { max_lat: equipmentDTO.gps_area?.previous_area?.max_lat })
-            .andWhere('Equipment.latitude < :prev_min_lat', { min_lat: equipmentDTO.gps_area?.previous_area?.min_lat })
-            .andWhere('Equipment.longitude > :prev_max_lon', { max_lon: equipmentDTO.gps_area?.previous_area?.max_lon })
-            .andWhere('Equipment.longitude < :prev_min_lon', { min_lon: equipmentDTO.gps_area?.previous_area?.min_lon });
-        }));
+        // A drawing worth 1000 words
+        if (equipmentDTO.gps_area.previous_area.max_lat <= equipmentDTO.gps_area.max_lat) {
+          query.andWhere('Equipment.latitude > :prev_max_lat', { max_lat: equipmentDTO.gps_area.previous_area.max_lat });
+        }
+        if (equipmentDTO.gps_area.previous_area.min_lat >= equipmentDTO.gps_area.min_lat) {
+          query.andWhere('Equipment.latitude < :prev_min_lat', { min_lat: equipmentDTO.gps_area.previous_area.min_lat });
+        }
+        if (equipmentDTO.gps_area.previous_area.max_lon <= equipmentDTO.gps_area.max_lon) {
+          query.andWhere('Equipment.longitude > :prev_max_lon', { max_lon: equipmentDTO.gps_area.previous_area.max_lon });
+        }
+        if (equipmentDTO.gps_area.previous_area.min_lon >= equipmentDTO.gps_area.min_lon) {
+          query.andWhere('Equipment.longitude < :prev_min_lon', { min_lon: equipmentDTO.gps_area.previous_area.min_lon });
+        }
       }
     } else if (equipmentDTO.installation?.address?.city?.ids) {
       query.andWhere('city.id in (:...id_city)',
