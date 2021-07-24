@@ -59,7 +59,7 @@ export default class EquipmentService {
     }
 
     // Boolean parameters
-    if (equipmentDTO.open_access) query.andWhere('Equipment.open_access is :open_acess', { open_access: equipmentDTO.open_access });
+    if (equipmentDTO.open_access) query.andWhere('Equipment.open_access is :open_access', { open_access: equipmentDTO.open_access });
     if (equipmentDTO.lighting) query.andWhere('Equipment.lighting is :lighting', { lighting: equipmentDTO.lighting });
     if (equipmentDTO.locker) query.andWhere('Equipment.locker is :locker', { locker: equipmentDTO.locker });
     if (equipmentDTO.shower) query.andWhere('Equipment.shower is :shower', { shower: equipmentDTO.shower });
