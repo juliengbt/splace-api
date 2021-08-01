@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import Installation from 'src/entities/installation.entity';
 import { DeepPartial, Repository, SelectQueryBuilder } from 'typeorm';
@@ -17,17 +17,11 @@ export default class InstallationService {
   }
 
   async update(installation: DeepPartial<Installation>): Promise<Installation> {
-    const toUpdate = installation;
-
-    if (installation.address?.id) {
-      await this.repo.query('START TRANSACTION');
-      await this.repo.query('UPDATE Installation i SET i.id_address = ? where i.id = ?', [installation.address.id, installation.id])
-        .then(() => this.repo.query('COMMIT'))
-        .catch(() => this.repo.query('ROLLBACK'));
-      delete toUpdate.address;
-    }
-
-    return this.repo.save(installation);
+    const res = await this.repo.save(installation);
+    return this.findById(res.id).then((i) => {
+      if (!i) throw new InternalServerErrorException();
+      return i;
+    });
   }
 
   async countInstallationWithAddress(idAddress: Buffer) : Promise<number> {
