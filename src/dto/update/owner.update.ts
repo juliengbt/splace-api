@@ -8,12 +8,12 @@ export default class OwnerUpdate {
   @IsString()
   @IsNotEmpty()
   @Length(3, 10, { message: 'Code must be between 3 and 10 characters' })
-  code!: string;
+    code!: string;
 
   @ApiProperty({ type: String, required: false })
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
   @IsOptional()
-  label?: string;
+    label?: string;
 }

@@ -8,11 +8,11 @@ export default class EquipmentTypeCreate {
   @IsString()
   @IsNotEmpty()
   @Length(3, 10)
-  code!: string;
+    code!: string;
 
   @ApiProperty({ type: String, required: true })
   @IsString()
   @IsNotEmpty()
   @MaxLength(45)
-  label!: string;
+    label!: string;
 }

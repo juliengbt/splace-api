@@ -4,21 +4,21 @@ import { IsLatitude, IsLongitude, ValidateNested } from 'class-validator';
 export default class GPSAreaDTO {
   @ApiProperty()
   @IsLongitude()
-  min_lon!: number;
+    min_lon!: number;
 
   @ApiProperty()
   @IsLatitude()
-  min_lat!: number;
+    min_lat!: number;
 
   @ApiProperty()
   @IsLongitude()
-  max_lon!: number;
+    max_lon!: number;
 
   @ApiProperty()
   @IsLatitude()
-  max_lat!: number;
+    max_lat!: number;
 
   @ApiProperty({ required: false })
   @ValidateNested()
-  previous_area?: GPSAreaDTO;
+    previous_area?: GPSAreaDTO;
 }

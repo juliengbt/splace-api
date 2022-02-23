@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import Picture from 'src/entities/picture.entity';
-import { DeepPartial, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 @Injectable()
 export default class PictureService {
@@ -11,7 +12,7 @@ export default class PictureService {
   ) {}
 
   async addImages(id: Buffer, files: Express.Multer.File[]) : Promise<number> {
-    const imgs : DeepPartial<Picture>[] = files.map(
+    const imgs : QueryDeepPartialEntity<Picture>[] = files.map(
       (f) => ({ name: f.filename, equipment: { id } })
     );
     return this.repo.createQueryBuilder()

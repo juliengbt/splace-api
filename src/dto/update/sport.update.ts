@@ -10,14 +10,14 @@ export default class SportUpdate {
   @IsString()
   @IsNotEmpty()
   @Length(3, 10)
-  code!: string;
+    code!: string;
 
   @ApiProperty({ type: String, required: false })
   @IsString()
   @IsNotEmpty()
   @MaxLength(100)
   @IsOptional()
-  name?: string;
+    name?: string;
 
   @ApiProperty({ type: String, required: false, nullable: true })
   @IsString()
@@ -25,7 +25,7 @@ export default class SportUpdate {
   @MaxLength(256)
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)
-  description?: string | null;
+    description?: string | null;
 
   @ApiProperty({ type: String, required: false, nullable: true })
   @IsString()
@@ -33,12 +33,12 @@ export default class SportUpdate {
   @MaxLength(256)
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)
-  federation?: string | null;
+    federation?: string | null;
 
   @ApiProperty({ type: () => CategoryUpdate, required: false })
   @IsNotEmptyObject()
   @ValidateNested()
   @Type(() => CategoryUpdate)
   @IsOptional()
-  category?: CategoryUpdate;
+    category?: CategoryUpdate;
 }

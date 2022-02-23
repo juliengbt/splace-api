@@ -12,7 +12,7 @@ export default class AddressUpdate {
   @ApiProperty({ type: String, required: true })
   @Type(() => String)
   @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
-  id!: Buffer;
+    id!: Buffer;
 
   @ApiProperty({ type: String, required: false, nullable: true })
   @IsString()
@@ -20,7 +20,7 @@ export default class AddressUpdate {
   @MaxLength(10)
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)
-  street_num?: string | null;
+    street_num?: string | null;
 
   @ApiProperty({ type: String, required: false, nullable: true })
   @IsString()
@@ -28,7 +28,7 @@ export default class AddressUpdate {
   @MaxLength(100)
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)
-  street_name?: string | null;
+    street_name?: string | null;
 
   @ApiProperty({ type: String, required: false, nullable: true })
   @IsString()
@@ -36,18 +36,18 @@ export default class AddressUpdate {
   @MaxLength(100)
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)
-  locality?: string | null;
+    locality?: string | null;
 
   @ApiProperty({ type: Number, required: false, nullable: true })
   @IsInt()
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)
-  district?: number | null;
+    district?: number | null;
 
   @ApiProperty({ type: () => ZipcodeUpdate, required: false })
   @IsNotEmptyObject()
   @ValidateNested()
   @IsOptional()
   @Type(() => ZipcodeUpdate)
-  zipcode?: ZipcodeUpdate;
+    zipcode?: ZipcodeUpdate;
 }

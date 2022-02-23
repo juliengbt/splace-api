@@ -9,13 +9,13 @@ import Sport from './sport.entity';
 export default class Category {
   @ApiProperty({ type: String })
   @PrimaryColumn({ type: 'varchar', length: 10 })
-  code!: string;
+    code!: string;
 
   @ApiProperty({ type: String, required: true })
   @Column({ type: 'varchar', length: 50 })
-  name!: string;
+    name!: string;
 
   @ApiProperty({ type: () => Sport, isArray: true })
   @OneToMany(() => Sport, (sport) => sport.category, { cascade: false })
-  sports?: Sport[];
+    sports?: Sport[];
 }

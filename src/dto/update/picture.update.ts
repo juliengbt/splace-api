@@ -8,5 +8,5 @@ export default class PictureUpdate {
   @IsString()
   @IsNotEmpty()
   @MaxLength(45)
-  name!: string;
+    name!: string;
 }

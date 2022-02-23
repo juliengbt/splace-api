@@ -5,9 +5,9 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 export default class SoilType {
   @ApiProperty()
   @PrimaryColumn({ type: 'varchar', length: 10 })
-  code!: string;
+    code!: string;
 
   @ApiProperty()
   @Column({ type: 'varchar', length: 45 })
-  label!: string;
+    label!: string;
 }

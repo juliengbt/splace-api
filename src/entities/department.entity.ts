@@ -11,7 +11,7 @@ export default class Department {
   @PrimaryColumn({ type: 'varbinary', length: 16 })
   @Type(() => String)
   @Transform(({ value }) => (value as Buffer).toString('base64url'))
-  id!: Buffer;
+    id!: Buffer;
 
   @BeforeInsert()
   uuidToBin() {
@@ -20,9 +20,9 @@ export default class Department {
 
   @ApiProperty()
   @Column({ type: 'varchar', length: 45 })
-  name!: string;
+    name!: string;
 
   @ApiProperty()
   @Column({ type: 'varchar', length: 3 })
-  num!: string;
+    num!: string;
 }

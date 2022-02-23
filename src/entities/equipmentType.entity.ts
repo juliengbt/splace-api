@@ -5,9 +5,9 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 export default class EquipmentType {
   @ApiProperty()
   @PrimaryColumn({ type: 'varchar', length: 10 })
-  code!: string;
+    code!: string;
 
   @ApiProperty()
   @Column({ type: 'varchar', length: 60 })
-  label!: string;
+    label!: string;
 }

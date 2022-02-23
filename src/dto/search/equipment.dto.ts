@@ -32,48 +32,48 @@ export default class EquipmentDTO {
   @ArrayMinSize(1, { message: 'name must contain at least $constraint1 object' })
   @IsString({ each: true, message: 'name must contains strings' })
   @MinLength(3, { each: true, message: 'Minimum length for names is $constraint1' })
-  name?: string[];
+    name?: string[];
 
   @ApiProperty({ type: Boolean, required: false })
   @IsOptional()
   @IsBoolean({ message: 'open_access must be a boolean value' })
-  open_access?: boolean | null;
+    open_access?: boolean | null;
 
   @ApiProperty({ type: Boolean, required: false })
   @IsOptional()
   @IsBoolean({ message: 'locker must be a boolean value' })
-  locker?: boolean | null;
+    locker?: boolean | null;
 
   @ApiProperty({ type: Boolean, required: false })
   @IsOptional()
   @IsBoolean({ message: 'lighting must be a boolean value' })
-  lighting?: boolean | null;
+    lighting?: boolean | null;
 
   @ApiProperty({ type: Boolean, required: false })
   @IsOptional()
   @IsBoolean({ message: 'shower must be a boolean value' })
-  shower?: boolean | null;
+    shower?: boolean | null;
 
   @ApiProperty({ type: Number, required: false })
   @IsLatitude()
   @IsOptional()
-  latitude?: number;
+    latitude?: number;
 
   @ApiProperty({ type: Number, required: false })
   @IsLongitude()
   @IsOptional()
-  longitude?: number;
+    longitude?: number;
 
   @ApiProperty({ type: () => GPSAreaDTO, required: false })
   @ValidateNested()
   @IsOptional()
-  gps_area?: GPSAreaDTO;
+    gps_area?: GPSAreaDTO;
 
   @ApiProperty({ type: () => InstallationDTO, required: false })
   @ValidateNested()
   @IsOptional()
   @IsNotEmptyObject()
-  installation?: InstallationDTO | null;
+    installation?: InstallationDTO | null;
 
   @ApiProperty({ type: () => OwnerDTO, required: false, isArray: true })
   @IsArray()
@@ -81,7 +81,7 @@ export default class EquipmentDTO {
   @ValidateNested({ each: true })
   @IsOptional()
   @IsNotEmptyObject({}, { each: true })
-  owner?: OwnerDTO[];
+    owner?: OwnerDTO[];
 
   @ApiProperty({ type: () => SoilTypeDTO, required: false, isArray: true })
   @IsArray()
@@ -89,7 +89,7 @@ export default class EquipmentDTO {
   @ValidateNested({ each: true })
   @IsOptional()
   @IsNotEmptyObject({}, { each: true })
-  soil_type?: SoilTypeDTO[];
+    soil_type?: SoilTypeDTO[];
 
   @ApiProperty({ type: () => EquipmentNatureDTO, required: false, isArray: true })
   @IsArray()
@@ -97,7 +97,7 @@ export default class EquipmentDTO {
   @ValidateNested({ each: true })
   @IsOptional()
   @IsNotEmptyObject({}, { each: true })
-  equipment_nature?: EquipmentNatureDTO[];
+    equipment_nature?: EquipmentNatureDTO[];
 
   @ApiProperty({ type: () => EquipmentTypeDTO, required: false, isArray: true })
   @IsArray()
@@ -105,7 +105,7 @@ export default class EquipmentDTO {
   @ValidateNested({ each: true })
   @IsOptional()
   @IsNotEmptyObject({}, { each: true })
-  equipment_type?: EquipmentTypeDTO[];
+    equipment_type?: EquipmentTypeDTO[];
 
   @ApiProperty({ type: () => EquipmentLevelDTO, required: false, isArray: true })
   @IsArray()
@@ -113,7 +113,7 @@ export default class EquipmentDTO {
   @ValidateNested({ each: true })
   @IsOptional()
   @IsNotEmptyObject({}, { each: true })
-  equipment_level?: EquipmentLevelDTO[] | null;
+    equipment_level?: EquipmentLevelDTO[] | null;
 
   @ApiProperty({ type: () => SportDTO, required: false, isArray: true })
   @IsArray()
@@ -122,12 +122,12 @@ export default class EquipmentDTO {
   @IsOptional()
   @Type(() => SportDTO)
   @IsNotEmptyObject({}, { each: true })
-  sports?: SportDTO[];
+    sports?: SportDTO[];
 
   @ApiProperty({ type: () => Number, required: false })
   @IsInt()
   @Min(1)
   @Max(5)
   @IsOptional()
-  rating?: number | null;
+    rating?: number | null;
 }

@@ -8,12 +8,12 @@ export default class CategoryUpdate {
   @IsString()
   @IsNotEmpty()
   @Length(3, 10)
-  code!: string;
+    code!: string;
 
   @ApiProperty({ type: String, required: false })
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
   @IsOptional()
-  name?: string;
+    name?: string;
 }

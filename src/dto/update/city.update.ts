@@ -9,19 +9,19 @@ export default class CityUpdate {
   @ApiProperty({ type: String, required: true })
   @Type(() => String)
   @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
-  id!: Buffer;
+    id!: Buffer;
 
   @ApiProperty({ type: String, required: false })
   @IsString()
   @IsNotEmpty()
   @MaxLength(45)
   @IsOptional()
-  name?: string;
+    name?: string;
 
   @ApiProperty({ type: () => DepartmentUpdate, required: false })
   @IsNotEmptyObject()
   @ValidateNested()
   @IsOptional()
   @Type(() => DepartmentUpdate)
-  department?: DepartmentUpdate;
+    department?: DepartmentUpdate;
 }

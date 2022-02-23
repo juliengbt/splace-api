@@ -8,11 +8,11 @@ export default class OwnerCreate {
   @IsString()
   @IsNotEmpty()
   @Length(3, 10, { message: 'Code must be between 3 and 10 characters' })
-  code!: string;
+    code!: string;
 
   @ApiProperty({ type: String, required: true })
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
-  label!: string;
+    label!: string;
 }

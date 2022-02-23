@@ -8,11 +8,11 @@ export default class CategoryCreate {
   @IsString()
   @IsNotEmpty()
   @Length(3, 10)
-  code!: string;
+    code!: string;
 
   @ApiProperty({ type: String, required: true })
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
-  name!: string;
+    name!: string;
 }

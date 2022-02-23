@@ -13,7 +13,7 @@ export default class Address {
   @PrimaryColumn({ type: 'varbinary', length: 16 })
   @Type(() => String)
   @Transform(({ value }) => (value as Buffer).toString('base64url'))
-  id!: Buffer;
+    id!: Buffer;
 
   @BeforeInsert()
   uuidToBin() {
@@ -22,22 +22,22 @@ export default class Address {
 
   @ApiProperty({ type: String, nullable: true })
   @Column({ nullable: true, type: 'varchar', length: 10 })
-  street_num!: string | null;
+    street_num!: string | null;
 
   @ApiProperty({ type: String, nullable: true })
   @Column({ nullable: true, type: 'varchar', length: 100 })
-  street_name!: string | null;
+    street_name!: string | null;
 
   @ApiProperty({ type: String, nullable: true })
   @Column({ nullable: true, type: 'varchar', length: 100 })
-  locality!: string | null;
+    locality!: string | null;
 
   @ApiProperty({ type: Number, nullable: true })
   @Column({ nullable: true, type: 'mediumint' })
-  district!: number | null;
+    district!: number | null;
 
   @ApiProperty({ type: () => Zipcode, required: true })
   @ManyToOne(() => Zipcode, (zip) => zip.id, { cascade: false })
   @JoinColumn({ name: 'id_zipcode' })
-  zipcode!: Zipcode;
+    zipcode!: Zipcode;
 }

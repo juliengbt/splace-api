@@ -9,18 +9,18 @@ export default class ZipcodeUpdate {
   @ApiProperty({ type: String, required: true })
   @Type(() => String)
   @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
-  id!: Buffer;
+    id!: Buffer;
 
   @ApiProperty({ type: Number, required: false })
   @IsInt()
   @Max(100000)
   @IsOptional()
-  code?: number;
+    code?: number;
 
   @ApiProperty({ type: () => CityUpdate, required: false })
   @Type(() => CityUpdate)
   @ValidateNested()
   @IsNotEmptyObject()
   @IsOptional()
-  city?: CityUpdate;
+    city?: CityUpdate;
 }

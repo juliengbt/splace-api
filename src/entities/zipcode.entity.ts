@@ -5,7 +5,6 @@ import {
   Column, Entity, JoinColumn, ManyToOne, PrimaryColumn
 } from 'typeorm';
 import { v4 } from 'uuid';
-// eslint-disable-next-line import/no-cycle
 import City from './city.entity';
 
 @Entity('Zipcode')
@@ -14,7 +13,7 @@ export default class Zipcode {
   @PrimaryColumn({ type: 'varbinary', length: 16 })
   @Type(() => String)
   @Transform(({ value }) => (value as Buffer).toString('base64url'))
-  id!: Buffer;
+    id!: Buffer;
 
   @BeforeInsert()
   uuidToBin() {
@@ -23,10 +22,10 @@ export default class Zipcode {
 
   @ApiProperty()
   @Column({ type: 'mediumint' })
-  code!: number;
+    code!: number;
 
   @ApiProperty({ type: () => City, required: true })
   @ManyToOne(() => City, (city) => city.id, { cascade: false })
   @JoinColumn({ name: 'id_city' })
-  city!: City;
+    city!: City;
 }

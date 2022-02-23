@@ -8,12 +8,12 @@ export default class EquipmentNatureUpdate {
   @IsString()
   @IsNotEmpty()
   @Length(3, 10)
-  code!: string;
+    code!: string;
 
   @ApiProperty({ type: String, required: false })
   @IsString()
   @IsNotEmpty()
   @MaxLength(45)
   @IsOptional()
-  label?: string;
+    label?: string;
 }

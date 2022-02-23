@@ -18,7 +18,7 @@ export default class Installation {
   @PrimaryColumn({ type: 'varbinary', length: 16 })
   @Type(() => String)
   @Transform(({ value }) => (value as Buffer).toString('base64url'))
-  id!: Buffer;
+    id!: Buffer;
 
   @BeforeInsert()
   uuidToBin() {

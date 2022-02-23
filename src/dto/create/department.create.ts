@@ -8,14 +8,14 @@ export default class DepartmentCreate {
   @ApiProperty({ type: String, required: false })
   @Type(() => String)
   @Transform(({ value }) => (value ? Buffer.from((value as string), 'base64url') : undefined))
-  id?: Buffer;
+    id?: Buffer;
 
   @ApiProperty({ type: String, required: false })
   @IsString()
   @IsNotEmpty()
   @MaxLength(45)
   @ValidateIf((object, _value) => object.id === undefined)
-  name?: string;
+    name?: string;
 
   @ApiProperty()
   @ApiProperty({ type: String, required: false })
@@ -23,5 +23,5 @@ export default class DepartmentCreate {
   @IsNotEmpty()
   @Length(1, 3)
   @ValidateIf((object, _value) => object.id === undefined)
-  num?: string;
+    num?: string;
 }

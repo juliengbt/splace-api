@@ -6,6 +6,7 @@ import Equipment from 'src/entities/equipment.entity';
 import {
   Brackets, DeepPartial, Repository, SelectQueryBuilder
 } from 'typeorm';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 @Injectable()
 export default class EquipmentService {
@@ -126,11 +127,11 @@ export default class EquipmentService {
       .getOne();
   }
 
-  async insert(equipment: DeepPartial<Equipment>): Promise<Partial<Equipment>> {
+  async insert(equipment: Equipment): Promise<Partial<Equipment>> {
     return this.repo.createQueryBuilder()
       .insert()
       .into(Equipment)
-      .values(equipment)
+      .values(equipment as QueryDeepPartialEntity<Equipment>)
       .execute()
       .then((res) => res.identifiers[0]);
   }
