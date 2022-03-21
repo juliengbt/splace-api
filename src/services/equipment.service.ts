@@ -115,9 +115,7 @@ export default class EquipmentService {
       }));
     }
 
-    if (Object.keys(equipmentDTO).length === 0) query.addOrderBy('RAND()');
-
-    return query.skip(offset).take(20).getMany();
+    return query.skip(offset).take(100).getMany();
   }
 
   async findById(id: Buffer): Promise<Equipment | undefined> {

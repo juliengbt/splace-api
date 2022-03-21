@@ -66,11 +66,14 @@ export default class EquipmentDTO {
 
   @ApiProperty({ type: () => GPSAreaDTO, required: false })
   @ValidateNested()
+  @IsNotEmptyObject()
+  @Type(() => GPSAreaDTO)
   @IsOptional()
     gps_area?: GPSAreaDTO;
 
   @ApiProperty({ type: () => InstallationDTO, required: false })
   @ValidateNested()
+  @Type(() => InstallationDTO)
   @IsOptional()
   @IsNotEmptyObject()
     installation?: InstallationDTO | null;
@@ -79,6 +82,7 @@ export default class EquipmentDTO {
   @IsArray()
   @ArrayMinSize(1, { message: 'owner must contain at least $constraint1 object' })
   @ValidateNested({ each: true })
+  @Type(() => OwnerDTO)
   @IsOptional()
   @IsNotEmptyObject({}, { each: true })
     owner?: OwnerDTO[];
@@ -87,6 +91,7 @@ export default class EquipmentDTO {
   @IsArray()
   @ArrayMinSize(1, { message: 'soil_type must contain at least $constraint1 object' })
   @ValidateNested({ each: true })
+  @Type(() => SoilTypeDTO)
   @IsOptional()
   @IsNotEmptyObject({}, { each: true })
     soil_type?: SoilTypeDTO[];
@@ -95,6 +100,7 @@ export default class EquipmentDTO {
   @IsArray()
   @ArrayMinSize(1, { message: 'equipment_nature must contain at least $constraint1 object' })
   @ValidateNested({ each: true })
+  @Type(() => EquipmentNatureDTO)
   @IsOptional()
   @IsNotEmptyObject({}, { each: true })
     equipment_nature?: EquipmentNatureDTO[];
@@ -103,6 +109,7 @@ export default class EquipmentDTO {
   @IsArray()
   @ArrayMinSize(1, { message: 'equipment_type must contain at least $constraint1 object' })
   @ValidateNested({ each: true })
+  @Type(() => EquipmentTypeDTO)
   @IsOptional()
   @IsNotEmptyObject({}, { each: true })
     equipment_type?: EquipmentTypeDTO[];
@@ -111,6 +118,7 @@ export default class EquipmentDTO {
   @IsArray()
   @ArrayMinSize(1, { message: 'equipment_level must contain at least $constraint1 object' })
   @ValidateNested({ each: true })
+  @Type(() => EquipmentLevelDTO)
   @IsOptional()
   @IsNotEmptyObject({}, { each: true })
     equipment_level?: EquipmentLevelDTO[] | null;
@@ -119,6 +127,7 @@ export default class EquipmentDTO {
   @IsArray()
   @ArrayMinSize(1, { message: 'sports must contain at least $constraint1 object' })
   @ValidateNested({ each: true })
+  @Type(() => SportDTO)
   @IsOptional()
   @Type(() => SportDTO)
   @IsNotEmptyObject({}, { each: true })

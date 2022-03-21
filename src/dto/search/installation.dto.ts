@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   ArrayMinSize,
   IsArray, IsBoolean, IsNotEmptyObject, IsOptional, MinLength, ValidateNested
@@ -25,6 +26,7 @@ export default class InstallationDTO {
 
   @ApiProperty({ type: () => AddressDTO, required: false })
   @ValidateNested()
+  @Type(() => AddressDTO)
   @IsOptional()
   @IsNotEmptyObject()
     address?: AddressDTO | null;

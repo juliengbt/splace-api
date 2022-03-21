@@ -30,6 +30,7 @@ import EquipmentService from 'src/services/equipment.service';
 import { validate } from 'class-validator';
 import ParseUUIDPipe from 'src/pipes/parse-uuid.pipe';
 import EquipmentUpdate from 'src/dto/update/equipment.update';
+import { distanceEarthPoints, getArea } from 'src/utils/functions';
 
 @ApiTags('Equipment')
 @Controller('equipment')
@@ -65,9 +66,16 @@ export default class EquipmentController {
   @ApiQuery({ name: 'offset', required: false })
   @ApiNotAcceptableResponse()
   @UseInterceptors(ClassSerializerInterceptor)
-  async getUsingDTO(@Body() equipmentDTO: EquipmentDTO, @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number): Promise<Equipment[]> {
+  async getUsingDTO(
+    @Body() equipmentDTO: EquipmentDTO, 
+      @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number
+  ): Promise<Equipment[]> {
+
+    if (offset >= 100) throw new NotAcceptableException('Maximum number of object is limited to 100');
+
     const equipmentParam = equipmentDTO;
     const installationDTO = equipmentDTO.installation;
+
     if (equipmentParam.name) {
       const last = `>${equipmentParam.name.pop()}*`;
       equipmentParam.name = [...new Set(equipmentParam.name)].flatMap((x) => x.split(' ')).filter((str) => str.length > 2);
@@ -90,13 +98,18 @@ export default class EquipmentController {
       }
     }
 
-    if (installationDTO !== undefined) equipmentParam.installation = installationDTO;
+    if (!(equipmentParam.latitude && equipmentParam.longitude)) {
+      if (equipmentDTO.gps_area) delete equipmentDTO.gps_area;
+    } else if (!equipmentDTO.gps_area ||
+        distanceEarthPoints(
+          equipmentDTO.gps_area.max_lat, 
+          equipmentDTO.gps_area.max_lon, 
+          equipmentDTO.gps_area.min_lat, 
+          equipmentDTO.gps_area.min_lon) > 150)
+      equipmentDTO.gps_area = getArea(equipmentParam.latitude, equipmentParam.longitude, 75);
 
-    await validate(equipmentParam).then((errors) => {
-      if (errors.length > 0) {
-        throw new NotAcceptableException(errors.map((err) => err.toString()));
-      }
-    });
+
+    if (installationDTO !== undefined) equipmentParam.installation = installationDTO;
 
     return this.service.findUsingDTO(equipmentParam, offset < 0 ? 0 : offset);
   }

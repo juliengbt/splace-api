@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiNotFoundResponse,
+  ApiParam,
   ApiQuery,
   ApiResponse,
   ApiTags
@@ -42,7 +43,7 @@ export default class SportController {
     description: 'Sport object',
     type: Sport
   })
-  @ApiQuery({ name: 'code', required: true })
+  @ApiParam({ name: 'code', required: true })
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiNotFoundResponse({ description: 'Not found.' })
   @Get('/code/:code')
