@@ -3,7 +3,6 @@ import GPSAreaDTO from 'src/dto/search/gps_area.dto';
 const { PI, sin, cos, asin, atan2, sqrt } = Math;
 const RAYON_TERRE = 6731.008;
 
-
 function radToDeg(val: number): number {
   return (val * 180) / PI;
 }
@@ -12,7 +11,12 @@ function degToRad(val: number): number {
   return (val * PI) / 180;
 }
 
-export function distanceEarthPoints(lat1: number, long1: number, lat2: number, long2: number) {
+export function distanceEarthPoints(
+  lat1: number,
+  long1: number,
+  lat2: number,
+  long2: number
+) {
   // Convert the latitudes
   // and longitudes
   // from degree to radians.
@@ -28,7 +32,8 @@ export function distanceEarthPoints(lat1: number, long1: number, lat2: number, l
   const sinDLat = sin(dlat / 2);
   const sinDLong = sin(dlong / 2);
 
-  let res: number = sinDLat * sinDLat + cos(lat1) * cos(lat2) * sinDLong * sinDLong;
+  let res: number =
+    sinDLat * sinDLat + cos(lat1) * cos(lat2) * sinDLong * sinDLong;
 
   res = 2 * asin(sqrt(res));
 
@@ -38,25 +43,20 @@ export function distanceEarthPoints(lat1: number, long1: number, lat2: number, l
   return res;
 }
 
-function getOffsetPos(
-  lat: number,
-  lon: number,
-  dist: number,
-  orient: number,
-) {
+function getOffsetPos(lat: number, lon: number, dist: number, orient: number) {
   const lat1 = degToRad(lat);
 
   const lat2 = asin(
     sin(lat1) * cos(dist / RAYON_TERRE) +
-      cos(lat1) * sin(dist / RAYON_TERRE) * cos(orient),
+      cos(lat1) * sin(dist / RAYON_TERRE) * cos(orient)
   );
   const lon2 =
     lon +
     radToDeg(
       atan2(
         sin(orient) * sin(dist / RAYON_TERRE) * cos(lat1),
-        cos(dist / RAYON_TERRE) - sin(lat1) * sin(lat2),
-      ),
+        cos(dist / RAYON_TERRE) - sin(lat1) * sin(lat2)
+      )
     );
 
   return {
