@@ -13,18 +13,13 @@ export default class EquipmentService {
     private repo: Repository<Equipment>
   ) {}
 
-  async findUsingDTO(
-    equipmentDTO: EquipmentDTO,
-    offset: number
-  ): Promise<Equipment[]> {
+  async findUsingDTO(equipmentDTO: EquipmentDTO, offset: number): Promise<Equipment[]> {
     const query = this.getFullObjectQuery();
     // Sports
     if (equipmentDTO.sports && equipmentDTO.sports.length > 0) {
-      query
-        .where('Equipment_sports.code_sport IN (:...sports_code)')
-        .setParameters({
-          sports_code: equipmentDTO.sports.map((s) => s.code).filter((s) => s)
-        });
+      query.where('Equipment_sports.code_sport IN (:...sports_code)').setParameters({
+        sports_code: equipmentDTO.sports.map((s) => s.code).filter((s) => s)
+      });
     }
 
     // Position
@@ -45,34 +40,22 @@ export default class EquipmentService {
 
       if (equipmentDTO.gps_area.previous_area) {
         // A drawing worth 1000 words
-        if (
-          equipmentDTO.gps_area.previous_area.max_lat <=
-          equipmentDTO.gps_area.max_lat
-        ) {
+        if (equipmentDTO.gps_area.previous_area.max_lat <= equipmentDTO.gps_area.max_lat) {
           query.andWhere('Equipment.latitude > :prev_max_lat', {
             max_lat: equipmentDTO.gps_area.previous_area.max_lat
           });
         }
-        if (
-          equipmentDTO.gps_area.previous_area.min_lat >=
-          equipmentDTO.gps_area.min_lat
-        ) {
+        if (equipmentDTO.gps_area.previous_area.min_lat >= equipmentDTO.gps_area.min_lat) {
           query.andWhere('Equipment.latitude < :prev_min_lat', {
             min_lat: equipmentDTO.gps_area.previous_area.min_lat
           });
         }
-        if (
-          equipmentDTO.gps_area.previous_area.max_lon <=
-          equipmentDTO.gps_area.max_lon
-        ) {
+        if (equipmentDTO.gps_area.previous_area.max_lon <= equipmentDTO.gps_area.max_lon) {
           query.andWhere('Equipment.longitude > :prev_max_lon', {
             max_lon: equipmentDTO.gps_area.previous_area.max_lon
           });
         }
-        if (
-          equipmentDTO.gps_area.previous_area.min_lon >=
-          equipmentDTO.gps_area.min_lon
-        ) {
+        if (equipmentDTO.gps_area.previous_area.min_lon >= equipmentDTO.gps_area.min_lon) {
           query.andWhere('Equipment.longitude < :prev_min_lon', {
             min_lon: equipmentDTO.gps_area.previous_area.min_lon
           });
@@ -131,32 +114,22 @@ export default class EquipmentService {
     // List parameters
     if (equipmentDTO.soil_type && equipmentDTO.soil_type.length > 0) {
       query.andWhere('soil_type.code in (:...soil_types)', {
-        soil_types: equipmentDTO.soil_type
-          .filter((s) => s.code !== undefined)
-          .map((s) => s.code)
+        soil_types: equipmentDTO.soil_type.filter((s) => s.code !== undefined).map((s) => s.code)
       });
     }
     if (equipmentDTO.owner && equipmentDTO.owner.length > 0) {
       query.andWhere('owner.code in (:...owners)', {
-        owners: equipmentDTO.owner
-          .filter((s) => s.code !== undefined)
-          .map((s) => s.code)
+        owners: equipmentDTO.owner.filter((s) => s.code !== undefined).map((s) => s.code)
       });
     }
-    if (
-      equipmentDTO.equipment_level &&
-      equipmentDTO.equipment_level.length > 0
-    ) {
+    if (equipmentDTO.equipment_level && equipmentDTO.equipment_level.length > 0) {
       query.andWhere('equipment_level.code in (:...equipment_levels)', {
         equipment_levels: equipmentDTO.equipment_level
           .filter((s) => s.code !== undefined)
           .map((s) => s.code)
       });
     }
-    if (
-      equipmentDTO.equipment_nature &&
-      equipmentDTO.equipment_nature.length > 0
-    ) {
+    if (equipmentDTO.equipment_nature && equipmentDTO.equipment_nature.length > 0) {
       query.andWhere('equipment_nature.code in (:...equipment_natures)', {
         equipment_natures: equipmentDTO.equipment_nature
           .filter((s) => s.code !== undefined)
@@ -172,45 +145,26 @@ export default class EquipmentService {
     }
 
     // Keyword research
-    if (
-      equipmentDTO.name ||
-      equipmentDTO.installation?.name ||
-      equipmentDTO.installation?.address?.city?.names
-    ) {
+    if (equipmentDTO.name || equipmentDTO.installation?.name) {
       query.andWhere(
-        new Brackets((builder) => {
-          const equipmentClause =
-            'MATCH(Equipment.name) AGAINST (:e_name IN BOOLEAN MODE)';
-          const installationClause =
-            'MATCH(installation.name) AGAINST (:i_name IN BOOLEAN MODE)';
-          const cityClause =
-            'MATCH(city.name) AGAINST (:c_name IN BOOLEAN MODE)';
+        new Brackets(() => {
+          const equipmentClause = 'MATCH(Equipment.name) AGAINST (:e_name IN BOOLEAN MODE)';
+          const installationClause = 'MATCH(installation.name) AGAINST (:i_name IN BOOLEAN MODE)';
 
           const useClauses = [];
 
           if (equipmentDTO.name) {
-            builder.andWhere(equipmentClause, {
-              e_name: equipmentDTO.name?.join(' ')
-            });
+            query.setParameter('e_name', '*' + equipmentDTO.name.join('*') + '*');
             useClauses.push(equipmentClause);
           }
           if (equipmentDTO.installation?.name) {
-            builder.orWhere(installationClause, {
-              i_name: equipmentDTO.installation.name.join(' ')
-            });
+            query.setParameter('i_name', '*' + equipmentDTO.installation.name.join('*') + '*');
+
             useClauses.push(installationClause);
-          }
-          if (
-            equipmentDTO.installation?.address?.city?.names &&
-            !equipmentDTO.installation.address?.city?.ids?.length
-          ) {
-            useClauses.push(cityClause);
-            query.setParameters({
-              c_name: equipmentDTO.installation.address.city.names.join(' ')
-            });
           }
           query
             .addSelect(`(${useClauses.join(' + ')})`, 'keyword_rank')
+            .having('keyword_rank > 0')
             .addOrderBy('keyword_rank', 'DESC');
         })
       );
@@ -247,35 +201,19 @@ export default class EquipmentService {
   private getFullObjectQuery(): SelectQueryBuilder<Equipment> {
     return this.repo
       .createQueryBuilder('Equipment')
-      .leftJoinAndMapOne(
-        'Equipment.installation',
-        'Equipment.installation',
-        'installation'
-      )
-      .leftJoinAndMapOne(
-        'installation.address',
-        'installation.address',
-        'address'
-      )
+      .leftJoinAndMapOne('Equipment.installation', 'Equipment.installation', 'installation')
+      .leftJoinAndMapOne('installation.address', 'installation.address', 'address')
       .leftJoinAndMapOne('address.zipcode', 'address.zipcode', 'zipcode')
       .leftJoinAndMapOne('zipcode.city', 'zipcode.city', 'city')
       .leftJoinAndMapOne('city.department', 'city.department', 'department')
       .leftJoinAndMapOne('Equipment.owner', 'Equipment.owner', 'owner')
-      .leftJoinAndMapOne(
-        'Equipment.soil_type',
-        'Equipment.soil_type',
-        'soil_type'
-      )
+      .leftJoinAndMapOne('Equipment.soil_type', 'Equipment.soil_type', 'soil_type')
       .leftJoinAndMapOne(
         'Equipment.equipment_nature',
         'Equipment.equipment_nature',
         'equipment_nature'
       )
-      .leftJoinAndMapOne(
-        'Equipment.equipment_type',
-        'Equipment.equipment_type',
-        'equipment_type'
-      )
+      .leftJoinAndMapOne('Equipment.equipment_type', 'Equipment.equipment_type', 'equipment_type')
       .leftJoinAndMapOne(
         'Equipment.equipment_level',
         'Equipment.equipment_level',
@@ -283,10 +221,6 @@ export default class EquipmentService {
       )
       .leftJoinAndMapMany('Equipment.sports', 'Equipment.sports', 'sports')
       .leftJoinAndMapOne('sports.category', 'sports.category', 'category')
-      .leftJoinAndMapMany(
-        'Equipment.pictures',
-        'Equipment.pictures',
-        'pictures'
-      );
+      .leftJoinAndMapMany('Equipment.pictures', 'Equipment.pictures', 'pictures');
   }
 }

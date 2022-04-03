@@ -4,7 +4,11 @@
     "project": "tsconfig.json",
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint", "@typescript-eslint/eslint-plugin", "import"],
+  "plugins": [
+    "@typescript-eslint",
+    "@typescript-eslint/eslint-plugin",
+    "import"
+  ],
   "extends": [
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
@@ -17,6 +21,7 @@
     "jest": true
   },
   "rules": {
+    "indent": "off",
     "@typescript-eslint/interface-name-prefix": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",

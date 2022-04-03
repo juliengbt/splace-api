@@ -50,7 +50,8 @@ export default class EquipmentController {
   @UseInterceptors(ClassSerializerInterceptor)
   async getById(@Param('id', new ParseUUIDPipe()) id: Buffer): Promise<Equipment | undefined> {
     const equipment = await this.service.findById(id);
-    if (equipment === undefined) throw new NotFoundException(`No equipment found with id : ${id.toString('base64url')}`);
+    if (equipment === undefined)
+      throw new NotFoundException(`No equipment found with id : ${id.toString('base64url')}`);
     return equipment;
   }
 
@@ -67,47 +68,48 @@ export default class EquipmentController {
   @ApiNotAcceptableResponse()
   @UseInterceptors(ClassSerializerInterceptor)
   async getUsingDTO(
-    @Body() equipmentDTO: EquipmentDTO, 
-      @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number
+    @Body() equipmentDTO: EquipmentDTO,
+    @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number
   ): Promise<Equipment[]> {
-
-    if (offset >= 100) throw new NotAcceptableException('Maximum number of object is limited to 100');
+    if (offset >= 100)
+      throw new NotAcceptableException('Maximum number of object is limited to 100');
 
     const equipmentParam = equipmentDTO;
     const installationDTO = equipmentDTO.installation;
 
     if (equipmentParam.name) {
-      const last = `>${equipmentParam.name.pop()}*`;
-      equipmentParam.name = [...new Set(equipmentParam.name)].flatMap((x) => x.split(' ')).filter((str) => str.length > 2);
-      equipmentParam.name.push(last);
+      equipmentParam.name = [...new Set(equipmentParam.name)]
+        .flatMap((x) => x.split(' '))
+        .filter((str) => str.length > 2);
     }
 
     if (installationDTO?.name) {
-      const last = `>${installationDTO.name.pop()}*`;
-      installationDTO.name = [...new Set(installationDTO.name)].flatMap((x) => x.split(' ')).filter((str) => str.length > 2);
-      installationDTO.name.push(last);
+      installationDTO.name = [...new Set(installationDTO.name)]
+        .flatMap((x) => x.split(' '))
+        .filter((str) => str.length > 2);
     }
 
     if (installationDTO?.address?.city) {
-      if (installationDTO.address?.city?.names) {
-        installationDTO.address.city.names = [...new Set(installationDTO.address.city.names)].flatMap((x) => x.split(' ')).filter((str) => str.length > 2);
-      }
-      if (installationDTO?.address.city.zipcode) throw new NotAcceptableException('Zip code is not allowed here');
+      if (installationDTO?.address.city.zipcode)
+        throw new NotAcceptableException('Zip code is not allowed here');
       if (installationDTO.address.city.ids) {
         installationDTO.address.city.ids = [...new Set(installationDTO.address.city.ids)];
       }
     }
 
-    if (!(equipmentParam.latitude && equipmentParam.longitude)) {
+    if (!equipmentParam.latitude || !equipmentParam.longitude) {
       if (equipmentDTO.gps_area) delete equipmentDTO.gps_area;
-    } else if (!equipmentDTO.gps_area ||
-        distanceEarthPoints(
-          equipmentDTO.gps_area.max_lat, 
-          equipmentDTO.gps_area.max_lon, 
-          equipmentDTO.gps_area.min_lat, 
-          equipmentDTO.gps_area.min_lon) > 150)
-      equipmentDTO.gps_area = getArea(equipmentParam.latitude, equipmentParam.longitude, 75);
-
+    } else if (
+      !equipmentDTO.gps_area ||
+      (equipmentParam.name && equipmentParam.name.length > 0) ||
+      distanceEarthPoints(
+        equipmentDTO.gps_area.max_lat,
+        equipmentDTO.gps_area.max_lon,
+        equipmentDTO.gps_area.min_lat,
+        equipmentDTO.gps_area.min_lon
+      ) > 200 // 200km
+    )
+      equipmentDTO.gps_area = getArea(equipmentParam.latitude, equipmentParam.longitude, 200);
 
     if (installationDTO !== undefined) equipmentParam.installation = installationDTO;
 
@@ -124,13 +126,19 @@ export default class EquipmentController {
   @ApiNotAcceptableResponse({ description: 'Equipment CU is not valid.' })
   @ApiBody({ type: EquipmentUpdate })
   @UseInterceptors(ClassSerializerInterceptor)
-  async update(@Body() equipmentU: EquipmentUpdate) : Promise<Equipment> {
-    if (!equipmentU.id) throw new NotAcceptableException('id must be provided in order to update equipment');
+  async update(@Body() equipmentU: EquipmentUpdate): Promise<Equipment> {
+    if (!equipmentU.id)
+      throw new NotAcceptableException('id must be provided in order to update equipment');
 
-    const errors = await validate(equipmentU, { skipUndefinedProperties: true });
+    const errors = await validate(equipmentU, {
+      skipUndefinedProperties: true
+    });
 
     if (errors.length > 0) throw new NotAcceptableException(errors);
 
-    return this.service.update({ ...equipmentU, id: Buffer.from(equipmentU.id) });
+    return this.service.update({
+      ...equipmentU,
+      id: Buffer.from(equipmentU.id)
+    });
   }
 }
