@@ -6,24 +6,23 @@ import fastifyHelmet from 'fastify-helmet';
 import AppModule from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter(),
-  );
+  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
 
-  app.useGlobalPipes(new ValidationPipe({
-    transformOptions: { enableImplicitConversion: true },
-    transform: true
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transformOptions: { enableImplicitConversion: true },
+      transform: true
+    })
+  );
 
   await app.register(fastifyHelmet, {
     contentSecurityPolicy: {
       directives: {
-        defaultSrc: ['\'self\''],
-        styleSrc: ['\'self\'', '\'unsafe-inline\'', 'cdn.jsdelivr.net', 'fonts.googleapis.com'],
-        fontSrc: ['\'self\'', 'fonts.gstatic.com'],
-        imgSrc: ['\'self\'', 'data:', 'cdn.jsdelivr.net'],
-        scriptSrc: ['\'self\'', 'https: \'unsafe-inline\'', 'cdn.jsdelivr.net']
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'", 'cdn.jsdelivr.net', 'fonts.googleapis.com'],
+        fontSrc: ["'self'", 'fonts.gstatic.com'],
+        imgSrc: ["'self'", 'data:', 'cdn.jsdelivr.net'],
+        scriptSrc: ["'self'", "https: 'unsafe-inline'", 'cdn.jsdelivr.net']
       }
     }
   });
@@ -43,6 +42,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('doc', app, document);
 
-  await app.listen(parseInt(process.env.SERVER_PORT || "8080"));
+  await app.listen(parseInt(process.env.SERVER_PORT || '8080'), '0.0.0.0');
 }
 bootstrap();
