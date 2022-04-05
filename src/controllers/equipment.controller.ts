@@ -97,19 +97,28 @@ export default class EquipmentController {
       }
     }
 
-    if (!equipmentParam.latitude || !equipmentParam.longitude) {
-      if (equipmentDTO.gps_area) delete equipmentDTO.gps_area;
-    } else if (
-      !equipmentDTO.gps_area ||
-      (equipmentParam.name && equipmentParam.name.length > 0) ||
-      distanceEarthPoints(
-        equipmentDTO.gps_area.max_lat,
-        equipmentDTO.gps_area.max_lon,
-        equipmentDTO.gps_area.min_lat,
-        equipmentDTO.gps_area.min_lon
-      ) > 200 // 200km
-    )
-      equipmentDTO.gps_area = getArea(equipmentParam.latitude, equipmentParam.longitude, 200);
+    /* This is important because if latitude and longitude are set then server will calculate distance from equipments
+       to lat lon, and then we have to restrict the number of equipment in a certain area in order avoid a large amount
+       of calculation */
+
+    // Latitude && longitude are set
+    if (equipmentParam.latitude && equipmentParam.longitude) {
+      // If user did not define an area
+      // or if user is searching by name
+      // or if area surface > 200 km2
+      if (
+        !equipmentDTO.gps_area ||
+        (equipmentParam.name && equipmentParam.name.length > 0) ||
+        distanceEarthPoints(
+          equipmentDTO.gps_area.max_lat,
+          equipmentDTO.gps_area.max_lon,
+          equipmentDTO.gps_area.min_lat,
+          equipmentDTO.gps_area.min_lon
+        ) > 200 // 200km
+      ) {
+        equipmentDTO.gps_area = getArea(equipmentParam.latitude, equipmentParam.longitude, 200);
+      }
+    }
 
     if (installationDTO !== undefined) equipmentParam.installation = installationDTO;
 

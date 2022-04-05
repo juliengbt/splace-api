@@ -11,12 +11,7 @@ function degToRad(val: number): number {
   return (val * PI) / 180;
 }
 
-export function distanceEarthPoints(
-  lat1: number,
-  long1: number,
-  lat2: number,
-  long2: number
-) {
+export function distanceEarthPoints(lat1: number, long1: number, lat2: number, long2: number) {
   // Convert the latitudes
   // and longitudes
   // from degree to radians.
@@ -32,8 +27,7 @@ export function distanceEarthPoints(
   const sinDLat = sin(dlat / 2);
   const sinDLong = sin(dlong / 2);
 
-  let res: number =
-    sinDLat * sinDLat + cos(lat1) * cos(lat2) * sinDLong * sinDLong;
+  let res: number = sinDLat * sinDLat + cos(lat1) * cos(lat2) * sinDLong * sinDLong;
 
   res = 2 * asin(sqrt(res));
 
@@ -47,8 +41,7 @@ function getOffsetPos(lat: number, lon: number, dist: number, orient: number) {
   const lat1 = degToRad(lat);
 
   const lat2 = asin(
-    sin(lat1) * cos(dist / RAYON_TERRE) +
-      cos(lat1) * sin(dist / RAYON_TERRE) * cos(orient)
+    sin(lat1) * cos(dist / RAYON_TERRE) + cos(lat1) * sin(dist / RAYON_TERRE) * cos(orient)
   );
   const lon2 =
     lon +
@@ -66,11 +59,7 @@ function getOffsetPos(lat: number, lon: number, dist: number, orient: number) {
 }
 
 // Create square area, lat lng is the center and 2*dist is the diagonal
-export function getArea(
-  lat: number,
-  lon: number,
-  distance: number
-): GPSAreaDTO {
+export function getArea(lat: number, lon: number, distance: number): GPSAreaDTO {
   const max = getOffsetPos(lat, lon, distance, degToRad(45));
   const min = getOffsetPos(lat, lon, distance, degToRad(225));
 
