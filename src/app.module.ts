@@ -27,7 +27,7 @@ import ZipcodeModule from './modules/zipcode.module';
     }),
     TypeOrmModule.forRoot({
       type: 'mariadb',
-      host: process.env.DB_HOST,
+      host: process.env.DB_HOST || 'localhost',
       port: 3306,
       username: process.env.MYSQL_USER,
       password: process.env.MYSQL_PASSWORD,
