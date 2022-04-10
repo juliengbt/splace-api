@@ -98,8 +98,8 @@ export default class EquipmentController {
     }
 
     /* This is important because if latitude and longitude are set then server will calculate distance from equipments
-       to lat lon, and then we have to restrict the number of equipment in a certain area in order avoid a large amount
-       of calculation */
+       to user position. If the area is too large there will be a large amount of calculation, so in order to restrict this,
+       we delete the user position  but the equipments won't be sorted */
 
     // Latitude && longitude are set
     if (equipmentParam.latitude && equipmentParam.longitude) {
@@ -116,7 +116,8 @@ export default class EquipmentController {
           equipmentDTO.gps_area.min_lon
         ) > 200 // 200km
       ) {
-        equipmentDTO.gps_area = getArea(equipmentParam.latitude, equipmentParam.longitude, 200);
+        delete equipmentParam.latitude;
+        delete equipmentParam.longitude;
       }
     }
 
