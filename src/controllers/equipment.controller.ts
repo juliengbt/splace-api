@@ -30,7 +30,7 @@ import EquipmentService from 'src/services/equipment.service';
 import { validate } from 'class-validator';
 import ParseUUIDPipe from 'src/pipes/parse-uuid.pipe';
 import EquipmentUpdate from 'src/dto/update/equipment.update';
-import { distanceEarthPoints, getArea } from 'src/utils/functions';
+import { distanceEarthPoints } from 'src/utils/functions';
 
 @ApiTags('Equipment')
 @Controller('equipment')
