@@ -26,12 +26,12 @@ import ZipcodeModule from './modules/zipcode.module';
       envFilePath: '.env'
     }),
     TypeOrmModule.forRoot({
-      type: 'mysql',
+      type: 'mariadb',
       host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT) || 3306,
-      username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
+      port: 3306,
+      username: process.env.MYSQL_USER,
+      password: process.env.MYSQL_PASSWORD,
+      database: process.env.MYSQL_DATABASE,
       entities: ['dist/**/*.entity.js'],
       synchronize: false,
       retryAttempts: 0,
@@ -54,5 +54,4 @@ import ZipcodeModule from './modules/zipcode.module';
   controllers: [],
   providers: []
 })
-export default class AppModule {
-}
+export default class AppModule {}
