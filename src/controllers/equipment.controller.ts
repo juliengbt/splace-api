@@ -30,7 +30,7 @@ import EquipmentService from 'src/services/equipment.service';
 import { validate } from 'class-validator';
 import ParseUUIDPipe from 'src/pipes/parse-uuid.pipe';
 import EquipmentUpdate from 'src/dto/update/equipment.update';
-import { distanceEarthPoints } from 'src/utils/functions';
+import { distanceEarthPoints, getArea } from 'src/utils/functions';
 
 @ApiTags('Equipment')
 @Controller('equipment')
@@ -103,21 +103,25 @@ export default class EquipmentController {
 
     // Latitude && longitude are set
     if (equipmentParam.latitude && equipmentParam.longitude) {
-      // If user did not define an area
-      // or if user is searching by name
-      // or if area surface > 200 km2
-      if (
-        !equipmentDTO.gps_area ||
-        (equipmentParam.name && equipmentParam.name.length > 0) ||
-        distanceEarthPoints(
-          equipmentDTO.gps_area.max_lat,
-          equipmentDTO.gps_area.max_lon,
-          equipmentDTO.gps_area.min_lat,
-          equipmentDTO.gps_area.min_lon
-        ) > 200 // 200km
-      ) {
-        delete equipmentParam.latitude;
-        delete equipmentParam.longitude;
+      if (equipmentDTO.gps_area) {
+        // Big area : surface > 200 km2
+        if (
+          distanceEarthPoints(
+            equipmentDTO.gps_area.max_lat,
+            equipmentDTO.gps_area.max_lon,
+            equipmentDTO.gps_area.min_lat,
+            equipmentDTO.gps_area.min_lon
+          ) > 200 // 200km
+        ) {
+          delete equipmentParam.latitude;
+          delete equipmentParam.longitude;
+          // If user is searching by name in a small area then search within an area of 200km2
+        } else if (equipmentParam.name && equipmentParam.name.length > 0) {
+          equipmentDTO.gps_area = getArea(equipmentParam.latitude, equipmentParam.longitude, 100);
+        }
+      } else {
+        // If user did not define an area
+        equipmentDTO.gps_area = getArea(equipmentParam.latitude, equipmentParam.longitude, 100);
       }
     }
 
