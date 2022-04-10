@@ -1,4 +1,4 @@
-version: "3.1"     
+version: "3.9"  
 services:
 
   splace_api:
@@ -8,40 +8,42 @@ services:
       - 8080:8080
 
     restart: always
-
+    
     networks:
       - splace_bridge
 
     volumes:
       - ./:/usr/src/app
 
+    command: sh -c "cd /usr/src/app && yarn install --network-timeout 100000 && yarn start"
+
     environment:
       - DB_HOST=splace_db
 
-    command: sh -c "cd /usr/src/app && yarn install --network-timeout 100000 && yarn start"
-
     depends_on: [splace_db]
 
-  splace_db:
-    image: linuxserver/mariadb
+  splace_db: 
+     image: mariadb:10.3
 
-    ports:
-      - 3306:3306
+     restart: always 
 
-    restart: always
+     container_name: database 
 
-    networks:
-      - splace_bridge
+     networks:
+       - splace_bridge
 
-    volumes:
-      - splace_db_volume:/config
-      - ../splace-db/:/config/initdb.d/
+     volumes:
+       - splace_db_volume:/var/lib/mysql
+       - ../splace-db/init/:/init 
 
-    environment:
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+     environment:
+       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} 
+       - MYSQL_DATABASE=${MYSQL_DATABASE}
+       - MYSQL_USER=${MYSQL_USER}
+       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+
+volumes: 
+  splace_db_volume:
 
 networks:
   splace_bridge:
-    
-volumes:
-  splace_db_volume:
