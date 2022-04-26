@@ -2,6 +2,7 @@ declare namespace NodeJS {
   export interface ProcessEnv {
     DEBUG: string;
     SERVER_PORT: string;
+    NODE_ENV: string;
 
     MYSQL_USER: string;
     MYSQL_PASSWORD: string;

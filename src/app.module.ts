@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config/dist/config.module';
 import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { AuthModule } from './auth/auth.module';
+import { AuthService } from './auth/auth.service';
 import AddressModule from './modules/address.module';
 import CategoryModule from './modules/category.module';
 import CityModule from './modules/city.module';
@@ -16,6 +18,7 @@ import PictureModule from './modules/picture.module';
 import SoilTypeModule from './modules/soilType.module';
 import SportModule from './modules/sport.module';
 import ZipcodeModule from './modules/zipcode.module';
+import { BaseUserModule } from './baseUser/baseUser.module';
 
 @Module({
   imports: [
@@ -35,8 +38,12 @@ import ZipcodeModule from './modules/zipcode.module';
       entities: ['dist/**/*.entity.js'],
       synchronize: false,
       retryAttempts: 0,
-      logging: ['query', 'error']
+      logging:
+        process.env.NODE_ENV === 'production '
+          ? ['error']
+          : ['error', 'info', 'log', 'query', 'warn']
     }),
+    BaseUserModule,
     SportModule,
     CategoryModule,
     AddressModule,
@@ -49,9 +56,10 @@ import ZipcodeModule from './modules/zipcode.module';
     OwnerModule,
     SoilTypeModule,
     CityModule,
-    ZipcodeModule
+    ZipcodeModule,
+    AuthModule
   ],
   controllers: [],
-  providers: []
+  providers: [AuthService]
 })
 export default class AppModule {}

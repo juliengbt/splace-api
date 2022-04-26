@@ -4,15 +4,11 @@
     "project": "tsconfig.json",
     "sourceType": "module"
   },
-  "plugins": [
-    "@typescript-eslint",
-    "@typescript-eslint/eslint-plugin",
-    "import"
-  ],
+  "plugins": ["@typescript-eslint", "@typescript-eslint/eslint-plugin", "import"],
   "extends": [
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
-    "prettier",
+    "plugin:prettier/recommended",
     "airbnb-typescript/base"
   ],
   "root": true,

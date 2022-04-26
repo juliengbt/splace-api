@@ -41,7 +41,11 @@ export default class CityController {
   @ApiParam({ required: true, type: String, name: 'id' })
   async getById(@Param('id', new ParseUUIDPipe()) id: Buffer): Promise<City> {
     const city = await this.service.findById(id);
-    if (city === undefined) throw new NotFoundException(`No cities found with id : ${id.toString('base64url')}`);
+    if (city === undefined)
+      throw new NotFoundException(
+        undefined,
+        `No cities found with id : ${id.toString('base64url')}`
+      );
     return city;
   }
 
@@ -59,7 +63,11 @@ export default class CityController {
   async getUsingDTO(@Body() cityDTO: CityDTO): Promise<City[]> {
     const cityParam = cityDTO;
 
-    if (cityDTO.ids) throw new NotAcceptableException('It is not allowed to use id property when using DTO');
+    if (cityDTO.ids)
+      throw new NotAcceptableException(
+        undefined,
+        'It is not allowed to use id property when using DTO'
+      );
 
     if (cityParam.names) {
       const last = cityParam.names.pop();
@@ -68,7 +76,8 @@ export default class CityController {
       cityParam.names.push(`>${last}*`); // Last word is important
     }
 
-    if (Object.keys(cityDTO).length === 0 && cityDTO.constructor === Object) throw new NotAcceptableException('cityDTO is empty');
+    if (Object.keys(cityDTO).length === 0 && cityDTO.constructor === Object)
+      throw new NotAcceptableException(undefined, 'cityDTO is empty');
     return this.service.findUsingDTO(cityParam);
   }
 }

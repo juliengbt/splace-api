@@ -9,13 +9,7 @@ import {
   Query,
   UseInterceptors
 } from '@nestjs/common';
-import {
-  ApiNotFoundResponse,
-  ApiParam,
-  ApiQuery,
-  ApiResponse,
-  ApiTags
-} from '@nestjs/swagger';
+import { ApiNotFoundResponse, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import SportService from 'src/services/sport.service';
 import Sport from 'src/entities/sport.entity';
 
@@ -47,7 +41,7 @@ export default class SportController {
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiNotFoundResponse({ description: 'Not found.' })
   @Get('/code/:code')
-  async getSportByCode(@Param('code') code:string): Promise<Sport> {
+  async getSportByCode(@Param('code') code: string): Promise<Sport> {
     const sport = await this.service.findByCode(code);
     if (sport === undefined) throw new NotFoundException(`No sports found with code like ${code}`);
     return sport;

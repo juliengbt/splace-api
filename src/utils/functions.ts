@@ -1,4 +1,5 @@
 import GPSAreaDTO from 'src/dto/search/gps_area.dto';
+import * as bcrypt from 'bcrypt';
 
 const { PI, sin, cos, asin, atan2, sqrt } = Math;
 const RAYON_TERRE = 6731.008;
@@ -69,4 +70,8 @@ export function getArea(lat: number, lon: number, distance: number): GPSAreaDTO 
     min_lat: min.lat,
     min_lon: min.lon
   };
+}
+
+export async function generatePassword(password: string): Promise<string> {
+  return bcrypt.hash(password, 10).then((hash) => hash);
 }
