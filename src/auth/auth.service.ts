@@ -19,6 +19,23 @@ export class AuthService {
     return null;
   }
 
+  async signin(userSignin: BaseUserSignin): Promise<BaseUser> {
+    const user = await this.usersService.findByEmail(userSignin.email);
+    if (!user) throw new ForbiddenException(undefined, 'Access Denied');
+
+    const match = await bcrypt.compare(userSignin.password, user.password);
+
+    if (!match) throw new ForbiddenException(undefined, 'Access Denied');
+
+    const tokens = await this.getTokens(user.id, user.email);
+    await this.usersService.updateRefreshToken(user.id, tokens.refresh_token);
+    return user;
+  }
+
+  async logout(userId: Buffer) {
+    await this.usersService.updateRefreshToken(userId, null);
+  }
+
   async getTokens(userId: Buffer, email: string): Promise<Tokens> {
     const payload = {
       id: userId,
@@ -39,18 +56,5 @@ export class AuthService {
       access_token: at,
       refresh_token: rt
     };
-  }
-
-  async signin(userSignin: BaseUserSignin): Promise<BaseUser> {
-    const user = await this.usersService.findByEmail(userSignin.email);
-    if (!user) throw new ForbiddenException(undefined, 'Access Denied');
-
-    const match = await bcrypt.compare(userSignin.password, user.password);
-
-    if (!match) throw new ForbiddenException(undefined, 'Access Denied');
-
-    const tokens = await this.getTokens(user.id, user.email);
-    await this.usersService.updateRefreshToken(user.id, tokens.refresh_token);
-    return user;
   }
 }

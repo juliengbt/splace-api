@@ -40,10 +40,10 @@ export default class BaseUser {
   last_connection!: Date;
 
   @Exclude()
-  @Column({ type: 'varchar', length: 255 })
-  refresh_token_hash!: string;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  refresh_token_hash!: string | null;
 
   @Exclude()
-  @Column({ type: 'datetime' })
-  refresh_token_timestamp!: Date;
+  @Column({ type: 'datetime', nullable: true })
+  refresh_token_timestamp!: Date | null;
 }

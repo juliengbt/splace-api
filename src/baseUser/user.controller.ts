@@ -2,13 +2,16 @@ import {
   Body,
   ConflictException,
   Controller,
+  HttpCode,
+  HttpStatus,
   InternalServerErrorException,
   Post,
   UseGuards
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiConflictResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'src/auth/auth.service';
-import { LocalAuthGuard } from 'src/auth/local-auth.gards';
+import { GetCurrentUserId } from 'src/decorators/getCurrentUserID';
 import BaseUser from './baseUser.entity';
 import { BaseUserService } from './baseUser.service';
 import BaseUserCreate from './dto/baseUser.create';
@@ -19,8 +22,9 @@ import BaseUserSignin from './dto/baseUser.signin';
 export class UserController {
   constructor(private readonly service: BaseUserService, private authService: AuthService) {}
 
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(AuthGuard('local'))
   @ApiBody({ type: BaseUserSignin, required: true })
+  @HttpCode(HttpStatus.OK)
   @Post('signin')
   async signin(@Body() user: BaseUserSignin) {
     return this.authService.signin(user);
@@ -28,6 +32,7 @@ export class UserController {
 
   @Post('signup')
   @ApiBody({ type: BaseUserCreate })
+  @HttpCode(HttpStatus.CREATED)
   @ApiConflictResponse({ description: 'User email already exists' })
   async signup(@Body() user: BaseUserCreate): Promise<BaseUser> {
     const exists = await this.service.findByEmail(user.email);
@@ -43,5 +48,12 @@ export class UserController {
     if (!createdUser) throw new InternalServerErrorException();
 
     return createdUser;
+  }
+
+  @Post('logout')
+  @UseGuards(AuthGuard('jwt-access'))
+  @HttpCode(HttpStatus.OK)
+  async logout(@GetCurrentUserId() userId: Buffer) {
+    return this.authService.logout(userId);
   }
 }

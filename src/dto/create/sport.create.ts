@@ -10,7 +10,7 @@ import {
   ValidateIf,
   ValidateNested
 } from 'class-validator';
-import Default from 'src/decorators';
+import Default from 'src/decorators/default';
 import CategoryCreate from './category.create';
 
 export default class SportCreate {

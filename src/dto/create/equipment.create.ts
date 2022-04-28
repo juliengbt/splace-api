@@ -15,7 +15,7 @@ import {
   ValidateIf,
   ValidateNested
 } from 'class-validator';
-import Default from 'src/decorators';
+import Default from 'src/decorators/default';
 import EquipmentLevelCreate from './equipmentLevel.create';
 import EquipmentNatureCreate from './equipmentNature.create';
 import EquipmentTypeCreate from './equipmentType.create';

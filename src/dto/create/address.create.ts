@@ -10,7 +10,7 @@ import {
   ValidateIf,
   ValidateNested
 } from 'class-validator';
-import Default from 'src/decorators';
+import Default from 'src/decorators/default';
 import ZipcodeCreate from './zipcode.create';
 
 export default class AddressCreate {

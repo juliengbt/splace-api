@@ -22,14 +22,14 @@ export class BaseUserService {
     return this.repo.save(userToSave).then((userRes) => userRes.id);
   }
 
-  async updateRefreshToken(userId: Buffer, rt: string) {
+  async updateRefreshToken(userId: Buffer, rt: string | null) {
     const now = new Date();
     this.repo.update(
       { id: userId },
       {
-        refresh_token_hash: await hashString(rt),
-        last_connection: now,
-        refresh_token_timestamp: now
+        refresh_token_hash: rt ? await hashString(rt) : null,
+        last_connection: rt ? now : undefined,
+        refresh_token_timestamp: rt ? now : null
       }
     );
   }
