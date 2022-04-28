@@ -3,8 +3,6 @@ import { ConfigModule } from '@nestjs/config/dist/config.module';
 import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { AuthModule } from './auth/auth.module';
-import { AuthService } from './auth/auth.service';
 import AddressModule from './modules/address.module';
 import CategoryModule from './modules/category.module';
 import CityModule from './modules/city.module';
@@ -19,6 +17,8 @@ import SoilTypeModule from './modules/soilType.module';
 import SportModule from './modules/sport.module';
 import ZipcodeModule from './modules/zipcode.module';
 import { BaseUserModule } from './baseUser/baseUser.module';
+import { AuthModule } from './auth/auth.module';
+import { UserController } from './baseUser/user.controller';
 
 @Module({
   imports: [
@@ -26,7 +26,8 @@ import { BaseUserModule } from './baseUser/baseUser.module';
       rootPath: join(__dirname, '..', '..', 'public')
     }),
     ConfigModule.forRoot({
-      envFilePath: '.env'
+      envFilePath: '.env',
+      isGlobal: true
     }),
     TypeOrmModule.forRoot({
       type: 'mariadb',
@@ -43,6 +44,7 @@ import { BaseUserModule } from './baseUser/baseUser.module';
           ? ['error']
           : ['error', 'info', 'log', 'query', 'warn']
     }),
+    AuthModule,
     BaseUserModule,
     SportModule,
     CategoryModule,
@@ -56,10 +58,9 @@ import { BaseUserModule } from './baseUser/baseUser.module';
     OwnerModule,
     SoilTypeModule,
     CityModule,
-    ZipcodeModule,
-    AuthModule
+    ZipcodeModule
   ],
-  controllers: [],
-  providers: [AuthService]
+  controllers: [UserController],
+  providers: []
 })
 export default class AppModule {}

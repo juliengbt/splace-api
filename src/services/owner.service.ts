@@ -11,7 +11,6 @@ export default class OwnerService {
   ) {}
 
   async findAll(): Promise<Owner[]> {
-    return this.repo.createQueryBuilder()
-      .getMany();
+    return this.repo.createQueryBuilder().getMany();
   }
 }

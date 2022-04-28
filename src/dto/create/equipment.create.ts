@@ -27,14 +27,14 @@ import SportCreate from './sport.create';
 export default class EquipmentCreate {
   @ApiProperty({ type: () => String, required: false })
   @Type(() => String)
-  @Transform(({ value }) => (value ? Buffer.from((value as string), 'base64url') : undefined))
-    id?: Buffer;
+  @Transform(({ value }) => (value ? Buffer.from(value as string, 'base64url') : undefined))
+  id?: Buffer;
 
   @ApiProperty({ type: String, required: true })
   @IsString()
   @IsNotEmpty()
   @MaxLength(150)
-    name!: string;
+  name!: string;
 
   @ApiProperty({ type: String, required: false, nullable: true })
   @IsString()
@@ -43,50 +43,50 @@ export default class EquipmentCreate {
   @IsOptional()
   @Default(null)
   @ValidateIf((_object, value) => value !== null)
-    other_info?: string | null;
+  other_info?: string | null;
 
   @ApiProperty({ type: Boolean, required: false, nullable: true })
   @IsBoolean()
   @IsOptional()
   @Default(null)
   @ValidateIf((_object, value) => value !== null)
-    open_access?: boolean | null;
+  open_access?: boolean | null;
 
   @ApiProperty({ type: Boolean, required: false, nullable: true })
   @IsBoolean()
   @IsOptional()
   @Default(null)
   @ValidateIf((_object, value) => value !== null)
-    locker?: boolean | null;
+  locker?: boolean | null;
 
   @ApiProperty({ type: Boolean, required: false, nullable: true })
   @IsBoolean()
   @IsOptional()
   @Default(null)
   @ValidateIf((_object, value) => value !== null)
-    lighting?: boolean | null;
+  lighting?: boolean | null;
 
   @ApiProperty({ type: Boolean, required: false, nullable: true })
   @IsBoolean()
   @IsOptional()
   @Default(null)
   @ValidateIf((_object, value) => value !== null)
-    shower?: boolean | null;
+  shower?: boolean | null;
 
   @ApiProperty({ type: Number, required: false })
   @IsInt()
   @MaxLength(1000)
   @IsOptional()
   @Default(1)
-    amount?: number;
+  amount?: number;
 
   @ApiProperty({ type: Number, required: true })
   @IsLongitude()
-    longitude?: number;
+  longitude?: number;
 
   @ApiProperty({ type: Number, required: true })
   @IsLatitude()
-    latitude?: number;
+  latitude?: number;
 
   @ApiProperty({ type: () => InstallationCreate, required: false, nullable: true })
   @Type(() => InstallationCreate)
@@ -95,7 +95,7 @@ export default class EquipmentCreate {
   @IsOptional()
   @Default(null)
   @ValidateIf((_object, value) => value !== null)
-    installation?: InstallationCreate | null;
+  installation?: InstallationCreate | null;
 
   @ApiProperty({ type: () => OwnerCreate, required: false, nullable: true })
   @Type(() => OwnerCreate)
@@ -104,7 +104,7 @@ export default class EquipmentCreate {
   @IsOptional()
   @Default(null)
   @ValidateIf((_object, value) => value !== null)
-    owner?: OwnerCreate | null;
+  owner?: OwnerCreate | null;
 
   @ApiProperty({ type: () => SoilTypeCreate, required: false, nullable: true })
   @Type(() => SoilTypeCreate)
@@ -113,7 +113,7 @@ export default class EquipmentCreate {
   @IsOptional()
   @Default(null)
   @ValidateIf((_object, value) => value !== null)
-    soil_type?: SoilTypeCreate | null;
+  soil_type?: SoilTypeCreate | null;
 
   @ApiProperty({ type: () => EquipmentNatureCreate, required: false, nullable: true })
   @Type(() => EquipmentNatureCreate)
@@ -122,13 +122,13 @@ export default class EquipmentCreate {
   @IsOptional()
   @Default(null)
   @ValidateIf((_object, value) => value !== null)
-    equipment_nature?: EquipmentNatureCreate | null;
+  equipment_nature?: EquipmentNatureCreate | null;
 
   @ApiProperty({ type: () => EquipmentTypeCreate, required: true, nullable: false })
   @Type(() => EquipmentTypeCreate)
   @ValidateNested()
   @IsNotEmptyObject()
-    equipment_type!: EquipmentTypeCreate;
+  equipment_type!: EquipmentTypeCreate;
 
   @ApiProperty({ type: () => EquipmentLevelCreate, required: false, nullable: true })
   @Type(() => EquipmentLevelCreate)
@@ -137,12 +137,12 @@ export default class EquipmentCreate {
   @IsOptional()
   @Default(null)
   @ValidateIf((_object, value) => value !== null)
-    equipment_level?: EquipmentLevelCreate | null;
+  equipment_level?: EquipmentLevelCreate | null;
 
   @ApiProperty({ type: () => SportCreate, required: true, isArray: true })
   @Type(() => SportCreate)
   @ValidateNested({ each: true })
   @IsArray()
   @ArrayMinSize(1)
-    sports!: SportCreate[];
+  sports!: SportCreate[];
 }

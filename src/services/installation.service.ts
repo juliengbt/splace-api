@@ -10,7 +10,7 @@ export default class InstallationService {
     private repo: Repository<Installation>
   ) {}
 
-  async findById(id: Buffer): Promise<Installation | undefined> {
+  async findById(id: Buffer): Promise<Installation | null> {
     return this.getFullObjectQuery()
       .where('Installation.id = :id_installation', { id_installation: id })
       .getOne();
@@ -24,14 +24,16 @@ export default class InstallationService {
     });
   }
 
-  async countInstallationWithAddress(idAddress: Buffer) : Promise<number> {
-    return this.repo.createQueryBuilder('Installation')
+  async countInstallationWithAddress(idAddress: Buffer): Promise<number> {
+    return this.repo
+      .createQueryBuilder('Installation')
       .where('Installation.address = :id', { id: idAddress })
       .getCount();
   }
 
   private getFullObjectQuery(): SelectQueryBuilder<Installation> {
-    return this.repo.createQueryBuilder('Installation')
+    return this.repo
+      .createQueryBuilder('Installation')
       .leftJoinAndSelect('Installation.address', 'address')
       .leftJoinAndSelect('Installation.equipments', 'equipments')
       .leftJoinAndSelect('equipments.owner', 'owner')

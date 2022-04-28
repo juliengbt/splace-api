@@ -11,7 +11,7 @@ export default class ZipcodeService {
     private repo: Repository<Zipcode>
   ) {}
 
-  async findOne(cityDTO: CityDTO) : Promise<Zipcode | undefined> {
+  async findOne(cityDTO: CityDTO): Promise<Zipcode | null> {
     const query = this.getFullObjectQuery();
 
     if (cityDTO.zipcode) {
@@ -20,19 +20,22 @@ export default class ZipcodeService {
 
     if (cityDTO.names) {
       const cityClause = 'MATCH(city.name) AGAINST (:c_name IN BOOLEAN MODE)';
-      query.where(cityClause, { c_name: cityDTO.names.join(' ') })
+      query
+        .where(cityClause, { c_name: cityDTO.names.join(' ') })
         .addSelect(`${cityClause}`, 'keyword_rank')
         .orderBy('keyword_rank', 'DESC');
     }
 
-    query.addSelect('LENGTH(city.name)', 'len_name')
+    query
+      .addSelect('LENGTH(city.name)', 'len_name')
       .addOrderBy('len_name', 'ASC')
       .addOrderBy('city.name', 'ASC');
     return query.getOne();
   }
 
   private getFullObjectQuery(): SelectQueryBuilder<Zipcode> {
-    return this.repo.createQueryBuilder('Zipcode')
+    return this.repo
+      .createQueryBuilder('Zipcode')
       .leftJoinAndMapOne('Zipcode.city', 'Zipcode.city', 'city')
       .leftJoinAndMapOne('city.department', 'city.department', 'department');
   }

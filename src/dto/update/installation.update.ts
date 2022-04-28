@@ -2,14 +2,21 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
-  IsBoolean, IsNotEmpty, IsNotEmptyObject, IsOptional, IsString, MaxLength, ValidateIf, ValidateNested
+  IsBoolean,
+  IsNotEmpty,
+  IsNotEmptyObject,
+  IsOptional,
+  IsString,
+  MaxLength,
+  ValidateIf,
+  ValidateNested
 } from 'class-validator';
 import AddressUpdate from './address.update';
 
 export default class InstallationUpdate {
   @ApiProperty({ type: String, required: true })
   @Type(() => String)
-  @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
+  @Transform(({ value }) => Buffer.from(value as string, 'base64url'))
   public id!: Buffer;
 
   @ApiProperty({ type: String, required: false })

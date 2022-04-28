@@ -1,11 +1,14 @@
 /* eslint-disable max-len */
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  Transform, Type
-} from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   BeforeInsert,
-  Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn
 } from 'typeorm';
 import { v4 } from 'uuid';
 import Address from './address.entity';
@@ -18,7 +21,7 @@ export default class Installation {
   @PrimaryColumn({ type: 'varbinary', length: 16 })
   @Type(() => String)
   @Transform(({ value }) => (value as Buffer).toString('base64url'))
-    id!: Buffer;
+  id!: Buffer;
 
   @BeforeInsert()
   uuidToBin() {

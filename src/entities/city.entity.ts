@@ -1,7 +1,12 @@
 import { Transform, Type } from 'class-transformer';
 import {
   BeforeInsert,
-  Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { v4 } from 'uuid';
@@ -15,7 +20,7 @@ export default class City {
   @PrimaryColumn({ type: 'varbinary', length: 16 })
   @Type(() => String)
   @Transform(({ value }) => (value as Buffer).toString('base64url'))
-    id!: Buffer;
+  id!: Buffer;
 
   @BeforeInsert()
   uuidToBin() {
@@ -24,15 +29,15 @@ export default class City {
 
   @ApiProperty()
   @Column({ type: 'varchar', length: 45 })
-    name!: string;
+  name!: string;
 
   @ApiProperty({ type: () => Number, isArray: true })
   @OneToMany(() => Zipcode, (zipcode) => zipcode.city, { cascade: false })
   @Transform(({ value: zips }) => zips.map((z: Zipcode) => z.code))
-    zipcodes?: number[];
+  zipcodes?: number[];
 
   @ApiProperty({ type: () => Department })
   @ManyToOne(() => Department, (department) => department.id, { cascade: false })
   @JoinColumn({ name: 'id_department' })
-    department!: Department;
+  department!: Department;
 }

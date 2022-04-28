@@ -1,15 +1,5 @@
-import {
-  Controller,
-  UseInterceptors,
-  ClassSerializerInterceptor,
-  Post,
-  Body,
-  NotAcceptableException,
-  NotFoundException
-} from '@nestjs/common';
-import {
-  ApiTags, ApiResponse, ApiNotAcceptableResponse, ApiBody
-} from '@nestjs/swagger';
+import { Controller, Post, Body, NotAcceptableException, NotFoundException } from '@nestjs/common';
+import { ApiTags, ApiResponse, ApiNotAcceptableResponse, ApiBody } from '@nestjs/swagger';
 import CityDTO from 'src/dto/search/city.dto';
 import Zipcode from 'src/entities/zipcode.entity';
 import ZipcodeService from 'src/services/zipcode.service';
@@ -27,12 +17,12 @@ export default class ZipcodeController {
   @ApiNotAcceptableResponse({ description: 'City DTO is not valid.' })
   @ApiBody({ type: CityDTO })
   @ApiNotAcceptableResponse()
-  @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   async getOneUsingDTO(@Body() cityDTO: CityDTO): Promise<Zipcode> {
     const cityParam = cityDTO;
 
-    if (cityDTO.ids) throw new NotAcceptableException('It is not allowed to use id property when using DTO');
+    if (cityDTO.ids)
+      throw new NotAcceptableException('It is not allowed to use id property when using DTO');
 
     if (cityParam.names) {
       const last = cityParam.names.pop();
@@ -41,7 +31,8 @@ export default class ZipcodeController {
       cityParam.names.push(`>${last}*`); // Last word is important
     }
 
-    if (Object.keys(cityDTO).length === 0 && cityDTO.constructor === Object) throw new NotAcceptableException('cityDTO is empty');
+    if (Object.keys(cityDTO).length === 0 && cityDTO.constructor === Object)
+      throw new NotAcceptableException('cityDTO is empty');
     const res = await this.service.findOne(cityParam);
     if (!res) throw new NotFoundException();
     return res;

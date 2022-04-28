@@ -1,6 +1,4 @@
-import {
-  ClassSerializerInterceptor, Controller, Get, UseInterceptors
-} from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import EquipmentNature from 'src/entities/equipmentNature.entity';
 import EquipmentNatureService from 'src/services/equipmentNature.service';
@@ -16,7 +14,6 @@ export default class EquipmentNatureController {
     type: EquipmentNature,
     isArray: true
   })
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   getEquipmentNatures(): Promise<EquipmentNature[]> {
     return this.service.findAll();

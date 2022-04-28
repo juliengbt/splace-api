@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import BaseUser from 'src/baseUser/baseUser.entity';
-import { generatePassword as generatePasswordHash } from 'src/utils/functions';
+import { hashString as generatePasswordHash, hashString } from 'src/utils/functions';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import BaseUserCreate from './dto/baseUser.create';
 
@@ -12,13 +12,29 @@ export class BaseUserService {
     private repo: Repository<BaseUser>
   ) {}
 
-  async create(user: BaseUserCreate): Promise<BaseUser> {
-    user.password = await generatePasswordHash(user.password);
-    const userToSave = this.repo.create(user);
-    return this.repo.save(userToSave);
+  async findById(id: Buffer): Promise<BaseUser | null> {
+    return this.repo.findOne({ where: { id: id } });
   }
 
-  async findByEmail(email: string): Promise<BaseUser | undefined> {
+  async create(user: BaseUserCreate): Promise<Buffer> {
+    user.password = await generatePasswordHash(user.password);
+    const userToSave = this.repo.create(user);
+    return this.repo.save(userToSave).then((userRes) => userRes.id);
+  }
+
+  async updateRefreshToken(userId: Buffer, rt: string) {
+    const now = new Date();
+    this.repo.update(
+      { id: userId },
+      {
+        refresh_token_hash: await hashString(rt),
+        last_connection: now,
+        refresh_token_timestamp: now
+      }
+    );
+  }
+
+  async findByEmail(email: string): Promise<BaseUser | null> {
     const query = this.getFullObjectQuery();
 
     query.where('BaseUser.email =:user_email', { user_email: email });

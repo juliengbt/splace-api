@@ -72,6 +72,6 @@ export function getArea(lat: number, lon: number, distance: number): GPSAreaDTO 
   };
 }
 
-export async function generatePassword(password: string): Promise<string> {
-  return bcrypt.hash(password, 10).then((hash) => hash);
+export async function hashString(s: string): Promise<string> {
+  return bcrypt.hash(s, 10).then((hash) => hash);
 }

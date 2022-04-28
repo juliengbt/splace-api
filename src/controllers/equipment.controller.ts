@@ -1,13 +1,11 @@
 /* eslint-disable max-len */
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Get,
   NotAcceptableException,
   Param,
   Post,
-  UseInterceptors,
   NotFoundException,
   DefaultValuePipe,
   Query,
@@ -47,10 +45,9 @@ export default class EquipmentController {
   @ApiParam({ type: String, required: true, name: 'id' })
   @ApiNotFoundResponse({ description: 'Not found.' })
   @ApiNotAcceptableResponse({ description: 'The parameter id must a uuid' })
-  @UseInterceptors(ClassSerializerInterceptor)
-  async getById(@Param('id', new ParseUUIDPipe()) id: Buffer): Promise<Equipment | undefined> {
+  async getById(@Param('id', new ParseUUIDPipe()) id: Buffer): Promise<Equipment> {
     const equipment = await this.service.findById(id);
-    if (equipment === undefined)
+    if (!equipment)
       throw new NotFoundException(`No equipment found with id : ${id.toString('base64url')}`);
     return equipment;
   }
@@ -66,7 +63,6 @@ export default class EquipmentController {
   @ApiBody({ type: EquipmentDTO })
   @ApiQuery({ name: 'offset', required: false })
   @ApiNotAcceptableResponse()
-  @UseInterceptors(ClassSerializerInterceptor)
   async getUsingDTO(
     @Body() equipmentDTO: EquipmentDTO,
     @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number
@@ -139,7 +135,6 @@ export default class EquipmentController {
   })
   @ApiNotAcceptableResponse({ description: 'Equipment CU is not valid.' })
   @ApiBody({ type: EquipmentUpdate })
-  @UseInterceptors(ClassSerializerInterceptor)
   async update(@Body() equipmentU: EquipmentUpdate): Promise<Equipment> {
     if (!equipmentU.id)
       throw new NotAcceptableException('id must be provided in order to update equipment');

@@ -11,7 +11,6 @@ export default class EquipmentTypeService {
   ) {}
 
   async findAll(): Promise<EquipmentType[]> {
-    return this.repo.createQueryBuilder()
-      .getMany();
+    return this.repo.createQueryBuilder().getMany();
   }
 }

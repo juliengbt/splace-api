@@ -1,6 +1,4 @@
-import {
-  ClassSerializerInterceptor, Controller, Get, UseInterceptors
-} from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import Category from 'src/entities/category.entity';
 import CategoryService from 'src/services/category.service';
@@ -16,7 +14,6 @@ export default class CategoryController {
     type: Category,
     isArray: true
   })
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   getCategories(): Promise<Category[]> {
     return this.categoryService.findAll();

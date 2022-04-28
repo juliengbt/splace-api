@@ -1,6 +1,4 @@
-import {
-  ClassSerializerInterceptor, Controller, Get, UseInterceptors
-} from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import Owner from 'src/entities/owner.entity';
 import OwnerService from 'src/services/owner.service';
@@ -16,7 +14,6 @@ export default class OwnerController {
     type: Owner,
     isArray: true
   })
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   getOwners(): Promise<Owner[]> {
     return this.service.findAll();

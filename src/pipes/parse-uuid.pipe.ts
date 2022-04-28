@@ -1,7 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import {
-  PipeTransform, Injectable, NotAcceptableException
-} from '@nestjs/common';
+import { PipeTransform, Injectable, NotAcceptableException } from '@nestjs/common';
 
 export function isUUID(value: string): boolean {
   return new RegExp('^[0-9A-Za-z-]{22}$').test(value);

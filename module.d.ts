@@ -3,6 +3,8 @@ declare namespace NodeJS {
     DEBUG: string;
     SERVER_PORT: string;
     NODE_ENV: string;
+    JWT_SECRET: string;
+    API_KEY: string;
 
     MYSQL_USER: string;
     MYSQL_PASSWORD: string;

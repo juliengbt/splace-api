@@ -27,15 +27,15 @@ import SportUpdate from './sport.update';
 export default class EquipmentUpdate {
   @ApiProperty({ type: () => String, required: true })
   @Type(() => String)
-  @Transform(({ value }) => Buffer.from((value as string), 'base64url'))
-    id!: Buffer;
+  @Transform(({ value }) => Buffer.from(value as string, 'base64url'))
+  id!: Buffer;
 
   @ApiProperty({ type: String, required: false })
   @IsString()
   @IsNotEmpty()
   @MaxLength(150)
   @IsOptional()
-    name?: string;
+  name?: string;
 
   @ApiProperty({ type: String, required: false, nullable: true })
   @IsString()
@@ -43,47 +43,47 @@ export default class EquipmentUpdate {
   @MaxLength(256)
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)
-    other_info?: string | null;
+  other_info?: string | null;
 
   @ApiProperty({ type: Boolean, required: false, nullable: true })
   @IsBoolean()
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)
-    open_access?: boolean | null;
+  open_access?: boolean | null;
 
   @ApiProperty({ type: Boolean, required: false, nullable: true })
   @IsBoolean()
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)
-    locker?: boolean | null;
+  locker?: boolean | null;
 
   @ApiProperty({ type: Boolean, required: false, nullable: true })
   @IsBoolean()
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)
-    lighting?: boolean | null;
+  lighting?: boolean | null;
 
   @ApiProperty({ type: Boolean, required: false, nullable: true })
   @IsBoolean()
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)
-    shower?: boolean | null;
+  shower?: boolean | null;
 
   @ApiProperty({ type: Number, required: false })
   @IsInt()
   @MaxLength(1000)
   @IsOptional()
-    amount?: number;
+  amount?: number;
 
   @ApiProperty({ type: Number, required: false })
   @IsLongitude()
   @IsOptional()
-    longitude?: number;
+  longitude?: number;
 
   @ApiProperty({ type: Number, required: false })
   @IsLatitude()
   @IsOptional()
-    latitude?: number;
+  latitude?: number;
 
   @ApiProperty({ type: () => InstallationUpdate, required: false, nullable: true })
   @Type(() => InstallationUpdate)
@@ -91,7 +91,7 @@ export default class EquipmentUpdate {
   @IsNotEmptyObject()
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)
-    installation?: InstallationUpdate | null;
+  installation?: InstallationUpdate | null;
 
   @ApiProperty({ type: () => OwnerUpdate, required: false, nullable: true })
   @Type(() => OwnerUpdate)
@@ -99,7 +99,7 @@ export default class EquipmentUpdate {
   @IsNotEmptyObject()
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)
-    owner?: OwnerUpdate | null;
+  owner?: OwnerUpdate | null;
 
   @ApiProperty({ type: () => SoilTypeUpdate, required: false, nullable: true })
   @Type(() => SoilTypeUpdate)
@@ -107,7 +107,7 @@ export default class EquipmentUpdate {
   @IsNotEmptyObject()
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)
-    soil_type?: SoilTypeUpdate | null;
+  soil_type?: SoilTypeUpdate | null;
 
   @ApiProperty({ type: () => EquipmentNatureUpdate, required: false, nullable: true })
   @Type(() => EquipmentNatureUpdate)
@@ -115,14 +115,14 @@ export default class EquipmentUpdate {
   @IsNotEmptyObject()
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)
-    equipment_nature?: EquipmentNatureUpdate | null;
+  equipment_nature?: EquipmentNatureUpdate | null;
 
   @ApiProperty({ type: () => EquipmentTypeUpdate, required: false, nullable: false })
   @Type(() => EquipmentTypeUpdate)
   @ValidateNested()
   @IsNotEmptyObject()
   @IsOptional()
-    equipment_type?: EquipmentTypeUpdate;
+  equipment_type?: EquipmentTypeUpdate;
 
   @ApiProperty({ type: () => EquipmentLevelUpdate, required: false, nullable: true })
   @Type(() => EquipmentLevelUpdate)
@@ -130,7 +130,7 @@ export default class EquipmentUpdate {
   @IsNotEmptyObject()
   @IsOptional()
   @ValidateIf((_object, value) => value !== null)
-    equipment_level?: EquipmentLevelUpdate | null;
+  equipment_level?: EquipmentLevelUpdate | null;
 
   @ApiProperty({ type: () => SportUpdate, required: false, isArray: true })
   @Type(() => SportUpdate)
@@ -138,12 +138,12 @@ export default class EquipmentUpdate {
   @IsArray()
   @ArrayMinSize(1)
   @IsOptional()
-    sports?: SportUpdate[];
+  sports?: SportUpdate[];
 
   @ApiProperty({ type: () => PictureUpdate, required: false, isArray: true })
   @Type(() => PictureUpdate)
   @ValidateNested({ each: true })
   @IsArray()
   @IsOptional()
-    pictures?: PictureUpdate[];
+  pictures?: PictureUpdate[];
 }

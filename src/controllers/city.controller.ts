@@ -1,15 +1,13 @@
 /* eslint-disable max-len */
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Get,
   NotAcceptableException,
   NotFoundException,
   Param,
   ParseUUIDPipe,
-  Post,
-  UseInterceptors
+  Post
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -36,12 +34,11 @@ export default class CityController {
   })
   @ApiNotFoundResponse({ description: 'Not found.' })
   @ApiNotAcceptableResponse({ description: 'The parameter id must a uuid' })
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   @ApiParam({ required: true, type: String, name: 'id' })
   async getById(@Param('id', new ParseUUIDPipe()) id: Buffer): Promise<City> {
     const city = await this.service.findById(id);
-    if (city === undefined)
+    if (!city)
       throw new NotFoundException(
         undefined,
         `No cities found with id : ${id.toString('base64url')}`
@@ -58,7 +55,6 @@ export default class CityController {
   @ApiNotAcceptableResponse({ description: 'City DTO is not valid.' })
   @ApiBody({ type: CityDTO })
   @ApiNotAcceptableResponse()
-  @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   async getUsingDTO(@Body() cityDTO: CityDTO): Promise<City[]> {
     const cityParam = cityDTO;

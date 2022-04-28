@@ -173,7 +173,7 @@ export default class EquipmentService {
     return query.skip(offset).take(100).getMany();
   }
 
-  async findById(id: Buffer): Promise<Equipment | undefined> {
+  async findById(id: Buffer): Promise<Equipment | null> {
     return this.getFullObjectQuery()
       .where('Equipment.id = :id_equipment')
       .setParameters({ id_equipment: id })

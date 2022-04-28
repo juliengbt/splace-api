@@ -11,7 +11,6 @@ export default class EquipmentNatureService {
   ) {}
 
   async findAll(): Promise<EquipmentNature[]> {
-    return this.repo.createQueryBuilder()
-      .getMany();
+    return this.repo.createQueryBuilder().getMany();
   }
 }

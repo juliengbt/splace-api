@@ -2,14 +2,21 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
-  IsBoolean, IsNotEmpty, IsNotEmptyObject, IsOptional, IsString, MaxLength, ValidateIf, ValidateNested
+  IsBoolean,
+  IsNotEmpty,
+  IsNotEmptyObject,
+  IsOptional,
+  IsString,
+  MaxLength,
+  ValidateIf,
+  ValidateNested
 } from 'class-validator';
 import AddressCreate from './address.create';
 
 export default class InstallationCreate {
   @ApiProperty({ type: String, required: false })
   @Type(() => String)
-  @Transform(({ value }) => (value ? Buffer.from((value as string), 'base64url') : undefined))
+  @Transform(({ value }) => (value ? Buffer.from(value as string, 'base64url') : undefined))
   public id?: Buffer;
 
   @ApiProperty({ type: String, required: false })

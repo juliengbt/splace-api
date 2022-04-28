@@ -11,7 +11,6 @@ export default class SoilTypeService {
   ) {}
 
   async findAll(): Promise<SoilType[]> {
-    return this.repo.createQueryBuilder()
-      .getMany();
+    return this.repo.createQueryBuilder().getMany();
   }
 }

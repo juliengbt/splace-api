@@ -11,7 +11,6 @@ export default class EquipmentLevelService {
   ) {}
 
   async findAll(): Promise<EquipmentLevel[]> {
-    return this.repo.createQueryBuilder()
-      .getMany();
+    return this.repo.createQueryBuilder().getMany();
   }
 }

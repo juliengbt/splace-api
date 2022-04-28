@@ -1,6 +1,4 @@
-import {
-  ClassSerializerInterceptor, Controller, Get, UseInterceptors
-} from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import SoilType from 'src/entities/soilType.entity';
 import SoilTypeService from 'src/services/soilType.service';
@@ -16,7 +14,6 @@ export default class SoilTypeController {
     type: SoilType,
     isArray: true
   })
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   getSoilTypes(): Promise<SoilType[]> {
     return this.service.findAll();

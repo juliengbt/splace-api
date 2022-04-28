@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type, Transform } from 'class-transformer';
+import { Type, Transform, Exclude } from 'class-transformer';
 import { BeforeInsert, Column, Entity, PrimaryColumn } from 'typeorm';
 import { v4 } from 'uuid';
 
@@ -20,7 +20,7 @@ export default class BaseUser {
   @Column({ type: 'varchar', length: 255 })
   email!: string;
 
-  @ApiProperty({ type: String, required: true })
+  @Exclude()
   @Column({ type: 'varchar', length: 255 })
   password!: string;
 
@@ -38,4 +38,12 @@ export default class BaseUser {
   @ApiProperty({ type: Date, required: true })
   @Column({ type: 'datetime' })
   last_connection!: Date;
+
+  @Exclude()
+  @Column({ type: 'varchar', length: 255 })
+  refresh_token_hash!: string;
+
+  @Exclude()
+  @Column({ type: 'datetime' })
+  refresh_token_timestamp!: Date;
 }

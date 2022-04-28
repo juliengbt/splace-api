@@ -1,6 +1,4 @@
-import {
-  BeforeInsert, Column, Entity, PrimaryColumn
-} from 'typeorm';
+import { BeforeInsert, Column, Entity, PrimaryColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { v4 } from 'uuid';
@@ -11,7 +9,7 @@ export default class Department {
   @PrimaryColumn({ type: 'varbinary', length: 16 })
   @Type(() => String)
   @Transform(({ value }) => (value as Buffer).toString('base64url'))
-    id!: Buffer;
+  id!: Buffer;
 
   @BeforeInsert()
   uuidToBin() {
@@ -20,9 +18,9 @@ export default class Department {
 
   @ApiProperty()
   @Column({ type: 'varchar', length: 45 })
-    name!: string;
+  name!: string;
 
   @ApiProperty()
   @Column({ type: 'varchar', length: 3 })
-    num!: string;
+  num!: string;
 }

@@ -2,7 +2,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   ArrayMinSize,
-  IsArray, IsBoolean, IsNotEmptyObject, IsOptional, MinLength, ValidateNested
+  IsArray,
+  IsBoolean,
+  IsNotEmptyObject,
+  IsOptional,
+  MinLength,
+  ValidateNested
 } from 'class-validator';
 import AddressDTO from './address.dto';
 
@@ -12,22 +17,22 @@ export default class InstallationDTO {
   @ArrayMinSize(1, { message: 'name must contain at least $constraint1 object' })
   @IsOptional()
   @MinLength(3, { each: true, message: 'Minimum length for names is $constraint1' })
-    name?: string[];
+  name?: string[];
 
   @ApiProperty({ type: () => Boolean, required: false })
   @IsBoolean({ message: 'car_park must be a boolean value' })
   @IsOptional()
-    car_park?: boolean | null;
+  car_park?: boolean | null;
 
   @ApiProperty({ type: () => Boolean, required: false })
   @IsBoolean({ message: 'disabled_access must be a boolean value' })
   @IsOptional()
-    disabled_access?: boolean | null;
+  disabled_access?: boolean | null;
 
   @ApiProperty({ type: () => AddressDTO, required: false })
   @ValidateNested()
   @Type(() => AddressDTO)
   @IsOptional()
   @IsNotEmptyObject()
-    address?: AddressDTO | null;
+  address?: AddressDTO | null;
 }

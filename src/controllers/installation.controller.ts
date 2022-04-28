@@ -1,6 +1,5 @@
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Get,
   HttpCode,
@@ -8,8 +7,7 @@ import {
   NotAcceptableException,
   NotFoundException,
   Param,
-  Patch,
-  UseInterceptors
+  Patch
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -38,11 +36,11 @@ export default class InstallationController {
   })
   @ApiNotFoundResponse({ description: 'Not found.' })
   @ApiParam({ required: true, type: String, name: 'id' })
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   async getById(@Param('id', new ParseUUIDPipe()) id: Buffer): Promise<Installation> {
     const installation = await this.service.findById(id);
-    if (installation === undefined) throw new NotFoundException(`No installation found with id : ${id.toString('base64url')}`);
+    if (!installation)
+      throw new NotFoundException(`No installation found with id : ${id.toString('base64url')}`);
     return installation;
   }
 
@@ -55,9 +53,9 @@ export default class InstallationController {
   })
   @ApiNotAcceptableResponse({ description: 'Equipment CU is not valid.' })
   @ApiBody({ type: InstallationUpdate })
-  @UseInterceptors(ClassSerializerInterceptor)
-  async update(@Body() installationU: InstallationUpdate) : Promise<Installation> {
-    if (!installationU.id) throw new NotAcceptableException('id must be provided in order to update installation');
+  async update(@Body() installationU: InstallationUpdate): Promise<Installation> {
+    if (!installationU.id)
+      throw new NotAcceptableException('id must be provided in order to update installation');
 
     const errors = await validate(installationU, { skipUndefinedProperties: true });
 

@@ -1,6 +1,4 @@
-import {
-  ClassSerializerInterceptor, Controller, Get, UseInterceptors
-} from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import EquipmentLevel from 'src/entities/equipmentLevel.entity';
 import EquipmentLevelService from 'src/services/equipmentLevel.service';
@@ -16,7 +14,6 @@ export default class EquipmentLevelController {
     type: EquipmentLevel,
     isArray: true
   })
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   getEquipmentLevels(): Promise<EquipmentLevel[]> {
     return this.service.findAll();

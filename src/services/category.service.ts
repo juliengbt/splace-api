@@ -11,8 +11,6 @@ export default class CategoryService {
   ) {}
 
   async findAll(): Promise<Category[]> {
-    return this.repo.createQueryBuilder()
-      .leftJoinAndSelect('Category.sports', 'sports')
-      .getMany();
+    return this.repo.createQueryBuilder().leftJoinAndSelect('Category.sports', 'sports').getMany();
   }
 }
