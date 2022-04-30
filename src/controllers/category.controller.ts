@@ -1,5 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/decorators/public';
 import Category from 'src/entities/category.entity';
 import CategoryService from 'src/services/category.service';
 
@@ -8,13 +9,15 @@ import CategoryService from 'src/services/category.service';
 export default class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
+  @Get()
+  @Public()
+  @HttpCode(HttpStatus.OK)
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Categories list',
     type: Category,
     isArray: true
   })
-  @Get()
   getCategories(): Promise<Category[]> {
     return this.categoryService.findAll();
   }

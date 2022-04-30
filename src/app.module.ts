@@ -18,7 +18,8 @@ import SportModule from './modules/sport.module';
 import ZipcodeModule from './modules/zipcode.module';
 import { BaseUserModule } from './baseUser/baseUser.module';
 import { AuthModule } from './auth/auth.module';
-import { UserController } from './baseUser/user.controller';
+import { APP_GUARD } from '@nestjs/core';
+import { AtGuard } from './auth/guards/at.guards';
 
 @Module({
   imports: [
@@ -60,7 +61,12 @@ import { UserController } from './baseUser/user.controller';
     CityModule,
     ZipcodeModule
   ],
-  controllers: [UserController],
-  providers: []
+  controllers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AtGuard
+    }
+  ]
 })
 export default class AppModule {}

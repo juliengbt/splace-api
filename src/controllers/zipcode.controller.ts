@@ -9,6 +9,7 @@ import ZipcodeService from 'src/services/zipcode.service';
 export default class ZipcodeController {
   constructor(private readonly service: ZipcodeService) {}
 
+  @Post()
   @ApiResponse({
     status: 200,
     description: 'Zipcode',
@@ -17,7 +18,6 @@ export default class ZipcodeController {
   @ApiNotAcceptableResponse({ description: 'City DTO is not valid.' })
   @ApiBody({ type: CityDTO })
   @ApiNotAcceptableResponse()
-  @Post()
   async getOneUsingDTO(@Body() cityDTO: CityDTO): Promise<Zipcode> {
     const cityParam = cityDTO;
 

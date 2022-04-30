@@ -20,21 +20,22 @@ import {
 import CityService from 'src/services/city.service';
 import CityDTO from 'src/dto/search/city.dto';
 import City from 'src/entities/city.entity';
+import { Public } from 'src/decorators/public';
 
 @ApiTags('City')
 @Controller('city')
 export default class CityController {
   constructor(private readonly service: CityService) {}
 
+  @Get(':id')
   @ApiResponse({
     status: 200,
-    description: 'Equipment list',
+    description: 'City',
     type: City,
     isArray: false
   })
   @ApiNotFoundResponse({ description: 'Not found.' })
   @ApiNotAcceptableResponse({ description: 'The parameter id must a uuid' })
-  @Get(':id')
   @ApiParam({ required: true, type: String, name: 'id' })
   async getById(@Param('id', new ParseUUIDPipe()) id: Buffer): Promise<City> {
     const city = await this.service.findById(id);
@@ -46,6 +47,8 @@ export default class CityController {
     return city;
   }
 
+  @Post()
+  @Public()
   @ApiResponse({
     status: 200,
     description: 'City list',
@@ -55,7 +58,6 @@ export default class CityController {
   @ApiNotAcceptableResponse({ description: 'City DTO is not valid.' })
   @ApiBody({ type: CityDTO })
   @ApiNotAcceptableResponse()
-  @Post()
   async getUsingDTO(@Body() cityDTO: CityDTO): Promise<City[]> {
     const cityParam = cityDTO;
 

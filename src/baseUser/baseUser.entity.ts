@@ -42,8 +42,4 @@ export default class BaseUser {
   @Exclude()
   @Column({ type: 'varchar', length: 255, nullable: true })
   refresh_token_hash!: string | null;
-
-  @Exclude()
-  @Column({ type: 'datetime', nullable: true })
-  refresh_token_timestamp!: Date | null;
 }

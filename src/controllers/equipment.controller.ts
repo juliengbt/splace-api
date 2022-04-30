@@ -29,6 +29,7 @@ import { validate } from 'class-validator';
 import ParseUUIDPipe from 'src/pipes/parse-uuid.pipe';
 import EquipmentUpdate from 'src/dto/update/equipment.update';
 import { distanceEarthPoints, getArea } from 'src/utils/functions';
+import { Public } from 'src/decorators/public';
 
 @ApiTags('Equipment')
 @Controller('equipment')
@@ -36,6 +37,7 @@ export default class EquipmentController {
   constructor(private readonly service: EquipmentService) {}
 
   @Get(':id')
+  @Public()
   @ApiResponse({
     status: 200,
     description: 'Equipment list',
@@ -53,6 +55,7 @@ export default class EquipmentController {
   }
 
   @Post()
+  @Public()
   @ApiResponse({
     status: 200,
     description: 'Equipment list',

@@ -1,5 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/decorators/public';
 import Owner from 'src/entities/owner.entity';
 import OwnerService from 'src/services/owner.service';
 
@@ -8,13 +9,15 @@ import OwnerService from 'src/services/owner.service';
 export default class OwnerController {
   constructor(private readonly service: OwnerService) {}
 
+  @Get()
+  @Public()
+  @HttpCode(HttpStatus.OK)
   @ApiResponse({
     status: 200,
     description: 'Owner list',
     type: Owner,
     isArray: true
   })
-  @Get()
   getOwners(): Promise<Owner[]> {
     return this.service.findAll();
   }

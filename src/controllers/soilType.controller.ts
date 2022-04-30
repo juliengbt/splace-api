@@ -1,5 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/decorators/public';
 import SoilType from 'src/entities/soilType.entity';
 import SoilTypeService from 'src/services/soilType.service';
 
@@ -8,13 +9,15 @@ import SoilTypeService from 'src/services/soilType.service';
 export default class SoilTypeController {
   constructor(private readonly service: SoilTypeService) {}
 
+  @Get()
+  @Public()
+  @HttpCode(HttpStatus.OK)
   @ApiResponse({
     status: 200,
     description: 'SoilType list',
     type: SoilType,
     isArray: true
   })
-  @Get()
   getSoilTypes(): Promise<SoilType[]> {
     return this.service.findAll();
   }

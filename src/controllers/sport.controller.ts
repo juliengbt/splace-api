@@ -1,13 +1,27 @@
-import { Body, Controller, Get, NotFoundException, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+  Param,
+  Post,
+  Query
+} from '@nestjs/common';
 import { ApiNotFoundResponse, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import SportService from 'src/services/sport.service';
 import Sport from 'src/entities/sport.entity';
+import { Public } from 'src/decorators/public';
 
 @ApiTags('Sport')
 @Controller('sport')
 export default class SportController {
   constructor(private readonly service: SportService) {}
 
+  @Get()
+  @Public()
+  @HttpCode(HttpStatus.OK)
   @ApiResponse({
     status: 200,
     description: 'Sports list',
@@ -15,7 +29,6 @@ export default class SportController {
     isArray: true
   })
   @ApiQuery({ name: 'category', required: false })
-  @Get()
   getSports(@Query('category') category?: string): Promise<Sport[]> {
     if (category) return this.service.findByCategory(category);
     return this.service.findAll();

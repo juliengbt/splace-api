@@ -22,16 +22,23 @@ export class BaseUserService {
     return this.repo.save(userToSave).then((userRes) => userRes.id);
   }
 
-  async updateRefreshToken(userId: Buffer, rt: string | null) {
+  async updateRefreshToken(userId: Buffer, rt: string | null): Promise<number> {
     const now = new Date();
-    this.repo.update(
-      { id: userId },
-      {
-        refresh_token_hash: rt ? await hashString(rt) : null,
-        last_connection: rt ? now : undefined,
-        refresh_token_timestamp: rt ? now : null
-      }
-    );
+    return this.repo
+      .update(
+        {
+          id: userId
+        },
+        {
+          refresh_token_hash: rt ? await hashString(rt) : null,
+          last_connection: now
+        }
+      )
+      .then((res) => res.raw)
+      .catch((err) => {
+        console.error(err);
+        return 0;
+      });
   }
 
   async findByEmail(email: string): Promise<BaseUser | null> {

@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpStatus,
   NotAcceptableException,
   Post,
   Query,
@@ -27,6 +28,7 @@ import path from 'path';
 import { existsSync, mkdirSync, rename, unlink } from 'fs';
 import EquipmentService from 'src/services/equipment.service';
 import Picture from 'src/entities/picture.entity';
+import { Public } from 'src/decorators/public';
 
 const storage = diskStorage({
   destination: (_req, _file, cb) => {
@@ -70,7 +72,8 @@ export default class PictureController {
   }
 
   @Post()
-  @HttpCode(201)
+  @Public()
+  @HttpCode(HttpStatus.CREATED)
   @ApiConsumes('multipart/form-data')
   @ApiResponse({
     status: 201,
@@ -135,9 +138,10 @@ export default class PictureController {
   }
 
   @Get()
-  @HttpCode(200)
+  @Public()
+  @HttpCode(HttpStatus.OK)
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Picture array',
     type: Picture,
     isArray: true
