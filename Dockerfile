@@ -4,11 +4,11 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN yarn install --network-timeout 100000
+RUN npm install --network-timeout 100000
 
 COPY . .
 
-RUN yarn run build
+RUN npm run build
 
 FROM node:slim as production
 
@@ -19,7 +19,7 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN yarn install --production --network-timeout 100000
+RUN npm install --production --network-timeout 100000
 
 COPY . .
 
