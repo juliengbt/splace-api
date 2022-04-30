@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install --network-timeout 100000
+RUN npm install --legacy-peer-deps --network-timeout 100000
 
 COPY . .
 
@@ -19,7 +19,7 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install --production --network-timeout 100000
+RUN npm install --legacy-peer-deps --production --network-timeout 100000
 
 COPY . .
 
