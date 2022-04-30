@@ -1,6 +1,7 @@
-import { Controller, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { GetCurrentUser } from 'src/decorators/getCurrentUser';
+import { Controller, Get, NotFoundException } from '@nestjs/common';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { GetCurrentUserId } from 'src/decorators/getCurrentUserID';
+import BaseUser from './baseUser.entity';
 import { BaseUserService } from './baseUser.service';
 
 @ApiTags('User')
@@ -8,10 +9,11 @@ import { BaseUserService } from './baseUser.service';
 export class UserController {
   constructor(private readonly service: BaseUserService) {}
 
-  @Post()
-  async getUser(@GetCurrentUser() user: any): Promise<any> {
-    console.log(user);
-    this.service.findByEmail('oui');
+  @Get()
+  @ApiResponse({ type: BaseUser })
+  async getUser(@GetCurrentUserId() userId: Buffer): Promise<BaseUser> {
+    const user = this.service.findById(userId);
+    if (user !== null) throw new NotFoundException('User does not exists');
     return user;
   }
 }
