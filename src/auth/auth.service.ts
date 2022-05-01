@@ -20,7 +20,6 @@ export class AuthService {
     if (!match) throw new ForbiddenException(undefined, 'Access Denied');
 
     const tokens = await this.getTokens(user.id, user.email);
-    console.log(user.id, typeof user.id);
     await this.usersService.updateRefreshToken(user.id, tokens.refresh_token);
     return tokens;
   }

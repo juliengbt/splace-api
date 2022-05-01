@@ -12,8 +12,8 @@ export class UserController {
   @Get()
   @ApiResponse({ type: BaseUser })
   async getUser(@GetCurrentUserId() userId: Buffer): Promise<BaseUser> {
-    const user = this.service.findById(userId);
-    if (user !== null) throw new NotFoundException('User does not exists');
+    const user = await this.service.findById(userId);
+    if (!user) throw new NotFoundException('User does not exists');
     return user;
   }
 }

@@ -170,7 +170,7 @@ export default class EquipmentService {
       );
     }
 
-    return query.skip(offset).take(100).getMany();
+    return query.skip(offset).take(50).getMany();
   }
 
   async findById(id: Buffer): Promise<Equipment | null> {
