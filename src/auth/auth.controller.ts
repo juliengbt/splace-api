@@ -30,7 +30,7 @@ export class AuthController {
   @Public()
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: BaseUserSignin, required: true })
-  @ApiResponse({ type: Tokens })
+  @ApiResponse({ type: Tokens, status: HttpStatus.OK })
   async signin(@Body() user: BaseUserSignin): Promise<Tokens> {
     return this.service.signin(user);
   }
@@ -40,7 +40,7 @@ export class AuthController {
   @ApiBody({ type: BaseUserCreate })
   @HttpCode(HttpStatus.CREATED)
   @ApiConflictResponse({ description: 'User email already exists' })
-  @ApiResponse({ type: Tokens })
+  @ApiResponse({ type: Tokens, status: HttpStatus.CREATED })
   async signup(@Body() user: BaseUserCreate): Promise<Tokens> {
     const exists = await this.userService.findByEmail(user.email);
 
@@ -51,7 +51,7 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  @ApiResponse({ type: Boolean })
+  @ApiResponse({ type: Boolean, status: HttpStatus.OK })
   async logout(@GetCurrentUserId() userId: Buffer): Promise<boolean> {
     return this.service.logout(userId);
   }
@@ -60,7 +60,7 @@ export class AuthController {
   @UseGuards(RtGuard)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  @ApiResponse({ type: Tokens })
+  @ApiResponse({ type: Tokens, status: HttpStatus.OK })
   refreshTokens(
     @GetCurrentUserId() userId: Buffer,
     @GetCurrentUser('refreshToken') refreshToken: string
