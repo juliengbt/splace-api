@@ -26,6 +26,9 @@ async function bootstrap() {
         imgSrc: ["'self'", 'data:', 'cdn.jsdelivr.net'],
         scriptSrc: ["'self'", "https: 'unsafe-inline'", 'cdn.jsdelivr.net']
       }
+    },
+    crossOriginResourcePolicy: {
+      policy: 'cross-origin'
     }
   });
 
