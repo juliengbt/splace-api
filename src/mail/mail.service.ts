@@ -7,7 +7,7 @@ export class MailService {
   constructor(private mailerService: MailerService) {}
 
   async sendUserConfirmation(user: BaseUser, token: string) {
-    const url = `https://splace.app//confirm?token=${token}`;
+    const url = `https://splace.app/user?email_token=${token}`;
 
     await this.mailerService.sendMail({
       to: user.email,
