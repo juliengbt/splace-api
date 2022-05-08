@@ -24,7 +24,7 @@ import { AtGuard } from './auth/guards/at.guards';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', 'public')
+      rootPath: join(process.cwd(), 'public')
     }),
     ConfigModule.forRoot({
       envFilePath: '.env',
