@@ -41,6 +41,17 @@ export class BaseUserService {
       });
   }
 
+  async confirmEmail(userId: Buffer) {
+    return this.repo.update(
+      {
+        id: userId
+      },
+      {
+        is_email_confirmed: true
+      }
+    );
+  }
+
   async findByEmail(email: string): Promise<BaseUser | null> {
     const query = this.getFullObjectQuery();
 

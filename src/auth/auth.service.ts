@@ -6,10 +6,16 @@ import { JwtPayload } from 'src/types';
 import BaseUserSignin from 'src/baseUser/dto/baseUser.signin';
 import BaseUserCreate from 'src/baseUser/dto/baseUser.create';
 import { Tokens } from './dto/tokens.dto';
+import { MailService } from 'src/mail/mail.service';
+import BaseUser from 'src/baseUser/baseUser.entity';
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: BaseUserService, private jwtService: JwtService) {}
+  constructor(
+    private usersService: BaseUserService,
+    private jwtService: JwtService,
+    private mailService: MailService
+  ) {}
 
   async signin(userSignin: BaseUserSignin): Promise<Tokens> {
     const user = await this.usersService.findByEmail(userSignin.email);
@@ -48,6 +54,22 @@ export class AuthService {
     await this.usersService.updateRefreshToken(user.id, tokens.refresh_token);
 
     return tokens;
+  }
+
+  async confirmEmail(userId: Buffer): Promise<void> {
+    await this.usersService.confirmEmail(userId);
+  }
+
+  async sendConfirmationMail(user: BaseUser): Promise<void> {
+    const payload: JwtPayload = {
+      sub: user.id.toString('base64url'),
+      email: user.email
+    };
+    const token = await this.jwtService.signAsync(payload, {
+      expiresIn: '6h',
+      secret: 'mt-' + process.env.JWT_SECRET
+    });
+    await this.mailService.sendUserConfirmation(user, token);
   }
 
   private async getTokens(userId: Buffer, email: string): Promise<Tokens> {

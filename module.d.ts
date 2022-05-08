@@ -5,6 +5,7 @@ declare namespace NodeJS {
     NODE_ENV: string;
     JWT_SECRET: string;
     API_KEY: string;
+    MAIL_PASSWORD: string;
 
     MYSQL_USER: string;
     MYSQL_PASSWORD: string;

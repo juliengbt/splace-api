@@ -42,4 +42,9 @@ export default class BaseUser {
   @Exclude()
   @Column({ type: 'varchar', length: 255, nullable: true })
   refresh_token_hash!: string | null;
+
+  @ApiProperty({ type: Boolean, nullable: false, default: false })
+  @Column({ type: 'bit' })
+  @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
+  is_email_confirmed!: boolean;
 }

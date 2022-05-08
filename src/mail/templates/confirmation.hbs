@@ -1,0 +1,90 @@
+<style>
+  body {
+    margin: 0;
+  }
+
+  .bg {
+    padding: 60px 20px;
+    display: flex;
+    justify-content: center;
+    background: rgb(255, 213, 0);
+    background: -webkit-linear-gradient(160deg, rgba(255, 213, 0, 1) 0%, rgba(242, 92, 6, 1) 100%);
+    background: -moz-linear-gradient(160deg, rgba(255, 213, 0, 1) 0%, rgba(242, 92, 6, 1) 100%);
+    background: -o-linear-gradient(160deg, rgba(255, 213, 0, 1) 0%, rgba(242, 92, 6, 1) 100%);
+    background: linear-gradient(160deg, rgba(255, 213, 0, 1) 0%, rgba(242, 92, 6, 1) 100%);
+  }
+
+  .main {
+    display: block;
+    padding: 1rem;
+    width: fit-content;
+    max-width: 500px;
+    border: 0 transparent solid;
+    border-radius: 20px;
+    background: white;
+  }
+
+  .splaceLink {
+    display: inline;
+    color: rgb(255, 148, 6);
+    text-decoration: none;
+  }
+
+  .title {
+    font-size: 2rem;
+    text-align: center;
+    padding-bottom: 1.5rem;
+  }
+
+  p,
+  a {
+    display: block;
+    font-family: 'Segoe UI Regular', sans-serif, reg;
+    margin: 0;
+  }
+
+  .logoContainer {
+    display: block;
+    width: 44px;
+    height: 44px;
+    margin: auto;
+    margin-bottom: 15px;
+    margin-top: 10px;
+  }
+
+  .content * {
+    margin-bottom: 15px;
+  }
+
+  .confirm {
+    padding: 10px;
+    background: rgb(255, 148, 6);
+    color: white;
+    font-weight: 600;
+    font-size: medium;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    border: 2px rgb(255, 148, 6) solid;
+    border-radius: 6px;
+    margin: 30px auto;
+    width: fit-content;
+    text-align: center;
+  }
+</style>
+<div class="bg">
+  <div class="main">
+    <img class="logoContainer" src="https://api.splace.app/images/logo_64.png" />
+    <div class="content">
+      <p>Bienvenue <strong>{{ name }}</strong> !</p>
+      <p>Merci de vous être inscrit sur <a class="splaceLink" href="https://splace.app" target="_blank">Splace</a> !</p>
+      <p>Nous avons besoin de confirmer votre adresse. Cliquez sur le bouton ci-dessous pour confirmer votre adresse
+        e-mail :</p>
+      <a href="{{ url }}" class="confirm" target="_blank">Vérifier mon email</a>
+      <p>Si vous rencontrez des difficultés, veuillez coller l’URL ci-dessus dans votre navigateur Web.</p>
+      <p>{{ url }}</p>
+      <p>Si vous n’êtes pas l'origine de l'inscription, veuillez ignorer ce message.
+      </p>
+      <p>Merci !<br />L’équipe de Splace</p>
+    </div>
+  </div>
+</div>

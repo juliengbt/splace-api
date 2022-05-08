@@ -5,7 +5,8 @@ import {
   Body,
   ConflictException,
   Controller,
-  UseGuards
+  UseGuards,
+  NotFoundException
 } from '@nestjs/common';
 import { ApiBody, ApiConflictResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BaseUserService } from 'src/baseUser/baseUser.service';
@@ -17,6 +18,7 @@ import { Public } from 'src/decorators/public';
 import { AuthService } from './auth.service';
 import { Tokens } from './dto/tokens.dto';
 import { RtGuard } from './guards/rt.guards';
+import { MtGuard } from './guards/mt.guards';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -61,10 +63,29 @@ export class AuthController {
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @ApiResponse({ type: Tokens, status: HttpStatus.OK })
-  refreshTokens(
+  async refreshTokens(
     @GetCurrentUserId() userId: Buffer,
     @GetCurrentUser('refreshToken') refreshToken: string
   ): Promise<Tokens> {
     return this.service.refreshTokens(userId, refreshToken);
+  }
+
+  @Public()
+  @UseGuards(MtGuard)
+  @Post('confirmEmail')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({ status: HttpStatus.OK })
+  async confirmEmail(@GetCurrentUserId() userId: Buffer): Promise<void> {
+    return this.service.confirmEmail(userId);
+  }
+
+  @Post('sendConfirmationEmail')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({ status: HttpStatus.OK })
+  async sendConfirmationEmail(@GetCurrentUserId() userId: Buffer): Promise<void> {
+    const user = await this.userService.findById(userId);
+    if (!user) throw new NotFoundException('User does not exists');
+    if (user.is_email_confirmed) new ConflictException('Email is already confirmed');
+    return this.service.sendConfirmationMail(user);
   }
 }
