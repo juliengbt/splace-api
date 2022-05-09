@@ -6,7 +6,8 @@ import {
   ConflictException,
   Controller,
   UseGuards,
-  NotFoundException
+  NotFoundException,
+  NotAcceptableException
 } from '@nestjs/common';
 import { ApiBody, ApiConflictResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BaseUserService } from 'src/baseUser/baseUser.service';
@@ -82,10 +83,17 @@ export class AuthController {
   @Post('sendConfirmationEmail')
   @HttpCode(HttpStatus.OK)
   @ApiResponse({ status: HttpStatus.OK })
-  async sendConfirmationEmail(@GetCurrentUserId() userId: Buffer): Promise<void> {
+  async sendConfirmationEmail(
+    @GetCurrentUserId() userId: Buffer,
+    @GetCurrentUser('email') userEmail: string
+  ): Promise<void> {
     const user = await this.userService.findById(userId);
     if (!user) throw new NotFoundException('User does not exists');
     if (user.is_email_confirmed) new ConflictException('Email is already confirmed');
+    if (user.email !== userEmail)
+      new NotAcceptableException(
+        'Ethe email provided by the token is not the same as the user email'
+      );
     return this.service.sendConfirmationMail(user);
   }
 }
