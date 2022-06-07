@@ -1,4 +1,4 @@
-import GPSAreaDTO from 'src/dto/search/gps_area.dto';
+import GPSAreaSearch from 'src/models/equipment/dto/gps_area.search';
 import argon from 'argon2';
 const { PI, sin, cos, asin, atan2, sqrt } = Math;
 const RAYON_TERRE = 6731.008;
@@ -59,7 +59,7 @@ function getOffsetPos(lat: number, lon: number, dist: number, orient: number) {
 }
 
 // Create square area, lat lng is the center and 2*dist is the diagonal
-export function getArea(lat: number, lon: number, distance: number): GPSAreaDTO {
+export function getArea(lat: number, lon: number, distance: number): GPSAreaSearch {
   const max = getOffsetPos(lat, lon, distance, degToRad(45));
   const min = getOffsetPos(lat, lon, distance, degToRad(225));
 

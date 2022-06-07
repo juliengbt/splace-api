@@ -1,31 +1,31 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config/dist/config.module';
-import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
-import { join } from 'path';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import AddressModule from './modules/address.module';
-import CategoryModule from './modules/category.module';
-import CityModule from './modules/city.module';
-import EquipmentModule from './modules/equipment.module';
-import EquipmentLevelModule from './modules/equipmentLevel.module';
-import EquipmentNatureModule from './modules/equipmentNature.module';
-import EquipmentTypeModule from './modules/equipmentType.module';
-import InstallationModule from './modules/installation.module';
-import OwnerModule from './modules/owner.module';
-import PictureModule from './modules/picture.module';
-import SoilTypeModule from './modules/soilType.module';
-import SportModule from './modules/sport.module';
-import ZipcodeModule from './modules/zipcode.module';
-import { BaseUserModule } from './baseUser/baseUser.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+//import { join } from 'path';
+import { ConfigModule } from '@nestjs/config';
+//import { ServeStaticModule } from '@nestjs/serve-static';
+import AddressModule from './models/address/address.module';
+import CategoryModule from 'src/models/category/category.module';
+import CityModule from 'src/models/city/city.module';
+import EquipmentModule from 'src/models/equipment/equipment.module';
+import EquipmentLevelModule from 'src/models/equipmentLevel/equipmentLevel.module';
+import EquipmentNatureModule from 'src/models/equipmentNature/equipmentNature.module';
+import EquipmentTypeModule from 'src/models/equipmentType/equipmentType.module';
+import InstallationModule from 'src/models/installation/installation.module';
+import OwnerModule from 'src/models/owner/owner.module';
+import PictureModule from 'src/models/picture/picture.module';
+import SoilTypeModule from 'src/models/soilType/soilType.module';
+import SportModule from 'src/models/sport/sport.module';
+import ZipcodeModule from 'src/models/zipcode/zipcode.module';
+import { UserModule } from 'src/models/user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AtGuard } from './auth/guards/at.guards';
-
+console.log(__dirname + '/**/*.entity.{js,ts}');
 @Module({
   imports: [
-    ServeStaticModule.forRoot({
+    /*ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'public')
-    }),
+    }),*/
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true
@@ -37,7 +37,7 @@ import { AtGuard } from './auth/guards/at.guards';
       username: process.env.MYSQL_USER,
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DATABASE,
-      entities: ['dist/**/*.entity.js'],
+      entities: [__dirname + '/**/*.entity.{js,ts}'],
       synchronize: false,
       retryAttempts: 0,
       logging:
@@ -46,7 +46,7 @@ import { AtGuard } from './auth/guards/at.guards';
           : ['error', 'info', 'log', 'query', 'warn']
     }),
     AuthModule,
-    BaseUserModule,
+    UserModule,
     SportModule,
     CategoryModule,
     AddressModule,

@@ -7,12 +7,13 @@ import {
   Controller,
   UseGuards,
   NotFoundException,
-  NotAcceptableException
+  NotAcceptableException,
+  Get,
+  Param
 } from '@nestjs/common';
 import { ApiBody, ApiConflictResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { BaseUserService } from 'src/baseUser/baseUser.service';
-import BaseUserCreate from 'src/baseUser/dto/baseUser.create';
-import BaseUserSignin from 'src/baseUser/dto/baseUser.signin';
+import { UserService } from 'src/models/user/user.service';
+import BaseUserSignin from 'src/models/user/dto/baseUser.signin';
 import { GetCurrentUser } from 'src/decorators/getCurrentUser';
 import { GetCurrentUserId } from 'src/decorators/getCurrentUserID';
 import { Public } from 'src/decorators/public';
@@ -20,14 +21,13 @@ import { AuthService } from './auth.service';
 import { Tokens } from './dto/tokens.dto';
 import { RtGuard } from './guards/rt.guards';
 import { MtGuard } from './guards/mt.guards';
+import RegularUserCreate from 'src/models/user/dto/regularUser.create';
+import ProUserCreate from 'src/models/user/dto/proUser.create';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly service: AuthService,
-    private readonly userService: BaseUserService
-  ) {}
+  constructor(private readonly service: AuthService, private readonly userService: UserService) {}
 
   @Post('signin')
   @Public()
@@ -40,23 +40,34 @@ export class AuthController {
 
   @Post('signup')
   @Public()
-  @ApiBody({ type: BaseUserCreate })
+  @ApiBody({ type: RegularUserCreate })
   @HttpCode(HttpStatus.CREATED)
   @ApiConflictResponse({ description: 'User email already exists' })
   @ApiResponse({ type: Tokens, status: HttpStatus.CREATED })
-  async signup(@Body() user: BaseUserCreate): Promise<Tokens> {
-    const exists = await this.userService.findByEmail(user.email);
+  async signup(@Body() u: RegularUserCreate): Promise<Tokens> {
+    return this.service.signup(u);
+  }
 
-    if (exists)
-      throw new ConflictException(undefined, `User already exists with email: ${user.email}`);
-    return this.service.signup(user);
+  @Post('signupPro')
+  @Public()
+  @ApiBody({ type: ProUserCreate })
+  @HttpCode(HttpStatus.CREATED)
+  @ApiConflictResponse({ description: 'User email already exists' })
+  @ApiResponse({ type: Tokens, status: HttpStatus.CREATED })
+  async signupPro(@Body() u: ProUserCreate): Promise<Tokens> {
+    return this.service.signup(u);
   }
 
   @Post('logout')
+  @Public()
+  @UseGuards(RtGuard)
   @HttpCode(HttpStatus.OK)
   @ApiResponse({ type: Boolean, status: HttpStatus.OK })
-  async logout(@GetCurrentUserId() userId: Buffer): Promise<boolean> {
-    return this.service.logout(userId);
+  async logout(
+    @GetCurrentUserId() userId: Buffer,
+    @GetCurrentUser('refreshToken') refreshToken: string
+  ): Promise<boolean> {
+    return this.service.logout(userId, refreshToken);
   }
 
   @Public()
@@ -78,6 +89,15 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.OK })
   async confirmEmail(@GetCurrentUserId() userId: Buffer): Promise<void> {
     return this.service.confirmEmail(userId);
+  }
+
+  @Public()
+  @Get('email/:email')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({ status: HttpStatus.OK })
+  async emailExists(@Param('email') email: string): Promise<void> {
+    const exist = await this.service.emailExist(email);
+    if (!exist) throw new NotFoundException();
   }
 
   @Post('sendConfirmationEmail')

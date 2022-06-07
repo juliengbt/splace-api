@@ -1,0 +1,14 @@
+import { Module } from '@nestjs/common/decorators/modules/module.decorator';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import AddressController from 'src/models/address/address.controller';
+import Address from 'src/models/address/address.entity';
+import AddressService from 'src/models/address/address.service';
+import InstallationModule from '../installation/installation.module';
+
+@Module({
+  imports: [InstallationModule, TypeOrmModule.forFeature([Address])],
+  exports: [],
+  controllers: [AddressController],
+  providers: [AddressService]
+})
+export default class AddressModule {}

@@ -1,9 +1,10 @@
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+//import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import AppModule from './app.module';
-import { fastifyHelmet } from '@fastify/helmet';
+import fastifyHelmet from '@fastify/helmet';
+import { useContainer } from 'class-validator';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
@@ -16,6 +17,9 @@ async function bootstrap() {
       transform: true
     })
   );
+
+  // Allow class-validator to use NestJS dependency injection container.
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
   await app.register(fastifyHelmet, {
     contentSecurityPolicy: {
@@ -38,14 +42,14 @@ async function bootstrap() {
     allowedHeaders: 'Content-Type, Content-Length, Authorization'
   });
 
-  const options = new DocumentBuilder()
+  /*const options = new DocumentBuilder()
     .setTitle('Splace API')
     .setDescription('Documentation for SplaceAPI')
     .setVersion('1.0')
     .addTag('Splace')
     .build();
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('doc', app, document);
+  SwaggerModule.setup('doc', app, document);*/
 
   await app.listen(parseInt(process.env.SERVER_PORT || '8080'), '0.0.0.0');
 }
