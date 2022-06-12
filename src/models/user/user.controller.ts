@@ -1,7 +1,8 @@
 import { Controller, Get, NotFoundException } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { GetCurrentUserId } from 'src/decorators/getCurrentUserID';
-import BaseUser from './entities/baseUser.entity';
+import ProUser from './entities/proUser.entity';
+import RegularUser from './entities/regularUser.entity';
 import { UserService } from './user.service';
 
 @ApiTags('User')
@@ -10,8 +11,10 @@ export class UserController {
   constructor(private readonly service: UserService) {}
 
   @Get()
-  @ApiResponse({ type: BaseUser })
-  async getUser(@GetCurrentUserId() userId: Buffer): Promise<BaseUser> {
+  @ApiOkResponse({
+    schema: { oneOf: [{ $ref: getSchemaPath(ProUser) }, { $ref: getSchemaPath(RegularUser) }] }
+  })
+  async getUser(@GetCurrentUserId() userId: Buffer): Promise<ProUser | RegularUser> {
     const user = await this.service.findById(userId);
     if (!user) throw new NotFoundException('User does not exists');
     return user;

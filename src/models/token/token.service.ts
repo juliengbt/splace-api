@@ -78,7 +78,7 @@ export class TokenService {
       .delete()
       .from(Token)
       .where('id_user = :id_user', { id_user: userId })
-      .andWhere('refresh_token_hash < :now', { now: new Date() })
+      .andWhere('exp < :now', { now: new Date() })
       .execute()
       .then((res) => res.affected || 0)
       .catch((err) => {

@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
-import BaseUser, { Role } from './baseUser.entity';
+import City from 'src/models/city/city.entity';
+import { Entity, JoinColumn, JoinTable, ManyToMany, OneToOne, PrimaryColumn } from 'typeorm';
+import BaseUser from './baseUser.entity';
 
 @Entity('ProUser')
 export default class ProUser {
@@ -12,6 +13,12 @@ export default class ProUser {
   @JoinColumn({ name: 'id' })
   user!: BaseUser;
 
-  @ApiProperty({ type: Role, enum: Role })
-  role!: Role.PRO;
+  @ApiProperty({ type: () => City, isArray: true })
+  @ManyToMany(() => City, (c) => c.id, { cascade: true })
+  @JoinTable({
+    name: 'ProUser_City',
+    inverseJoinColumn: { name: 'id_city' },
+    joinColumn: { name: 'id_proUser' }
+  })
+  cities!: City[];
 }

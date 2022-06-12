@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-//import { join } from 'path';
+import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
-//import { ServeStaticModule } from '@nestjs/serve-static';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import AddressModule from './models/address/address.module';
 import CategoryModule from 'src/models/category/category.module';
 import CityModule from 'src/models/city/city.module';
@@ -23,9 +23,9 @@ import { AtGuard } from './auth/guards/at.guards';
 console.log(__dirname + '/**/*.entity.{js,ts}');
 @Module({
   imports: [
-    /*ServeStaticModule.forRoot({
+    ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'public')
-    }),*/
+    }),
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true

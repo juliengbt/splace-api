@@ -61,7 +61,7 @@ export class AuthService {
   }
 
   async logout(userId: Buffer, rt: string): Promise<boolean> {
-    const user = await this.usersService.findById(userId);
+    const user = await this.usersService.findBaseUserById(userId);
     if (!user || user.tokens.length == 0) return false;
 
     let rtMatches = false;
@@ -85,7 +85,7 @@ export class AuthService {
   }
 
   async refreshTokens(userId: Buffer, rt: string): Promise<Tokens> {
-    const user = await this.usersService.findById(userId);
+    const user = await this.usersService.findBaseUserById(userId);
     if (!user || user.tokens.length == 0) throw new ForbiddenException('Access Denied');
 
     let rtMatches = false;
