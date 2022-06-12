@@ -1,5 +1,5 @@
-import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Get } from '@nestjs/common';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/decorators/public';
 import Owner from 'src/models/owner/owner.entity';
 import OwnerService from 'src/models/owner/owner.service';
@@ -11,9 +11,7 @@ export default class OwnerController {
 
   @Get()
   @Public()
-  @HttpCode(HttpStatus.OK)
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Owner list',
     type: Owner,
     isArray: true

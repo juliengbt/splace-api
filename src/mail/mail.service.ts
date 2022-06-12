@@ -8,16 +8,19 @@ export class MailService {
 
   async sendUserConfirmation(user: BaseUser, token: string) {
     const url = `https://splace.app/user?email_token=${token}`;
-
-    await this.mailerService.sendMail({
-      to: user.email,
-      // from: '"Support Team" <support@example.com>', // override default from
-      subject: 'Splace - Confirmation adresse email',
-      template: __dirname + '/confirmation', // `.hbs` extension is appended automatically
-      context: {
-        name: user.name,
-        url
-      }
-    });
+    try {
+      await this.mailerService.sendMail({
+        to: user.email,
+        // from: '"Support Team" <support@example.com>', // override default from
+        subject: 'Splace - Confirmation adresse email',
+        template: __dirname + '/confirmation', // `.hbs` extension is appended automatically
+        context: {
+          name: user.name,
+          url
+        }
+      });
+    } catch (err) {
+      console.error(err);
+    }
   }
 }

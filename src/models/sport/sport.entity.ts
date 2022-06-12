@@ -24,4 +24,8 @@ export default class Sport {
   @JoinColumn({ name: 'code_category' })
   @ManyToOne(() => Category, (category) => category.code, { cascade: false })
   category?: Category;
+
+  @ApiProperty({ type: String })
+  @Column({ type: 'varchar', length: 100, nullable: false })
+  alias!: string;
 }

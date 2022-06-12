@@ -1,5 +1,5 @@
-import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Get } from '@nestjs/common';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/decorators/public';
 import EquipmentNature from 'src/models/equipmentNature/equipmentNature.entity';
 import EquipmentNatureService from 'src/models/equipmentNature/equipmentNature.service';
@@ -11,9 +11,7 @@ export default class EquipmentNatureController {
 
   @Get()
   @Public()
-  @HttpCode(HttpStatus.OK)
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'EquipmentNature list',
     type: EquipmentNature,
     isArray: true

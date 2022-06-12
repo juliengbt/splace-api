@@ -1,5 +1,5 @@
-import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Get } from '@nestjs/common';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/decorators/public';
 import SoilType from 'src/models/soilType/soilType.entity';
 import SoilTypeService from 'src/models/soilType/soilType.service';
@@ -11,9 +11,7 @@ export default class SoilTypeController {
 
   @Get()
   @Public()
-  @HttpCode(HttpStatus.OK)
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'SoilType list',
     type: SoilType,
     isArray: true

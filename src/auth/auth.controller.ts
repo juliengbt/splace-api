@@ -14,6 +14,7 @@ import {
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiParam,
   ApiTags
 } from '@nestjs/swagger';
 import { UserService } from 'src/models/user/user.service';
@@ -91,6 +92,7 @@ export class AuthController {
 
   @Public()
   @Get('email/:email')
+  @ApiParam({ type: String, name: 'email' })
   @ApiOkResponse()
   async emailExists(@Param('email') email: string): Promise<void> {
     const exist = await this.service.emailExist(email);

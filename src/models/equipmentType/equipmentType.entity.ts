@@ -14,4 +14,8 @@ export default class EquipmentType {
   @ApiProperty({ type: () => String })
   @Column({ type: 'varchar', length: 10 })
   icon!: string;
+
+  @ApiProperty({ type: String })
+  @Column({ type: 'varchar', length: 100, nullable: false })
+  alias!: string;
 }

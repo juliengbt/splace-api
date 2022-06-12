@@ -1,5 +1,5 @@
-import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Get } from '@nestjs/common';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/decorators/public';
 import Category from 'src/models/category/category.entity';
 import CategoryService from 'src/models/category/category.service';
@@ -11,9 +11,7 @@ export default class CategoryController {
 
   @Get()
   @Public()
-  @HttpCode(HttpStatus.OK)
-  @ApiResponse({
-    status: HttpStatus.OK,
+  @ApiOkResponse({
     description: 'Categories list',
     type: Category,
     isArray: true

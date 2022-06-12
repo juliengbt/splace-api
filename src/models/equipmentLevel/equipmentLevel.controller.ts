@@ -1,5 +1,5 @@
-import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Get } from '@nestjs/common';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/decorators/public';
 import EquipmentLevel from 'src/models/equipmentLevel/equipmentLevel.entity';
 import EquipmentLevelService from 'src/models/equipmentLevel/equipmentLevel.service';
@@ -11,8 +11,7 @@ export default class EquipmentLevelController {
 
   @Get()
   @Public()
-  @HttpCode(HttpStatus.OK)
-  @ApiResponse({
+  @ApiOkResponse({
     status: 200,
     description: 'EquipmentLevel list',
     type: EquipmentLevel,
