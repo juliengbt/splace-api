@@ -11,7 +11,7 @@ import { JwtPayload } from 'src/types';
 import BaseUserSignin from 'src/models/user/dto/baseUser.signin';
 import { Tokens } from './dto/tokens.dto';
 import { MailService } from 'src/mail/mail.service';
-import BaseUser from 'src/models/user/entities/baseUser.entity';
+import BaseUser, { Role } from 'src/models/user/entities/baseUser.entity';
 import { TokenService } from 'src/models/token/token.service';
 import ProUserCreate from 'src/models/user/dto/proUser.create';
 import RegularUserCreate from 'src/models/user/dto/regularUser.create';
@@ -33,7 +33,7 @@ export class AuthService {
 
     if (!match) throw new ForbiddenException(undefined, 'Access Denied');
 
-    const tokens = await this.getTokens(user.id, user.email);
+    const tokens = await this.getTokens(user.id, user.email, user.role);
     const exp = this.getTokenExp(tokens.refresh_token);
 
     if (!exp) throw new InternalServerErrorException('Error while decoding refresh token');
@@ -50,12 +50,14 @@ export class AuthService {
     if (exists)
       throw new ConflictException(undefined, `User already exists with email: ${u.user.email}`);
 
-    const userId = await this.usersService.create(u);
-    const tokens = await this.getTokens(userId, u.user.email);
+    const id = await this.usersService.create(u);
+    const user = await this.usersService.findBaseUserById(id);
+    if (!user) throw new InternalServerErrorException();
+    const tokens = await this.getTokens(user.id, user.email, user.role);
     const exp = this.getTokenExp(tokens.refresh_token);
 
     if (!exp) throw new InternalServerErrorException('Error while decoding refresh token');
-    await this.tokenService.insertToken(userId, tokens.refresh_token, exp);
+    await this.tokenService.insertToken(user.id, tokens.refresh_token, exp);
 
     return tokens;
   }
@@ -97,7 +99,7 @@ export class AuthService {
 
     if (!rtMatches) throw new ForbiddenException('Access Denied');
 
-    const tokens = await this.getTokens(user.id, user.email);
+    const tokens = await this.getTokens(user.id, user.email, user.role);
     const exp = this.getTokenExp(tokens.refresh_token);
 
     if (!exp) throw new InternalServerErrorException('Error while decoding refresh token');
@@ -131,10 +133,11 @@ export class AuthService {
     await this.mailService.sendUserConfirmation(user, token);
   }
 
-  private async getTokens(userId: Buffer, email: string): Promise<Tokens> {
+  private async getTokens(userId: Buffer, email: string, role: Role): Promise<Tokens> {
     const payload: JwtPayload = {
       sub: userId.toString('base64url'),
-      email: email
+      email: email,
+      role: role
     };
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(payload, {

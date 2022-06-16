@@ -1,6 +1,6 @@
 import { Controller, Post, Body, NotAcceptableException, NotFoundException } from '@nestjs/common';
-import { ApiTags, ApiResponse, ApiNotAcceptableResponse, ApiBody } from '@nestjs/swagger';
-import CitySearch from 'src/models/city/dto/city.dto';
+import { ApiTags, ApiNotAcceptableResponse, ApiBody, ApiOkResponse } from '@nestjs/swagger';
+import CitySearch from 'src/models/city/dto/city.search';
 import Zipcode from 'src/models/zipcode/zipcode.entity';
 import ZipcodeService from 'src/models/zipcode/zipcode.service';
 
@@ -10,12 +10,11 @@ export default class ZipcodeController {
   constructor(private readonly service: ZipcodeService) {}
 
   @Post()
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Zipcode',
     type: Zipcode
   })
-  @ApiNotAcceptableResponse({ description: 'City DTO is not valid.' })
+  @ApiNotAcceptableResponse({ description: 'City Search is not valid.' })
   @ApiBody({ type: CitySearch })
   @ApiNotAcceptableResponse()
   async getOneUsingDTO(@Body() cityDTO: CitySearch): Promise<Zipcode> {

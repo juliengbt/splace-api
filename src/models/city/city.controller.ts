@@ -6,21 +6,21 @@ import {
   NotAcceptableException,
   NotFoundException,
   Param,
-  ParseUUIDPipe,
   Post
 } from '@nestjs/common';
 import {
   ApiBody,
   ApiNotAcceptableResponse,
   ApiNotFoundResponse,
+  ApiOkResponse,
   ApiParam,
-  ApiResponse,
   ApiTags
 } from '@nestjs/swagger';
 import CityService from 'src/models/city/city.service';
-import CitySearch from 'src/models/city/dto/city.dto';
+import CitySearch from 'src/models/city/dto/city.search';
 import City from 'src/models/city/city.entity';
 import { Public } from 'src/decorators/public';
+import ParseBase64IDPipe from 'src/pipes/parse-base64id.pipe';
 
 @ApiTags('City')
 @Controller('city')
@@ -28,16 +28,14 @@ export default class CityController {
   constructor(private readonly service: CityService) {}
 
   @Get(':id')
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'City',
-    type: City,
-    isArray: false
+    type: City
   })
   @ApiNotFoundResponse({ description: 'Not found.' })
   @ApiNotAcceptableResponse({ description: 'The parameter id must a uuid' })
   @ApiParam({ required: true, type: String, name: 'id' })
-  async getById(@Param('id', new ParseUUIDPipe()) id: Buffer): Promise<City> {
+  async getById(@Param('id', new ParseBase64IDPipe()) id: Buffer): Promise<City> {
     const city = await this.service.findById(id);
     if (!city)
       throw new NotFoundException(
@@ -49,8 +47,7 @@ export default class CityController {
 
   @Post()
   @Public()
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'City list',
     type: City,
     isArray: true
@@ -64,7 +61,7 @@ export default class CityController {
     if (cityDTO.ids)
       throw new NotAcceptableException(
         undefined,
-        'It is not allowed to use id property when using DTO'
+        'Id is not allowed to use id property when using DTO'
       );
 
     if (cityParam.names) {

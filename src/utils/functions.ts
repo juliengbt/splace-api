@@ -1,5 +1,7 @@
 import GPSAreaSearch from 'src/models/equipment/dto/gps_area.search';
 import argon from 'argon2';
+import { faker } from '@faker-js/faker';
+
 const { PI, sin, cos, asin, atan2, sqrt } = Math;
 const RAYON_TERRE = 6731.008;
 
@@ -73,4 +75,8 @@ export function getArea(lat: number, lon: number, distance: number): GPSAreaSear
 
 export async function hashString(s: string): Promise<string> {
   return argon.hash(s);
+}
+
+export function randomBase64ID(): string {
+  return Buffer.from(faker.datatype.uuid().replace('-', ''), 'hex').toString('base64url');
 }

@@ -20,7 +20,7 @@ export default class Sport {
   @Column({ type: 'varchar', length: 256, nullable: true })
   federation!: string | null;
 
-  @ApiProperty({ type: () => Category })
+  @ApiProperty({ type: () => Category, required: false })
   @JoinColumn({ name: 'code_category' })
   @ManyToOne(() => Category, (category) => category.code, { cascade: false })
   category?: Category;

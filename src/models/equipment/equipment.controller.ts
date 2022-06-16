@@ -15,15 +15,15 @@ import {
   ApiBody,
   ApiNotAcceptableResponse,
   ApiNotFoundResponse,
+  ApiOkResponse,
   ApiParam,
   ApiQuery,
-  ApiResponse,
   ApiTags
 } from '@nestjs/swagger';
 import Equipment from 'src/models/equipment/equipment.entity';
 import EquipmentSearch from 'src/models/equipment/dto/equipment.search';
 import EquipmentService from 'src/models/equipment/equipment.service';
-import ParseUUIDPipe from 'src/pipes/parse-uuid.pipe';
+import ParseBase64IDPipe from 'src/pipes/parse-base64id.pipe';
 import { distanceEarthPoints, getArea } from 'src/utils/functions';
 import { Public } from 'src/decorators/public';
 
@@ -34,8 +34,7 @@ export default class EquipmentController {
 
   @Get(':id')
   @Public()
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Equipment list',
     type: Equipment,
     isArray: false
@@ -43,7 +42,7 @@ export default class EquipmentController {
   @ApiParam({ type: String, required: true, name: 'id' })
   @ApiNotFoundResponse({ description: 'Not found.' })
   @ApiNotAcceptableResponse({ description: 'The parameter id must a uuid' })
-  async getById(@Param('id', new ParseUUIDPipe()) id: Buffer): Promise<Equipment> {
+  async getById(@Param('id', new ParseBase64IDPipe()) id: Buffer): Promise<Equipment> {
     const equipment = await this.service.findById(id);
     if (!equipment)
       throw new NotFoundException(`No equipment found with id : ${id.toString('base64url')}`);
@@ -52,8 +51,7 @@ export default class EquipmentController {
 
   @Post()
   @Public()
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Equipment list',
     type: Equipment,
     isArray: true

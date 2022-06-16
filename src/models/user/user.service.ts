@@ -4,8 +4,10 @@ import BaseUser, { Role } from 'src/models/user/entities/baseUser.entity';
 import { hashString as generatePasswordHash } from 'src/utils/functions';
 import { DeepPartial, Repository, SelectQueryBuilder } from 'typeorm';
 import City from '../city/city.entity';
+import Equipment from '../equipment/equipment.entity';
 import Sport from '../sport/sport.entity';
 import ProUserCreate from './dto/proUser.create';
+import ProUserSearch from './dto/proUser.search';
 import RegularUserCreate from './dto/regularUser.create';
 import ProUser from './entities/proUser.entity';
 import RegularUser from './entities/regularUser.entity';
@@ -27,8 +29,47 @@ export class UserService {
     else return this.getFullObjectQueryReg().where('user.id = :id', { id }).getOne();
   }
 
+  async getProById(id: Buffer): Promise<ProUser | null> {
+    return this.getFullObjectQueryPro().where('user.id = :id', { id }).getOne();
+  }
+
+  async getRegById(id: Buffer): Promise<RegularUser | null> {
+    return this.getFullObjectQueryReg().where('user.id = :id', { id }).getOne();
+  }
+
+  async getProDetailById(id: Buffer): Promise<ProUser | null> {
+    return this.getProDetailsQuery().where('user.id = :id', { id }).getOne();
+  }
+
   async findBaseUserById(id: Buffer): Promise<BaseUser | null> {
     return this.repo.findOne({ where: { id: id } });
+  }
+
+  async findProUsers(proUserSearch: ProUserSearch, offset: number): Promise<ProUser[]> {
+    const query = this.getFullObjectQueryPro();
+
+    query.where('user.is_deleted is :is_del', { is_del: false });
+
+    if (proUserSearch.sport) {
+      query.andWhere('sports.code = :sport', { sport: proUserSearch.sport });
+    }
+
+    if (proUserSearch.cityId) {
+      query.andWhere('cities.id = :city', { city: proUserSearch.cityId });
+    }
+
+    if (proUserSearch.name) {
+      const clause = 'MATCH(user.name) AGAINST (:u_name IN BOOLEAN MODE)';
+      query.andWhere(clause, {
+        u_name: '*' + proUserSearch.name.split(' ').join('*') + '*'
+      });
+      query
+        .addSelect(`(${clause})`, 'keyword_rank')
+        .having('keyword_rank > 0')
+        .addOrderBy('keyword_rank', 'DESC');
+    }
+
+    return query.skip(offset).take(50).getMany();
   }
 
   async create(u: RegularUserCreate | ProUserCreate): Promise<Buffer> {
@@ -71,10 +112,62 @@ export class UserService {
     return query.getOne();
   }
 
+  /**
+   * Add equipment to favorites, removes it if equipment is already in favorite
+   * @param user User to update
+   * @param equipment Equipment to add/remove of favorites
+   * @returns true if is equipment is a new fav of user, false otherwise
+   */
+  async updateFavorite(user: BaseUser, equipment: Equipment): Promise<boolean> {
+    const favIndex = user.equipments.findIndex(
+      (e) => e.id.toString('base64url') === equipment.id.toString('base64url')
+    );
+
+    if (favIndex >= 0)
+      await this.getFullObjectQuery().relation('equipments').of(user).remove(equipment);
+    else await this.getFullObjectQuery().relation('equipments').of(user).add(equipment);
+    return favIndex < 0;
+  }
+
+  /**
+   * Make reg member of pro
+   * @param pro user to receive the member
+   * @param reg User to be member
+   * @returns true if reg was added as a member, false if reg is already member
+   */
+  async addMember(pro: ProUser, reg: RegularUser): Promise<boolean> {
+    const memberIndex = pro.members?.findIndex(
+      (m) => m.user.id.toString('base64url') === reg.user.id.toString('base64url')
+    );
+
+    if (!memberIndex || memberIndex >= 0) return false;
+
+    await this.getFullObjectQuery().relation('members').of(pro).add(reg);
+    return true;
+  }
+
+  /**
+   * Removes reg from pro's member list
+   * @param pro user with the member list
+   * @param reg user to remove from the member list
+   * @returns true if reg was successfully removed, false if reg isn't member of pro
+   */
+  async removeMember(pro: ProUser, reg: RegularUser): Promise<boolean> {
+    const memberIndex = pro.members?.findIndex(
+      (m) => m.user.id.toString('base64url') === reg.user.id.toString('base64url')
+    );
+
+    if (!memberIndex || memberIndex < 0) return false;
+
+    await this.getFullObjectQuery().relation('members').of(pro).remove(reg);
+    return true;
+  }
+
   private getFullObjectQuery(): SelectQueryBuilder<BaseUser> {
     return this.repo
       .createQueryBuilder('BaseUser')
-      .leftJoinAndMapMany('BaseUser.sports', 'BaseUser.sports', 'sport');
+      .leftJoinAndMapMany('BaseUser.sports', 'BaseUser.sports', 'sport')
+      .leftJoinAndMapMany('BaseUser.equipments', 'BaseUser.equipments', 'equipments');
   }
 
   private getFullObjectQueryPro(): SelectQueryBuilder<ProUser> {
@@ -84,7 +177,19 @@ export class UserService {
       .leftJoinAndMapMany('user.sports', 'user.sports', 'sports')
       .leftJoinAndMapMany('sports.category', 'sports.category', 'category')
       .leftJoinAndMapMany('ProUser.cities', 'ProUser.cities', 'cities')
-      .leftJoinAndMapOne('cities.department', 'cities.department', 'department');
+      .leftJoinAndMapOne('cities.department', 'cities.department', 'department')
+      .leftJoinAndMapMany('user.equipments', 'user.equipments', 'equipments')
+      .leftJoinAndMapMany('ProUser.members', 'ProUser.members', 'members');
+  }
+
+  private getProDetailsQuery(): SelectQueryBuilder<ProUser> {
+    return this.proRepo
+      .createQueryBuilder('ProUser')
+      .leftJoinAndMapOne('ProUser.user', 'ProUser.user', 'user')
+      .leftJoinAndMapMany('user.sports', 'user.sports', 'sports')
+      .leftJoinAndMapMany('ProUser.cities', 'ProUser.cities', 'cities')
+      .leftJoinAndMapOne('cities.department', 'cities.department', 'department')
+      .leftJoinAndMapMany('user.equipments', 'user.equipments', 'equipments');
   }
 
   private getFullObjectQueryReg(): SelectQueryBuilder<RegularUser> {
@@ -92,6 +197,6 @@ export class UserService {
       .createQueryBuilder('RegularUser')
       .leftJoinAndMapOne('RegularUser.user', 'RegularUser.user', 'user')
       .leftJoinAndMapMany('user.sports', 'user.sports', 'sports')
-      .leftJoinAndMapMany('sports.category', 'sports.category', 'category');
+      .leftJoinAndMapMany('user.equipments', 'user.equipments', 'equipments');
   }
 }

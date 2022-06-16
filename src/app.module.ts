@@ -20,6 +20,7 @@ import { UserModule } from 'src/models/user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AtGuard } from './auth/guards/at.guards';
+import { RolesGuard } from './auth/guards/roles.guards';
 console.log(__dirname + '/**/*.entity.{js,ts}');
 @Module({
   imports: [
@@ -66,6 +67,10 @@ console.log(__dirname + '/**/*.entity.{js,ts}');
     {
       provide: APP_GUARD,
       useClass: AtGuard
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard
     }
   ]
 })

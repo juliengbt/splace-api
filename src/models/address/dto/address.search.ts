@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNotEmptyObject, IsOptional } from 'class-validator';
-import CitySearch from '../../city/dto/city.dto';
+import CitySearch from '../../city/dto/city.search';
 
 export default class AddressSearch {
   @ApiProperty({ type: String, required: false })

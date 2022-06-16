@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type, Transform, Exclude } from 'class-transformer';
+import Equipment from 'src/models/equipment/equipment.entity';
 import Sport from 'src/models/sport/sport.entity';
 import {
   BeforeInsert,
@@ -64,6 +65,15 @@ export default class BaseUser {
     joinColumn: { name: 'id_user' }
   })
   sports!: Sport[];
+
+  @ApiProperty({ type: () => Equipment, isArray: true })
+  @ManyToMany(() => Equipment, (e) => e.id, { cascade: false, eager: true })
+  @JoinTable({
+    name: 'BaseUser_Equipment',
+    inverseJoinColumn: { name: 'id_equipment' },
+    joinColumn: { name: 'id_user' }
+  })
+  equipments!: Equipment[];
 
   @Exclude()
   @OneToMany(() => Token, (token) => token.user, { cascade: false, lazy: false, eager: true })

@@ -1,8 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ArrayMinSize, IsArray, IsOptional, IsString, Min, MinLength } from 'class-validator';
+import { randomBase64ID } from 'src/utils/functions';
 
 export default class CitySearch {
-  @ApiProperty({ type: String, required: false, isArray: true })
+  @ApiProperty({
+    type: String,
+    required: false,
+    isArray: true,
+    example: [randomBase64ID(), randomBase64ID()]
+  })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
