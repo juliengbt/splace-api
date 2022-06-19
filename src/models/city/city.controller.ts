@@ -3,6 +3,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   NotAcceptableException,
   NotFoundException,
   Param,
@@ -55,6 +57,7 @@ export default class CityController {
   @ApiNotAcceptableResponse({ description: 'City DTO is not valid.' })
   @ApiBody({ type: CitySearch })
   @ApiNotAcceptableResponse()
+  @HttpCode(HttpStatus.OK)
   async getUsingDTO(@Body() cityDTO: CitySearch): Promise<City[]> {
     const cityParam = cityDTO;
 

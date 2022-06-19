@@ -18,7 +18,7 @@ export default class EquipmentService {
     // Sports
     if (equipmentDTO.sports && equipmentDTO.sports.length > 0) {
       query.where('Equipment_sports.code_sport IN (:...sports_code)').setParameters({
-        sports_code: equipmentDTO.sports.map((s) => s.code).filter((s) => s)
+        sports_code: equipmentDTO.sports
       });
     }
 
@@ -114,33 +114,27 @@ export default class EquipmentService {
     // List parameters
     if (equipmentDTO.soil_type && equipmentDTO.soil_type.length > 0) {
       query.andWhere('soil_type.code in (:...soil_types)', {
-        soil_types: equipmentDTO.soil_type.filter((s) => s.code !== undefined).map((s) => s.code)
+        soil_types: equipmentDTO.soil_type
       });
     }
     if (equipmentDTO.owner && equipmentDTO.owner.length > 0) {
       query.andWhere('owner.code in (:...owners)', {
-        owners: equipmentDTO.owner.filter((s) => s.code !== undefined).map((s) => s.code)
+        owners: equipmentDTO.owner
       });
     }
     if (equipmentDTO.equipment_level && equipmentDTO.equipment_level.length > 0) {
       query.andWhere('equipment_level.code in (:...equipment_levels)', {
         equipment_levels: equipmentDTO.equipment_level
-          .filter((s) => s.code !== undefined)
-          .map((s) => s.code)
       });
     }
     if (equipmentDTO.equipment_nature && equipmentDTO.equipment_nature.length > 0) {
       query.andWhere('equipment_nature.code in (:...equipment_natures)', {
         equipment_natures: equipmentDTO.equipment_nature
-          .filter((s) => s.code !== undefined)
-          .map((s) => s.code)
       });
     }
     if (equipmentDTO.equipment_type && equipmentDTO.equipment_type.length > 0) {
       query.andWhere('equipment_type.code in (:...equipment_types)', {
         equipment_types: equipmentDTO.equipment_type
-          .filter((s) => s.code !== undefined)
-          .map((s) => s.code)
       });
     }
 

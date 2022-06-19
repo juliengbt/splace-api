@@ -10,20 +10,14 @@ import {
   IsNotEmptyObject,
   IsOptional,
   IsString,
+  Length,
   Max,
   Min,
   MinLength,
   ValidateNested
 } from 'class-validator';
-import EquipmentLevelSearch from '../../equipmentLevel/dto/equipmentLevel.search';
-import EquipmentNatureSearch from '../../equipmentNature/dto/equipmentNature.search';
-import EquipmentTypeSearch from '../../equipmentType/dto/equipmentType.search';
 import GPSAreaSearch from './gps_area.search';
 import InstallationSearch from '../../installation/dto/installation.search';
-import OwnerSearch from '../../owner/dto/owner.search';
-// eslint-disable-next-line import/no-cycle
-import SoilTypeSearch from '../../soilType/dto/soilType.search';
-import SportSearch from '../../sport/dto/sport.search';
 
 export default class EquipmentSearch {
   @ApiProperty({ type: String, required: false, isArray: true })
@@ -78,60 +72,65 @@ export default class EquipmentSearch {
   @IsNotEmptyObject()
   installation?: InstallationSearch | null;
 
-  @ApiProperty({ type: () => OwnerSearch, required: false, isArray: true })
+  @ApiProperty({ type: String, required: false, isArray: true })
   @IsArray()
   @ArrayMinSize(1, { message: 'owner must contain at least $constraint1 object' })
-  @ValidateNested({ each: true })
-  @Type(() => OwnerSearch)
+  @Length(3, 10, {
+    message: 'Owner code must be between $constraint1 and $constraint2 characters',
+    each: true
+  })
   @IsOptional()
-  @IsNotEmptyObject({}, { each: true })
-  owner?: OwnerSearch[];
+  owner?: string[];
 
-  @ApiProperty({ type: () => SoilTypeSearch, required: false, isArray: true })
+  @ApiProperty({ type: String, required: false, isArray: true })
   @IsArray()
   @ArrayMinSize(1, { message: 'soil_type must contain at least $constraint1 object' })
-  @ValidateNested({ each: true })
-  @Type(() => SoilTypeSearch)
+  @Length(3, 10, {
+    message: 'SoilType code must be between $constraint1 and $constraint2 characters',
+    each: true
+  })
   @IsOptional()
-  @IsNotEmptyObject({}, { each: true })
-  soil_type?: SoilTypeSearch[];
+  soil_type?: string[];
 
-  @ApiProperty({ type: () => EquipmentNatureSearch, required: false, isArray: true })
+  @ApiProperty({ type: String, required: false, isArray: true })
   @IsArray()
   @ArrayMinSize(1, { message: 'equipment_nature must contain at least $constraint1 object' })
-  @ValidateNested({ each: true })
-  @Type(() => EquipmentNatureSearch)
+  @Length(3, 10, {
+    message: 'EquipmentNature code must be between $constraint1 and $constraint2 characters',
+    each: true
+  })
   @IsOptional()
-  @IsNotEmptyObject({}, { each: true })
-  equipment_nature?: EquipmentNatureSearch[];
+  equipment_nature?: string[];
 
-  @ApiProperty({ type: () => EquipmentTypeSearch, required: false, isArray: true })
+  @ApiProperty({ type: String, required: false, isArray: true })
   @IsArray()
   @ArrayMinSize(1, { message: 'equipment_type must contain at least $constraint1 object' })
-  @ValidateNested({ each: true })
-  @Type(() => EquipmentTypeSearch)
+  @Length(3, 10, {
+    message: 'EquipmentType code must be between $constraint1 and $constraint2 characters',
+    each: true
+  })
   @IsOptional()
-  @IsNotEmptyObject({}, { each: true })
-  equipment_type?: EquipmentTypeSearch[];
+  equipment_type?: string[];
 
-  @ApiProperty({ type: () => EquipmentLevelSearch, required: false, isArray: true })
+  @ApiProperty({ type: String, required: false, isArray: true })
   @IsArray()
   @ArrayMinSize(1, { message: 'equipment_level must contain at least $constraint1 object' })
-  @ValidateNested({ each: true })
-  @Type(() => EquipmentLevelSearch)
+  @Length(3, 10, {
+    message: 'EquipmentLevel code must be between $constraint1 and $constraint2 characters',
+    each: true
+  })
   @IsOptional()
-  @IsNotEmptyObject({}, { each: true })
-  equipment_level?: EquipmentLevelSearch[] | null;
+  equipment_level?: string[] | null;
 
-  @ApiProperty({ type: () => SportSearch, required: false, isArray: true })
+  @ApiProperty({ type: String, required: false, isArray: true })
   @IsArray()
   @ArrayMinSize(1, { message: 'sports must contain at least $constraint1 object' })
-  @ValidateNested({ each: true })
-  @Type(() => SportSearch)
+  @Length(3, 10, {
+    message: 'Sport code must be between $constraint1 and $constraint2 characters',
+    each: true
+  })
   @IsOptional()
-  @Type(() => SportSearch)
-  @IsNotEmptyObject({}, { each: true })
-  sports?: SportSearch[];
+  sports?: string[];
 
   @ApiProperty({ type: () => Number, required: false })
   @IsInt()

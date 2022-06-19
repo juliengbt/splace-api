@@ -21,6 +21,7 @@ import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AtGuard } from './auth/guards/at.guards';
 import { RolesGuard } from './auth/guards/roles.guards';
+import { MainModule } from './_main/main.module';
 console.log(__dirname + '/**/*.entity.{js,ts}');
 @Module({
   imports: [
@@ -46,6 +47,7 @@ console.log(__dirname + '/**/*.entity.{js,ts}');
           ? ['error']
           : ['error', 'info', 'log', 'query', 'warn']
     }),
+    MainModule,
     AuthModule,
     UserModule,
     SportModule,

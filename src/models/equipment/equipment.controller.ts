@@ -9,7 +9,9 @@ import {
   NotFoundException,
   DefaultValuePipe,
   Query,
-  ParseIntPipe
+  ParseIntPipe,
+  HttpCode,
+  HttpStatus
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -56,6 +58,7 @@ export default class EquipmentController {
     type: Equipment,
     isArray: true
   })
+  @HttpCode(HttpStatus.OK)
   @ApiNotAcceptableResponse({ description: 'Equipment DTO is not valid.' })
   @ApiBody({ type: EquipmentSearch })
   @ApiQuery({ name: 'offset', required: false })

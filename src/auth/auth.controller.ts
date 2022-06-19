@@ -6,13 +6,17 @@ import {
   UseGuards,
   NotFoundException,
   NotAcceptableException,
-  Get,
-  Param
+  Param,
+  HttpCode,
+  HttpStatus,
+  Head,
+  Patch
 } from '@nestjs/common';
 import {
   ApiBody,
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiParam,
   ApiTags
@@ -38,6 +42,7 @@ export class AuthController {
   @Public()
   @ApiBody({ type: BaseUserSignin, required: true })
   @ApiOkResponse({ type: Tokens })
+  @HttpCode(HttpStatus.OK)
   async signin(@Body() user: BaseUserSignin): Promise<Tokens> {
     return this.service.signin(user);
   }
@@ -64,6 +69,7 @@ export class AuthController {
   @Public()
   @UseGuards(RtGuard)
   @ApiOkResponse({ type: Boolean })
+  @HttpCode(HttpStatus.OK)
   async logout(
     @GetCurrentUserId() userId: Buffer,
     @GetCurrentUser('refreshToken') refreshToken: string
@@ -75,6 +81,7 @@ export class AuthController {
   @UseGuards(RtGuard)
   @Post('refresh')
   @ApiOkResponse({ type: Tokens })
+  @HttpCode(HttpStatus.OK)
   async refreshTokens(
     @GetCurrentUserId() userId: Buffer,
     @GetCurrentUser('refreshToken') refreshToken: string
@@ -84,14 +91,15 @@ export class AuthController {
 
   @Public()
   @UseGuards(MtGuard)
-  @Post('confirmEmail')
-  @ApiOkResponse()
+  @Patch('confirmEmail')
+  @ApiNoContentResponse()
+  @HttpCode(HttpStatus.NO_CONTENT)
   async confirmEmail(@GetCurrentUserId() userId: Buffer): Promise<void> {
-    return this.service.confirmEmail(userId);
+    await this.service.confirmEmail(userId);
   }
 
   @Public()
-  @Get('email/:email')
+  @Head('email/:email')
   @ApiParam({ type: String, name: 'email' })
   @ApiOkResponse()
   async emailExists(@Param('email') email: string): Promise<void> {
@@ -101,6 +109,7 @@ export class AuthController {
 
   @Post('sendConfirmationEmail')
   @ApiOkResponse()
+  @HttpCode(HttpStatus.OK)
   async sendConfirmationEmail(
     @GetCurrentUserId() userId: Buffer,
     @GetCurrentUser('email') userEmail: string

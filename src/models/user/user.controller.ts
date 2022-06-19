@@ -3,6 +3,8 @@ import {
   Controller,
   DefaultValuePipe,
   Get,
+  HttpCode,
+  HttpStatus,
   NotFoundException,
   Param,
   ParseIntPipe,
@@ -11,6 +13,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBody,
+  ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
@@ -52,6 +55,7 @@ export class UserController {
   @ApiOkResponse({ type: () => ProUser, isArray: true })
   @ApiBody({ type: () => ProUserSearch, required: true })
   @ApiQuery({ name: 'offset', required: false })
+  @HttpCode(HttpStatus.OK)
   async findPros(
     @Body() proUserSearch: ProUserSearch,
     @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number
@@ -74,6 +78,7 @@ export class UserController {
   @ApiOkResponse()
   @ApiParam({ name: 'id' })
   @ApiNotFoundResponse()
+  @HttpCode(HttpStatus.OK)
   async updateFav(
     @Param('id', new ParseBase64IDPipe()) equipmentId: Buffer,
     @GetCurrentUserId() userId: Buffer
@@ -87,7 +92,7 @@ export class UserController {
   }
 
   @Post('/pro/members/add')
-  @ApiOkResponse()
+  @ApiCreatedResponse()
   @ApiBody({ type: String, description: 'base64 identifier' })
   @Roles(Role.PRO)
   async addMember(
@@ -105,6 +110,7 @@ export class UserController {
   @ApiOkResponse()
   @ApiBody({ type: String, description: 'base64 identifier' })
   @Roles(Role.PRO)
+  @HttpCode(HttpStatus.OK)
   async removeMember(
     @GetCurrentUserId() userId: Buffer,
     @Body('id', new ParseBase64IDPipe()) regularUserId: Buffer
