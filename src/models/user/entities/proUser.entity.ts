@@ -2,7 +2,15 @@ import { faker } from '@faker-js/faker';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import City from 'src/models/city/city.entity';
-import { Entity, JoinColumn, JoinTable, ManyToMany, OneToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  OneToOne,
+  PrimaryColumn
+} from 'typeorm';
 import BaseUser from './baseUser.entity';
 import RegularUser from './regularUser.entity';
 
@@ -27,12 +35,13 @@ export default class ProUser {
   @ApiProperty({ type: () => RegularUser, isArray: true, required: false })
   @ManyToMany(() => RegularUser, (r) => r.user.id, { cascade: true })
   @JoinTable({
-    name: 'ProUser_RegUser',
+    name: 'ProUser_RegularUser',
     inverseJoinColumn: { name: 'id_regularUser' },
     joinColumn: { name: 'id_proUser' }
   })
   members?: RegularUser[];
 
-  @ApiProperty({ type: String, isArray: false, example: [faker.lorem.paragraph(15).slice(0, 499)] })
+  @ApiProperty({ type: String, isArray: false, example: [faker.lorem.paragraph(15).slice(0, 511)] })
+  @Column({ type: 'varchar', length: 512 })
   description!: string;
 }

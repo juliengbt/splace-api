@@ -46,16 +46,18 @@ export class UserService {
   }
 
   async findProUsers(proUserSearch: ProUserSearch, offset: number): Promise<ProUser[]> {
-    const query = this.getFullObjectQueryPro();
+    const query = this.getProDetailsQuery();
 
     query.where('user.is_deleted is :is_del', { is_del: false });
 
     if (proUserSearch.sport) {
       query.andWhere('sports.code = :sport', { sport: proUserSearch.sport });
+    } else if (proUserSearch.category) {
+      query.andWhere('sports.category = :cat', { cat: proUserSearch.category });
     }
 
     if (proUserSearch.cityId) {
-      query.andWhere('cities.id = :city', { city: proUserSearch.cityId });
+      query.andWhere('cities.id = :city', { city: Buffer.from(proUserSearch.cityId, 'base64url') });
     }
 
     if (proUserSearch.name) {
