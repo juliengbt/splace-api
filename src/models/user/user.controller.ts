@@ -66,7 +66,7 @@ export class UserController {
   @Public()
   @Get('/pro/:id')
   @ApiOkResponse({ type: () => ProUser })
-  @ApiParam({ name: 'id', required: true })
+  @ApiParam({ type: String, name: 'id', required: true })
   @ApiNotFoundResponse()
   async getProUserDetail(@Param('id', new ParseBase64IDPipe()) id: Buffer): Promise<ProUser> {
     const pro = await this.service.getProDetailById(id);
@@ -76,7 +76,7 @@ export class UserController {
 
   @Post('/favorite/:id')
   @ApiOkResponse()
-  @ApiParam({ name: 'id', required: true })
+  @ApiParam({ type: String, name: 'id', required: true })
   @ApiNotFoundResponse()
   @HttpCode(HttpStatus.OK)
   async updateFav(
