@@ -210,12 +210,20 @@ export class UserService {
       )
       .leftJoinAndMapOne(
         'equipment_installation.address',
-        'installation.address',
+        'equipment_installation.address',
         'equipment_address'
       )
-      .leftJoinAndMapOne('equipment_address.zipcode', 'address.zipcode', 'equipment_zipcode')
-      .leftJoinAndMapOne('equipment_zipcode.city', 'zipcode.city', 'equipment_city')
-      .leftJoinAndMapOne('equipment_city.department', 'city.department', 'equipment_department')
+      .leftJoinAndMapOne(
+        'equipment_address.zipcode',
+        'equipment_address.zipcode',
+        'equipment_zipcode'
+      )
+      .leftJoinAndMapOne('equipment_zipcode.city', 'equipment_zipcode.city', 'equipment_city')
+      .leftJoinAndMapOne(
+        'equipment_city.department',
+        'equipment_city.department',
+        'equipment_department'
+      )
       .leftJoinAndMapOne('equipments.owner', 'equipments.owner', 'owner')
       .leftJoinAndMapOne('equipments.soil_type', 'equipments.soil_type', 'soil_type')
       .leftJoinAndMapOne(
