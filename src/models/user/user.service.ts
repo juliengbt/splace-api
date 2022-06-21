@@ -42,7 +42,7 @@ export class UserService {
   }
 
   async findBaseUserById(id: Buffer): Promise<BaseUser | null> {
-    return this.repo.findOne({ where: { id: id } });
+    return this.repo.findOne({ where: { id: id }, relations: { equipments: true } });
   }
 
   async findProUsers(proUserSearch: ProUserSearch, offset: number): Promise<ProUser[]> {
