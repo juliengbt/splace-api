@@ -67,7 +67,7 @@ export default class BaseUser {
   sports!: Sport[];
 
   @ApiProperty({ type: () => Equipment, isArray: true })
-  @ManyToMany(() => Equipment, (e) => e.id, { cascade: false, eager: true })
+  @ManyToMany(() => Equipment, (e) => e.id, { cascade: false, eager: false })
   @JoinTable({
     name: 'BaseUser_Equipment',
     inverseJoinColumn: { name: 'id_equipment' },

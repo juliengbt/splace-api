@@ -107,11 +107,7 @@ export class UserService {
   }
 
   async findByEmail(email: string): Promise<BaseUser | null> {
-    const query = this.getFullObjectQuery();
-
-    query.where('BaseUser.email =:user_email', { user_email: email });
-
-    return query.getOne();
+    return this.repo.findOne({ where: { email } });
   }
 
   /**
@@ -126,8 +122,8 @@ export class UserService {
     );
 
     if (favIndex >= 0)
-      await this.getFullObjectQuery().relation('equipments').of(user).remove(equipment);
-    else await this.getFullObjectQuery().relation('equipments').of(user).add(equipment);
+      await this.getBaseUserQuery().relation('equipments').of(user).remove(equipment);
+    else await this.getBaseUserQuery().relation('equipments').of(user).add(equipment);
     return favIndex < 0;
   }
 
@@ -144,7 +140,7 @@ export class UserService {
 
     if (!memberIndex || memberIndex >= 0) return false;
 
-    await this.getFullObjectQuery().relation('members').of(pro).add(reg);
+    await this.getFullObjectQueryPro().relation('members').of(pro).add(reg);
     return true;
   }
 
@@ -161,11 +157,11 @@ export class UserService {
 
     if (!memberIndex || memberIndex < 0) return false;
 
-    await this.getFullObjectQuery().relation('members').of(pro).remove(reg);
+    await this.getFullObjectQueryPro().relation('members').of(pro).remove(reg);
     return true;
   }
 
-  private getFullObjectQuery(): SelectQueryBuilder<BaseUser> {
+  private getBaseUserQuery(): SelectQueryBuilder<BaseUser> {
     return this.repo
       .createQueryBuilder('BaseUser')
       .leftJoinAndMapMany('BaseUser.sports', 'BaseUser.sports', 'sport')
@@ -173,15 +169,17 @@ export class UserService {
   }
 
   private getFullObjectQueryPro(): SelectQueryBuilder<ProUser> {
-    return this.proRepo
-      .createQueryBuilder('ProUser')
-      .leftJoinAndMapOne('ProUser.user', 'ProUser.user', 'user')
-      .leftJoinAndMapMany('user.sports', 'user.sports', 'sports')
-      .leftJoinAndMapMany('sports.category', 'sports.category', 'category')
-      .leftJoinAndMapMany('ProUser.cities', 'ProUser.cities', 'cities')
-      .leftJoinAndMapOne('cities.department', 'cities.department', 'department')
-      .leftJoinAndMapMany('user.equipments', 'user.equipments', 'equipments')
-      .leftJoinAndMapMany('ProUser.members', 'ProUser.members', 'members');
+    return this.joinEquipment(
+      this.proRepo
+        .createQueryBuilder('ProUser')
+        .leftJoinAndMapOne('ProUser.user', 'ProUser.user', 'user')
+        .leftJoinAndMapMany('user.sports', 'user.sports', 'sports')
+        .leftJoinAndMapMany('sports.category', 'sports.category', 'category')
+        .leftJoinAndMapMany('ProUser.cities', 'ProUser.cities', 'cities')
+        .leftJoinAndMapOne('cities.department', 'cities.department', 'department')
+        .leftJoinAndMapMany('user.equipments', 'user.equipments', 'equipments')
+        .leftJoinAndMapMany('ProUser.members', 'ProUser.members', 'members')
+    );
   }
 
   private getProDetailsQuery(): SelectQueryBuilder<ProUser> {
@@ -190,15 +188,48 @@ export class UserService {
       .leftJoinAndMapOne('ProUser.user', 'ProUser.user', 'user')
       .leftJoinAndMapMany('user.sports', 'user.sports', 'sports')
       .leftJoinAndMapMany('ProUser.cities', 'ProUser.cities', 'cities')
-      .leftJoinAndMapOne('cities.department', 'cities.department', 'department')
-      .leftJoinAndMapMany('user.equipments', 'user.equipments', 'equipments');
+      .leftJoinAndMapOne('cities.department', 'cities.department', 'department');
   }
 
   private getFullObjectQueryReg(): SelectQueryBuilder<RegularUser> {
-    return this.regularRepo
-      .createQueryBuilder('RegularUser')
-      .leftJoinAndMapOne('RegularUser.user', 'RegularUser.user', 'user')
-      .leftJoinAndMapMany('user.sports', 'user.sports', 'sports')
-      .leftJoinAndMapMany('user.equipments', 'user.equipments', 'equipments');
+    return this.joinEquipment(
+      this.regularRepo
+        .createQueryBuilder('RegularUser')
+        .leftJoinAndMapOne('RegularUser.user', 'RegularUser.user', 'user')
+        .leftJoinAndMapMany('user.sports', 'user.sports', 'sports')
+    );
+  }
+
+  private joinEquipment(query: SelectQueryBuilder<any>) {
+    return query
+      .leftJoinAndMapMany('user.equipments', 'user.equipments', 'equipments')
+      .leftJoinAndMapOne(
+        'equipments.installation',
+        'equipments.installation',
+        'equipment_installation'
+      )
+      .leftJoinAndMapOne(
+        'equipment_installation.address',
+        'installation.address',
+        'equipment_address'
+      )
+      .leftJoinAndMapOne('equipment_address.zipcode', 'address.zipcode', 'equipment_zipcode')
+      .leftJoinAndMapOne('equipment_zipcode.city', 'zipcode.city', 'equipment_city')
+      .leftJoinAndMapOne('equipment_city.department', 'city.department', 'equipment_department')
+      .leftJoinAndMapOne('equipments.owner', 'equipments.owner', 'owner')
+      .leftJoinAndMapOne('equipments.soil_type', 'equipments.soil_type', 'soil_type')
+      .leftJoinAndMapOne(
+        'equipments.equipment_nature',
+        'equipments.equipment_nature',
+        'equipment_nature'
+      )
+      .leftJoinAndMapOne('equipments.equipment_type', 'equipments.equipment_type', 'equipment_type')
+      .leftJoinAndMapOne(
+        'equipments.equipment_level',
+        'equipments.equipment_level',
+        'equipment_level'
+      )
+      .leftJoinAndMapMany('equipments.sports', 'equipments.sports', 'equipment_sports')
+      .leftJoinAndMapMany('equipments.pictures', 'equipments.pictures', 'pictures');
   }
 }
