@@ -177,7 +177,6 @@ export class UserService {
         .leftJoinAndMapMany('sports.category', 'sports.category', 'category')
         .leftJoinAndMapMany('ProUser.cities', 'ProUser.cities', 'cities')
         .leftJoinAndMapOne('cities.department', 'cities.department', 'department')
-        .leftJoinAndMapMany('user.equipments', 'user.equipments', 'equipments')
         .leftJoinAndMapMany('ProUser.members', 'ProUser.members', 'members')
     );
   }
