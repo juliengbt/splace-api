@@ -37,7 +37,7 @@ export default class EquipmentController {
   @Get(':id')
   @Public()
   @ApiOkResponse({
-    description: 'Equipment list',
+    description: 'Equipment',
     type: Equipment,
     isArray: false
   })
@@ -109,8 +109,7 @@ export default class EquipmentController {
             equipmentDTO.gps_area.min_lon
           ) > 200 // 200km
         ) {
-          delete equipmentParam.latitude;
-          delete equipmentParam.longitude;
+          equipmentDTO.gps_area = getArea(equipmentParam.latitude, equipmentParam.longitude, 100);
           // If user is searching by name in a small area then search within an area of 200km2
         } else if (equipmentParam.name && equipmentParam.name.length > 0) {
           equipmentDTO.gps_area = getArea(equipmentParam.latitude, equipmentParam.longitude, 100);
