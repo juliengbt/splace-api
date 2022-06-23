@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import Sport from 'src/models/sport/sport.entity';
-import { DeepPartial, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export default class SportService {
@@ -11,34 +11,14 @@ export default class SportService {
   ) {}
 
   async findAll(): Promise<Sport[]> {
-    return this.repo.createQueryBuilder().leftJoinAndSelect('Sport.category', 'category').getMany();
+    return this.repo.find();
   }
 
   async findByCategory(code_category: string): Promise<Sport[]> {
-    return this.repo
-      .createQueryBuilder()
-      .leftJoinAndSelect('Sport.category', 'category')
-      .where('Sport.code_category like :code')
-      .setParameters({ code: `%${code_category}%` })
-      .getMany();
-  }
-
-  async save(sport: DeepPartial<Sport>): Promise<Partial<Sport>> {
-    return this.repo
-      .createQueryBuilder()
-      .insert()
-      .into(Sport)
-      .values(sport)
-      .execute()
-      .then((res) => res.identifiers[0]);
+    return this.repo.find({ where: { category: { code: code_category } } });
   }
 
   async findByCode(code_sport: string): Promise<Sport | null> {
-    return this.repo
-      .createQueryBuilder()
-      .leftJoinAndSelect('Sport.category', 'category')
-      .where('Sport.code like :code')
-      .setParameters({ code: `%${code_sport}%` })
-      .getOne();
+    return this.repo.findOne({ where: { code: code_sport } });
   }
 }
