@@ -1,6 +1,7 @@
-import GPSAreaSearch from 'src/models/equipment/dto/gps_area.search';
-import argon from 'argon2';
 import { faker } from '@faker-js/faker';
+import argon from 'argon2';
+import GPSAreaSearch from 'src/models/equipment/dto/gps_area.search';
+import { v4 } from 'uuid';
 
 const { PI, sin, cos, asin, atan2, sqrt } = Math;
 const RAYON_TERRE = 6731.008;
@@ -79,4 +80,8 @@ export async function hashString(s: string): Promise<string> {
 
 export function randomBase64ID(): string {
   return Buffer.from(faker.datatype.uuid().replace('-', ''), 'hex').toString('base64url');
+}
+
+export function generateUUIDBuffer(): Buffer {
+  return Buffer.from(v4().replace(/-/g, ''), 'hex');
 }

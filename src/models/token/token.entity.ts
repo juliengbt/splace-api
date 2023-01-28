@@ -1,25 +1,21 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import BaseUser from '../user/entities/baseUser.entity';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import User from '../user/entities/user.entity';
 
-@Entity('Token')
+@Entity()
 export default class Token {
-  @ApiProperty({ type: () => BaseUser, required: true })
-  @ManyToOne(() => BaseUser, (user) => user.id, { cascade: true })
-  @JoinColumn({ name: 'id_user' })
-  @PrimaryColumn({ name: 'id_user', type: 'varbinary' })
-  user!: BaseUser;
+  @Exclude()
+  @OneToOne(() => User, (user) => user.id, { cascade: true })
+  @JoinColumn({ foreignKeyConstraintName: 'fk_token_user' })
+  user: User;
 
-  @ApiProperty({ type: Date, required: true })
-  @Column({ type: 'datetime' })
-  last_connection!: Date;
+  @PrimaryColumn({ name: 'userId', type: 'varbinary', length: 16 })
+  userId: Buffer;
 
-  @ApiProperty({ type: Date, required: true })
   @Column({ type: 'datetime' })
-  exp!: Date;
+  exp: Date;
 
   @Exclude()
   @PrimaryColumn({ type: 'varchar', length: 255, nullable: false })
-  refresh_token_hash!: string;
+  refreshTokenHash: string;
 }

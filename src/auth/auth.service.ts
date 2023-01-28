@@ -4,21 +4,23 @@ import {
   Injectable,
   InternalServerErrorException
 } from '@nestjs/common';
-import { UserService } from 'src/models/user/user.service';
-import argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from 'src/types';
-import BaseUserSignin from 'src/models/user/dto/baseUser.signin';
-import { Tokens } from './dto/tokens.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import argon from 'argon2';
 import { MailService } from 'src/mail/mail.service';
-import BaseUser, { Role } from 'src/models/user/entities/baseUser.entity';
 import { TokenService } from 'src/models/token/token.service';
-import ProUserCreate from 'src/models/user/dto/proUser.create';
-import RegularUserCreate from 'src/models/user/dto/regularUser.create';
+import UserCreate from 'src/models/user/dto/user.create';
+import BaseUserSignin from 'src/models/user/dto/user.signin';
+import User from 'src/models/user/entities/user.entity';
+import { UserService } from 'src/models/user/user.service';
+import { JwtPayload } from 'src/types';
+import { Repository } from 'typeorm';
+import { Tokens } from './dto/tokens.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
+    @InjectRepository(User) private userRepo: Repository<User>,
     private usersService: UserService,
     private tokenService: TokenService,
     private jwtService: JwtService,
@@ -27,17 +29,16 @@ export class AuthService {
 
   async signin(userSignin: BaseUserSignin): Promise<Tokens> {
     const user = await this.usersService.findByEmail(userSignin.email);
-    if (!user) throw new ForbiddenException(undefined, 'Access Denied');
 
     const match = await argon.verify(user.password, userSignin.password);
 
     if (!match) throw new ForbiddenException(undefined, 'Access Denied');
 
-    const tokens = await this.getTokens(user.id, user.email, user.role);
-    const exp = this.getTokenExp(tokens.refresh_token);
+    const tokens = await this.getTokens(user.id, user.email);
+    const exp = this.getTokenExp(tokens.refreshToken);
 
     if (!exp) throw new InternalServerErrorException('Error while decoding refresh token');
-    await this.tokenService.insertToken(user.id, tokens.refresh_token, exp);
+    await this.tokenService.insertToken(user.id, tokens.refreshToken, exp);
 
     // Delete expired tokens
     this.tokenService.deleteExpriedTokens(user.id);
@@ -45,69 +46,41 @@ export class AuthService {
     return tokens;
   }
 
-  async signup(u: RegularUserCreate | ProUserCreate): Promise<Tokens> {
-    const exists = await this.usersService.findByEmail(u.user.email);
+  async signup(u: UserCreate): Promise<Tokens> {
+    const exists = await this.userRepo.findOneBy({ email: u.email });
     if (exists)
-      throw new ConflictException(undefined, `User already exists with email: ${u.user.email}`);
+      throw new ConflictException(undefined, `User already exists with email: ${u.email}`);
 
-    const id = await this.usersService.create(u);
-    const user = await this.usersService.findBaseUserById(id);
-    if (!user) throw new InternalServerErrorException();
-    const tokens = await this.getTokens(user.id, user.email, user.role);
-    const exp = this.getTokenExp(tokens.refresh_token);
+    const user = await this.usersService.create(u);
+    const tokens = await this.getTokens(user.id, user.email);
+    const exp = this.getTokenExp(tokens.refreshToken);
 
-    if (!exp) throw new InternalServerErrorException('Error while decoding refresh token');
-    await this.tokenService.insertToken(user.id, tokens.refresh_token, exp);
-
+    if (!exp)
+      throw new InternalServerErrorException(undefined, 'Error while decoding refresh token');
+    await this.tokenService.insertToken(user.id, tokens.refreshToken, exp);
     return tokens;
   }
 
-  async logout(userId: Buffer, rt: string): Promise<boolean> {
-    const user = await this.usersService.findBaseUserById(userId);
-    if (!user || user.tokens.length == 0) return false;
-
-    let rtMatches = false;
-    let i = 0;
-    while (!rtMatches && i < user.tokens.length) {
-      if (await argon.verify(user.tokens[i].refresh_token_hash, rt)) rtMatches = true;
-      else i++;
+  async logout(userId: Buffer, rt: string): Promise<void> {
+    const user = await this.usersService.findById(userId);
+    if (await argon.verify(user.token.refreshTokenHash, rt)) {
+      await this.tokenService.deleteRefreshToken(userId, user.token.refreshTokenHash);
     }
-
-    if (!rtMatches) return false;
-
-    const res = await this.tokenService.deleteRefreshToken(
-      userId,
-      user.tokens[i].refresh_token_hash
-    );
-
-    // Delete expired tokens
-    this.tokenService.deleteExpriedTokens(userId);
-
-    return res ? true : false;
   }
 
   async refreshTokens(userId: Buffer, rt: string): Promise<Tokens> {
-    const user = await this.usersService.findBaseUserById(userId);
-    if (!user || user.tokens.length == 0) throw new ForbiddenException('Access Denied');
+    const user = await this.usersService.findById(userId);
+    if (await argon.verify(user.token.refreshTokenHash, rt)) throw new ForbiddenException();
 
-    let rtMatches = false;
-    let i = 0;
-    while (!rtMatches && i < user.tokens.length) {
-      if (await argon.verify(user.tokens[i].refresh_token_hash, rt)) rtMatches = true;
-      else i++;
-    }
-
-    if (!rtMatches) throw new ForbiddenException('Access Denied');
-
-    const tokens = await this.getTokens(user.id, user.email, user.role);
-    const exp = this.getTokenExp(tokens.refresh_token);
+    const tokens = await this.getTokens(user.id, user.email);
+    const exp = this.getTokenExp(tokens.refreshToken);
 
     if (!exp) throw new InternalServerErrorException('Error while decoding refresh token');
     await this.tokenService.updateRefreshToken(
       userId,
-      tokens.refresh_token,
+      tokens.refreshToken,
       exp,
-      user.tokens[i].refresh_token_hash
+      user.token.refreshTokenHash
     );
 
     return tokens;
@@ -117,11 +90,10 @@ export class AuthService {
     await this.usersService.confirmEmail(userId);
   }
 
-  async emailExist(email: string): Promise<boolean> {
-    return (await this.usersService.findByEmail(email)) == null ? false : true;
-  }
+  async sendConfirmationMail(userId: Buffer): Promise<void> {
+    const user = await this.usersService.findById(userId);
+    if (user.isEmailConfirmed) throw new ConflictException('Email is already confirmed');
 
-  async sendConfirmationMail(user: BaseUser): Promise<void> {
     const payload: JwtPayload = {
       sub: user.id.toString('base64url'),
       email: user.email
@@ -133,11 +105,10 @@ export class AuthService {
     await this.mailService.sendUserConfirmation(user, token);
   }
 
-  private async getTokens(userId: Buffer, email: string, role: Role): Promise<Tokens> {
+  private async getTokens(userId: Buffer, email: string): Promise<Tokens> {
     const payload: JwtPayload = {
       sub: userId.toString('base64url'),
-      email: email,
-      role: role
+      email: email
     };
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(payload, {
@@ -151,8 +122,8 @@ export class AuthService {
     ]);
 
     return {
-      access_token: at,
-      refresh_token: rt
+      accessToken: at,
+      refreshToken: rt
     };
   }
 

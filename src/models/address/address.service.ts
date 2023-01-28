@@ -33,17 +33,17 @@ export default class AddressService {
       });
     if (address.district === null) query.andWhere('Address.district is NULL');
 
-    if (address.street_name)
+    if (address.streetName)
       query.andWhere('LOWER(TRIM(Address.street_name)) = LOWER(TRIM(:street_name))', {
-        street_name: address.street_name
+        street_name: address.streetName
       });
-    if (address.street_name === null) query.andWhere('Address.street_name is NULL');
+    if (address.streetName === null) query.andWhere('Address.street_name is NULL');
 
-    if (address.street_num)
+    if (address.streetNum)
       query.andWhere('LOWER(TRIM(Address.street_num)) = LOWER(TRIM(:street_num))', {
-        street_num: address.street_num
+        street_num: address.streetNum
       });
-    if (address.street_num === null) query.andWhere('Address.street_num is NULL');
+    if (address.streetNum === null) query.andWhere('Address.street_num is NULL');
 
     if (address.zipcode?.id)
       query.andWhere('Address.zipcode = :id_zipcode', { id_zipcode: address.zipcode.id });

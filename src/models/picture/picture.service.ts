@@ -11,35 +11,21 @@ export default class PictureService {
     private repo: Repository<Picture>
   ) {}
 
-  async addImages(id: Buffer, files: Express.Multer.File[]): Promise<number> {
+  async addImages(id: Buffer, files: Express.Multer.File[]): Promise<void> {
     const imgs: QueryDeepPartialEntity<Picture>[] = files.map((f) => ({
       name: f.filename,
       equipment: { id }
     }));
-    return this.repo
-      .createQueryBuilder()
-      .insert()
-      .into(Picture)
-      .values(imgs)
-      .execute()
-      .then((res) => res.identifiers.length);
+    await this.repo.createQueryBuilder().insert().into(Picture).values(imgs).execute();
   }
 
-  async removeAll(id_e: Buffer, pictures: string[]): Promise<number | null | undefined> {
-    return this.repo
+  async removeAll(id_e: Buffer, pictures: string[]): Promise<void> {
+    await this.repo
       .createQueryBuilder()
       .delete()
       .from(Picture)
       .where('name IN (:...names)', { names: pictures })
-      .andWhere('id_equipment = :id_e', { id_e })
-      .execute()
-      .then((res) => res.affected);
-  }
-
-  async findImages(equipmentId: Buffer): Promise<Picture[]> {
-    return this.repo
-      .createQueryBuilder('Picture')
-      .where('Picture.equipment = :id', { id: equipmentId })
-      .getMany();
+      .andWhere('equipmentId = :id_e', { id_e })
+      .execute();
   }
 }

@@ -2,16 +2,16 @@
 import {
   Body,
   Controller,
-  Get,
-  NotAcceptableException,
-  Param,
-  Post,
-  NotFoundException,
   DefaultValuePipe,
-  Query,
-  ParseIntPipe,
+  Get,
   HttpCode,
-  HttpStatus
+  HttpStatus,
+  NotAcceptableException,
+  NotFoundException,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -19,17 +19,20 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
-  ApiQuery,
-  ApiTags
+  ApiQuery
 } from '@nestjs/swagger';
-import Equipment from 'src/models/equipment/equipment.entity';
+import { Public } from 'src/decorators/public';
 import EquipmentSearch from 'src/models/equipment/dto/equipment.search';
+import Equipment from 'src/models/equipment/entities/equipment.entity';
 import EquipmentService from 'src/models/equipment/equipment.service';
 import ParseBase64IDPipe from 'src/pipes/parse-base64id.pipe';
 import { distanceEarthPoints, getArea } from 'src/utils/functions';
-import { Public } from 'src/decorators/public';
+import EquipmentLevel from './entities/level.entity';
+import EquipmentNature from './entities/nature.entity';
+import EquipmentOwner from './entities/owner.entity';
+import EquipmentSurface from './entities/surface.entity';
+import EquipmentType from './entities/type.entity';
 
-@ApiTags('Equipment')
 @Controller('equipment')
 export default class EquipmentController {
   constructor(private readonly service: EquipmentService) {}
@@ -53,13 +56,8 @@ export default class EquipmentController {
 
   @Post()
   @Public()
-  @ApiOkResponse({
-    description: 'Equipment list',
-    type: Equipment,
-    isArray: true
-  })
+  @ApiOkResponse({ type: Equipment, isArray: true })
   @HttpCode(HttpStatus.OK)
-  @ApiNotAcceptableResponse({ description: 'Equipment DTO is not valid.' })
   @ApiBody({ type: EquipmentSearch })
   @ApiQuery({ name: 'offset', required: false })
   @ApiNotAcceptableResponse()
@@ -71,7 +69,7 @@ export default class EquipmentController {
       throw new NotAcceptableException('Maximum number of object is limited to 100');
 
     const equipmentParam = equipmentDTO;
-    const installationDTO = equipmentDTO.installation;
+    const sportingComplexDTO = equipmentDTO.sportingComplex;
 
     if (equipmentParam.name) {
       equipmentParam.name = [...new Set(equipmentParam.name)]
@@ -79,17 +77,17 @@ export default class EquipmentController {
         .filter((str) => str.length > 2);
     }
 
-    if (installationDTO?.name) {
-      installationDTO.name = [...new Set(installationDTO.name)]
+    if (sportingComplexDTO?.name) {
+      sportingComplexDTO.name = [...new Set(sportingComplexDTO.name)]
         .flatMap((x) => x.split(' '))
         .filter((str) => str.length > 2);
     }
 
-    if (installationDTO?.address?.city) {
-      if (installationDTO?.address.city.zipcode)
+    if (sportingComplexDTO?.address?.city) {
+      if (sportingComplexDTO?.address.city.zipcode)
         throw new NotAcceptableException('Zip code is not allowed here');
-      if (installationDTO.address.city.ids) {
-        installationDTO.address.city.ids = [...new Set(installationDTO.address.city.ids)];
+      if (sportingComplexDTO.address.city.ids) {
+        sportingComplexDTO.address.city.ids = [...new Set(sportingComplexDTO.address.city.ids)];
       }
     }
 
@@ -120,8 +118,48 @@ export default class EquipmentController {
       }
     }
 
-    if (installationDTO !== undefined) equipmentParam.installation = installationDTO;
+    if (sportingComplexDTO !== undefined) equipmentParam.sportingComplex = sportingComplexDTO;
 
     return this.service.findUsingDTO(equipmentParam, offset < 0 ? 0 : offset);
+  }
+
+  @Public()
+  @Get('/owners')
+  @ApiOkResponse({ type: EquipmentOwner, isArray: true })
+  @HttpCode(HttpStatus.OK)
+  async getOwners(): Promise<EquipmentOwner[]> {
+    return this.service.getOwners();
+  }
+
+  @Public()
+  @Get('/types')
+  @ApiOkResponse({ type: EquipmentType, isArray: true })
+  @HttpCode(HttpStatus.OK)
+  async getTypes(): Promise<EquipmentType[]> {
+    return this.service.getTypes();
+  }
+
+  @Public()
+  @Get('/natures')
+  @ApiOkResponse({ type: EquipmentNature, isArray: true })
+  @HttpCode(HttpStatus.OK)
+  async getNatures(): Promise<EquipmentNature[]> {
+    return this.service.getNatures();
+  }
+
+  @Public()
+  @Get('/surfaces')
+  @ApiOkResponse({ type: EquipmentSurface, isArray: true })
+  @HttpCode(HttpStatus.OK)
+  async getSurfaces(): Promise<EquipmentSurface[]> {
+    return this.service.getSurfaces();
+  }
+
+  @Public()
+  @Get('/levels')
+  @ApiOkResponse({ type: EquipmentLevel, isArray: true })
+  @HttpCode(HttpStatus.OK)
+  async getLevels(): Promise<EquipmentLevel[]> {
+    return this.service.getLevels();
   }
 }

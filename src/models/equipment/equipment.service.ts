@@ -1,16 +1,31 @@
 /* eslint-disable max-len */
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import EquipmentSearch from 'src/models/equipment/dto/equipment.search';
-import Equipment from 'src/models/equipment/equipment.entity';
+import Equipment from 'src/models/equipment/entities/equipment.entity';
 import { Brackets, DeepPartial, Repository, SelectQueryBuilder } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import EquipmentLevel from './entities/level.entity';
+import EquipmentNature from './entities/nature.entity';
+import EquipmentOwner from './entities/owner.entity';
+import EquipmentSurface from './entities/surface.entity';
+import EquipmentType from './entities/type.entity';
 
 @Injectable()
 export default class EquipmentService {
   constructor(
     @InjectRepository(Equipment)
-    private repo: Repository<Equipment>
+    private repo: Repository<Equipment>,
+    @InjectRepository(EquipmentOwner)
+    private ownerRepo: Repository<EquipmentOwner>,
+    @InjectRepository(EquipmentType)
+    private typeRepo: Repository<EquipmentType>,
+    @InjectRepository(EquipmentLevel)
+    private levelRepo: Repository<EquipmentLevel>,
+    @InjectRepository(EquipmentSurface)
+    private surfaceRepo: Repository<EquipmentSurface>,
+    @InjectRepository(EquipmentNature)
+    private natureRepo: Repository<EquipmentNature>
   ) {}
 
   async findUsingDTO(equipmentDTO: EquipmentSearch, offset: number): Promise<Equipment[]> {
@@ -61,9 +76,9 @@ export default class EquipmentService {
           });
         }
       }
-    } else if (equipmentDTO.installation?.address?.city?.ids) {
+    } else if (equipmentDTO.sportingComplex?.address?.city?.ids) {
       query.andWhere('city.id in (:...id_city)', {
-        id_city: equipmentDTO.installation.address.city.ids.map((id) =>
+        id_city: equipmentDTO.sportingComplex.address.city.ids.map((id) =>
           Buffer.from(id, 'base64url')
         )
       });
@@ -102,13 +117,13 @@ export default class EquipmentService {
       query.andWhere('Equipment.shower is :shower', {
         shower: equipmentDTO.shower
       });
-    if (equipmentDTO.installation?.car_park)
-      query.andWhere('installation.car_park is :car_park', {
-        car_park: equipmentDTO.installation.car_park
+    if (equipmentDTO.sportingComplex?.car_park)
+      query.andWhere('sportingComplex.car_park is :car_park', {
+        car_park: equipmentDTO.sportingComplex.car_park
       });
-    if (equipmentDTO.installation?.disabled_access)
-      query.andWhere('installation.disabled_access is :disabled_access', {
-        disabled_access: equipmentDTO.installation.disabled_access
+    if (equipmentDTO.sportingComplex?.disabled_access)
+      query.andWhere('sportingComplex.disabled_access is :disabled_access', {
+        disabled_access: equipmentDTO.sportingComplex.disabled_access
       });
 
     // List parameters
@@ -139,11 +154,12 @@ export default class EquipmentService {
     }
 
     // Keyword research
-    if (equipmentDTO.name || equipmentDTO.installation?.name) {
+    if (equipmentDTO.name || equipmentDTO.sportingComplex?.name) {
       query.andWhere(
         new Brackets(() => {
           const equipmentClause = 'MATCH(Equipment.name) AGAINST (:e_name IN BOOLEAN MODE)';
-          const installationClause = 'MATCH(installation.name) AGAINST (:i_name IN BOOLEAN MODE)';
+          const sportingComplexClause =
+            'MATCH(sportingComplex.name) AGAINST (:i_name IN BOOLEAN MODE)';
 
           const useClauses = [];
 
@@ -151,10 +167,10 @@ export default class EquipmentService {
             query.setParameter('e_name', '*' + equipmentDTO.name.join('*') + '*');
             useClauses.push(equipmentClause);
           }
-          if (equipmentDTO.installation?.name) {
-            query.setParameter('i_name', '*' + equipmentDTO.installation.name.join('*') + '*');
+          if (equipmentDTO.sportingComplex?.name) {
+            query.setParameter('i_name', '*' + equipmentDTO.sportingComplex.name.join('*') + '*');
 
-            useClauses.push(installationClause);
+            useClauses.push(sportingComplexClause);
           }
           query
             .addSelect(`(${useClauses.join(' + ')})`, 'keyword_rank')
@@ -167,11 +183,72 @@ export default class EquipmentService {
     return query.skip(offset).take(50).getMany();
   }
 
-  async findById(id: Buffer): Promise<Equipment | null> {
-    return this.getFullObjectQuery()
-      .where('Equipment.id = :id_equipment')
-      .setParameters({ id_equipment: id })
-      .getOne();
+  async findById(id: Buffer): Promise<Equipment> {
+    const equipment = await this.repo.findOneBy({ id: id });
+    if (!equipment) throw new NotFoundException();
+    return equipment;
+  }
+
+  async loadById(id: Buffer): Promise<Equipment> {
+    const equipment = await this.repo.findOne({
+      where: { id: id },
+      relations: {
+        sportingComplex: {
+          address: {
+            zipcode: {
+              city: {
+                department: true
+              }
+            }
+          }
+        },
+        sports: true,
+        pictures: true
+      }
+    });
+    if (!equipment) throw new NotFoundException();
+    return equipment;
+  }
+
+  async loadSavedEquipments(userId: Buffer): Promise<Equipment[]> {
+    return this.repo.find({
+      where: {
+        savedByUsers: { id: userId }
+      },
+      relations: {
+        sportingComplex: {
+          address: {
+            zipcode: {
+              city: {
+                department: true
+              }
+            }
+          }
+        },
+        sports: true,
+        pictures: true
+      }
+    });
+  }
+
+  async getOwners() {
+    return this.ownerRepo.find();
+  }
+
+  async getSurfaces() {
+    return this.surfaceRepo.find();
+  }
+
+  async getTypes() {
+    return this.typeRepo.find();
+  }
+
+  async getNatures() {
+    return this.natureRepo.find();
+  }
+
+  async getLevels() {
+    return this.levelRepo.find();
   }
 
   async insert(equipment: Equipment): Promise<Partial<Equipment>> {
@@ -195,8 +272,12 @@ export default class EquipmentService {
   private getFullObjectQuery(): SelectQueryBuilder<Equipment> {
     return this.repo
       .createQueryBuilder('Equipment')
-      .leftJoinAndMapOne('Equipment.installation', 'Equipment.installation', 'installation')
-      .leftJoinAndMapOne('installation.address', 'installation.address', 'address')
+      .leftJoinAndMapOne(
+        'Equipment.sportingComplex',
+        'Equipment.sportingComplex',
+        'sportingComplex'
+      )
+      .leftJoinAndMapOne('sportingComplex.address', 'sportingComplex.address', 'address')
       .leftJoinAndMapOne('address.zipcode', 'address.zipcode', 'zipcode')
       .leftJoinAndMapOne('zipcode.city', 'zipcode.city', 'city')
       .leftJoinAndMapOne('city.department', 'city.department', 'department')

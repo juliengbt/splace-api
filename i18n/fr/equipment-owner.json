@@ -1,0 +1,13 @@
+{
+  "asso": "Association(s)",
+  "commune": "Commune",
+  "dep": "Département",
+  "epci": "EPCI",
+  "eta_ens_pv": "Etablissement d'enseignement privé",
+  "eta_pub": "Etablissement Public",
+  "eta_pv_com": "Etablissement privé commercial",
+  "etat": "Etat",
+  "multi_prop": "Multi-propriétaire",
+  "pv_non_com": "Privé non commercial",
+  "region": "Région"
+}

@@ -1,92 +1,93 @@
 import {
-  Post,
   Body,
-  ConflictException,
   Controller,
-  UseGuards,
-  NotFoundException,
-  NotAcceptableException,
-  Param,
   HttpCode,
   HttpStatus,
-  Head,
-  Patch
+  Patch,
+  Post,
+  Res,
+  UseGuards
 } from '@nestjs/common';
 import {
   ApiBody,
-  ApiConflictResponse,
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
-  ApiParam,
   ApiTags
 } from '@nestjs/swagger';
-import { UserService } from 'src/models/user/user.service';
-import BaseUserSignin from 'src/models/user/dto/baseUser.signin';
+import { FastifyReply } from 'fastify';
 import { GetCurrentUser } from 'src/decorators/getCurrentUser';
 import { GetCurrentUserId } from 'src/decorators/getCurrentUserID';
 import { Public } from 'src/decorators/public';
+import UserCreate from 'src/models/user/dto/user.create';
+import UserSignin from 'src/models/user/dto/user.signin';
 import { AuthService } from './auth.service';
-import { Tokens } from './dto/tokens.dto';
-import { RtGuard } from './guards/rt.guards';
 import { MtGuard } from './guards/mt.guards';
-import RegularUserCreate from 'src/models/user/dto/regularUser.create';
-import ProUserCreate from 'src/models/user/dto/proUser.create';
+import { RtGuard } from './guards/rt.guards';
+import { refreshTokenCookieOptions, REFRESH_TOKEN_COOKIE } from './strategies/rt.strategy';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly service: AuthService, private readonly userService: UserService) {}
+  constructor(private readonly service: AuthService) {}
 
   @Post('signin')
   @Public()
-  @ApiBody({ type: BaseUserSignin, required: true })
-  @ApiOkResponse({ type: Tokens })
+  @ApiBody({ type: UserSignin, required: true })
+  @ApiOkResponse({ type: String })
   @HttpCode(HttpStatus.OK)
-  async signin(@Body() user: BaseUserSignin): Promise<Tokens> {
-    return this.service.signin(user);
+  async signin(
+    @Body() user: UserSignin,
+    @Res({ passthrough: true }) res: FastifyReply
+  ): Promise<string> {
+    const tokens = await this.service.signin(user);
+    res.setCookie(REFRESH_TOKEN_COOKIE, tokens.refreshToken, refreshTokenCookieOptions);
+    res.header('content-type', 'text/plain; charset=utf-8');
+    return tokens.accessToken;
   }
 
   @Post('signup')
   @Public()
-  @ApiBody({ type: RegularUserCreate })
-  @ApiConflictResponse({ description: 'User email already exists' })
-  @ApiCreatedResponse({ type: Tokens })
-  async signup(@Body() u: RegularUserCreate): Promise<Tokens> {
-    return this.service.signup(u);
-  }
-
-  @Post('signupPro')
-  @Public()
-  @ApiBody({ type: ProUserCreate })
-  @ApiConflictResponse({ description: 'User email already exists' })
-  @ApiCreatedResponse({ type: Tokens })
-  async signupPro(@Body() u: ProUserCreate): Promise<Tokens> {
-    return this.service.signup(u);
+  @ApiBody({ type: UserCreate })
+  @ApiCreatedResponse({ type: String })
+  async signup(
+    @Body() u: UserCreate,
+    @Res({ passthrough: true }) res: FastifyReply
+  ): Promise<string> {
+    const tokens = await this.service.signup(u);
+    res.setCookie(REFRESH_TOKEN_COOKIE, tokens.refreshToken, refreshTokenCookieOptions);
+    res.header('content-type', 'text/plain; charset=utf-8');
+    return tokens.accessToken;
   }
 
   @Post('logout')
   @Public()
   @UseGuards(RtGuard)
-  @ApiOkResponse({ type: Boolean })
-  @HttpCode(HttpStatus.OK)
+  @ApiNoContentResponse()
+  @HttpCode(HttpStatus.NO_CONTENT)
   async logout(
     @GetCurrentUserId() userId: Buffer,
-    @GetCurrentUser('refreshToken') refreshToken: string
-  ): Promise<boolean> {
-    return this.service.logout(userId, refreshToken);
+    @GetCurrentUser('refreshToken') refreshToken: string,
+    @Res({ passthrough: true }) res: FastifyReply
+  ): Promise<void> {
+    this.service.logout(userId, refreshToken);
+    res.clearCookie(REFRESH_TOKEN_COOKIE);
   }
 
   @Public()
   @UseGuards(RtGuard)
   @Post('refresh')
-  @ApiOkResponse({ type: Tokens })
+  @ApiOkResponse({ type: String })
   @HttpCode(HttpStatus.OK)
   async refreshTokens(
     @GetCurrentUserId() userId: Buffer,
-    @GetCurrentUser('refreshToken') refreshToken: string
-  ): Promise<Tokens> {
-    return this.service.refreshTokens(userId, refreshToken);
+    @GetCurrentUser('refreshToken') refreshToken: string,
+    @Res({ passthrough: true }) res: FastifyReply
+  ): Promise<string> {
+    const tokens = await this.service.refreshTokens(userId, refreshToken);
+    res.setCookie(REFRESH_TOKEN_COOKIE, tokens.refreshToken, refreshTokenCookieOptions);
+    res.header('content-type', 'text/plain; charset=utf-8');
+    return tokens.accessToken;
   }
 
   @Public()
@@ -98,29 +99,10 @@ export class AuthController {
     await this.service.confirmEmail(userId);
   }
 
-  @Public()
-  @Head('email/:email')
-  @ApiParam({ type: String, name: 'email' })
-  @ApiOkResponse()
-  async emailExists(@Param('email') email: string): Promise<void> {
-    const exist = await this.service.emailExist(email);
-    if (!exist) throw new NotFoundException();
-  }
-
   @Post('sendConfirmationEmail')
   @ApiOkResponse()
   @HttpCode(HttpStatus.OK)
-  async sendConfirmationEmail(
-    @GetCurrentUserId() userId: Buffer,
-    @GetCurrentUser('email') userEmail: string
-  ): Promise<void> {
-    const user = await this.userService.findBaseUserById(userId);
-    if (!user) throw new NotFoundException('User does not exists');
-    if (user.is_email_confirmed) new ConflictException('Email is already confirmed');
-    if (user.email !== userEmail)
-      new NotAcceptableException(
-        'Ethe email provided by the token is not the same as the user email'
-      );
-    return this.service.sendConfirmationMail(user);
+  async sendConfirmationEmail(@GetCurrentUserId() userId: Buffer): Promise<void> {
+    return this.service.sendConfirmationMail(userId);
   }
 }

@@ -1,0 +1,18 @@
+{
+  "autre": "Autre",
+  "beton": "Béton",
+  "bitume": "Bitume",
+  "bois": "Bois",
+  "carrelage": "Carrelage",
+  "gaz_nat": "Gazon naturel",
+  "gaz_synt": "Gazon synthétique",
+  "glace": "Glace",
+  "metal": "Métal",
+  "parquet": "Parquet",
+  "sable": "Sable",
+  "sci_cop": "Sciure/copeaux",
+  "stabilise": "Stabilisé/cendrée",
+  "surf_nat": "Surface naturelle",
+  "synt": "Synthétique (hors gazon)",
+  "ter_bat": "Terre battue"
+}

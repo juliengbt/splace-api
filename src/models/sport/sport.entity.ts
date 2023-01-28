@@ -1,31 +1,30 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import Category from '../category/category.entity';
 
-@Entity('Sport')
+@Entity()
 export default class Sport {
   @ApiProperty({ type: String })
   @PrimaryColumn({ type: 'varchar', length: 10 })
-  readonly code!: string;
+  readonly code: string;
 
   @ApiProperty({ type: String })
-  @Column({ type: 'varchar', length: 100 })
-  name!: string;
+  name: string;
 
   @ApiProperty({ type: String, nullable: true })
   @Column({ type: 'varchar', length: 256, nullable: true })
-  description!: string | null;
+  description: string | null;
 
   @ApiProperty({ type: String, nullable: true })
   @Column({ type: 'varchar', length: 256, nullable: true })
-  federation!: string | null;
+  federation: string | null;
 
   @ApiProperty({ type: () => Category, required: false })
-  @JoinColumn({ name: 'code_category' })
-  @ManyToOne(() => Category, (category) => category.code, { cascade: false })
-  category?: Category;
+  @ManyToOne(() => Category, (category) => category.sports, { cascade: false, eager: true })
+  @JoinColumn({ foreignKeyConstraintName: 'fk_sport_category' })
+  category: Category;
 
   @ApiProperty({ type: String })
   @Column({ type: 'varchar', length: 100, nullable: false })
-  alias!: string;
+  alias: string;
 }

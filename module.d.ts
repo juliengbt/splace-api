@@ -1,18 +1,17 @@
 declare namespace NodeJS {
   export interface ProcessEnv {
     DEBUG: string;
-    SERVER_PORT: string;
     NODE_ENV: string;
     JWT_SECRET: string;
-    API_KEY: string;
-    MAIL_PASSWORD: string;
-
-    MYSQL_USER: string;
-    MYSQL_PASSWORD: string;
+    COOKIE_SECRET: string;
+    DOMAIN_CLIENT?: string;
+    DB_USER: string;
+    DB_PASSWORD: string;
+    DB_ROOT_PASSWORD: string;
+    DB_DATABASE: string;
+    DB_TEST_DATABASE: string;
     DB_HOST: string;
-    MYSQL_DATABASE: string;
-
-    IMAGES_LOCATION: string;
-    IMAGES_MAX_SIZE: string;
+    DB_PORT: string;
+    PORT: string;
   }
 }
