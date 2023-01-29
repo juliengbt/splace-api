@@ -3,13 +3,25 @@ import { Injectable, InternalServerErrorException, NotFoundException } from '@ne
 import { InjectRepository } from '@nestjs/typeorm';
 import EquipmentSearch from 'src/models/equipment/dto/equipment.search';
 import Equipment from 'src/models/equipment/entities/equipment.entity';
-import { Brackets, DeepPartial, Repository, SelectQueryBuilder } from 'typeorm';
+import {
+  And,
+  DeepPartial,
+  FindOptionsWhere,
+  In,
+  IsNull,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Repository
+} from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import SportingComplex from '../sporting-complex/sporting-complex.entity';
 import EquipmentLevel from './entities/level.entity';
 import EquipmentNature from './entities/nature.entity';
 import EquipmentOwner from './entities/owner.entity';
 import EquipmentSurface from './entities/surface.entity';
 import EquipmentType from './entities/type.entity';
+
+const BooleanOrNull = (b: boolean | undefined | null) => (b === null ? IsNull() : b);
 
 @Injectable()
 export default class EquipmentService {
@@ -28,64 +40,41 @@ export default class EquipmentService {
     private natureRepo: Repository<EquipmentNature>
   ) {}
 
-  async findUsingDTO(equipmentDTO: EquipmentSearch, offset: number): Promise<Equipment[]> {
-    const query = this.getFullObjectQuery();
+  async findUsingDTO(equipmentDTO: EquipmentSearch): Promise<Equipment[]> {
+    const equipmentFindOptions: FindOptionsWhere<Equipment> = {};
+    const sportingComplexFindOptions: FindOptionsWhere<SportingComplex> = {};
+
     // Sports
     if (equipmentDTO.sports && equipmentDTO.sports.length > 0) {
-      query.where('Equipment_sports.code_sport IN (:...sports_code)').setParameters({
-        sports_code: equipmentDTO.sports
-      });
+      equipmentFindOptions.sports = { code: In(equipmentDTO.sports) };
     }
 
     // Position
-    if (equipmentDTO.gps_area) {
-      query
-        .andWhere('Equipment.latitude <= :max_lat', {
-          max_lat: equipmentDTO.gps_area.max_lat
-        })
-        .andWhere('Equipment.latitude >= :min_lat', {
-          min_lat: equipmentDTO.gps_area.min_lat
-        })
-        .andWhere('Equipment.longitude <= :max_lon', {
-          max_lon: equipmentDTO.gps_area.max_lon
-        })
-        .andWhere('Equipment.longitude >= :min_lon', {
-          min_lon: equipmentDTO.gps_area.min_lon
-        });
-
-      if (equipmentDTO.gps_area.previous_area) {
-        // A drawing worth 1000 words
-        if (equipmentDTO.gps_area.previous_area.max_lat <= equipmentDTO.gps_area.max_lat) {
-          query.andWhere('Equipment.latitude > :prev_max_lat', {
-            max_lat: equipmentDTO.gps_area.previous_area.max_lat
-          });
-        }
-        if (equipmentDTO.gps_area.previous_area.min_lat >= equipmentDTO.gps_area.min_lat) {
-          query.andWhere('Equipment.latitude < :prev_min_lat', {
-            min_lat: equipmentDTO.gps_area.previous_area.min_lat
-          });
-        }
-        if (equipmentDTO.gps_area.previous_area.max_lon <= equipmentDTO.gps_area.max_lon) {
-          query.andWhere('Equipment.longitude > :prev_max_lon', {
-            max_lon: equipmentDTO.gps_area.previous_area.max_lon
-          });
-        }
-        if (equipmentDTO.gps_area.previous_area.min_lon >= equipmentDTO.gps_area.min_lon) {
-          query.andWhere('Equipment.longitude < :prev_min_lon', {
-            min_lon: equipmentDTO.gps_area.previous_area.min_lon
-          });
-        }
-      }
+    if (equipmentDTO.gpsArea) {
+      equipmentFindOptions.latitude = And(
+        LessThanOrEqual(equipmentDTO.gpsArea.maxLatitude),
+        MoreThanOrEqual(equipmentDTO.gpsArea.minLatitude)
+      );
+      equipmentFindOptions.longitude = And(
+        LessThanOrEqual(equipmentDTO.gpsArea.maxLongitude),
+        MoreThanOrEqual(equipmentDTO.gpsArea.minLongitude)
+      );
     } else if (equipmentDTO.sportingComplex?.address?.city?.ids) {
-      query.andWhere('city.id in (:...id_city)', {
-        id_city: equipmentDTO.sportingComplex.address.city.ids.map((id) =>
-          Buffer.from(id, 'base64url')
-        )
-      });
+      sportingComplexFindOptions.address = {
+        zipcode: {
+          city: {
+            id: In(
+              equipmentDTO.sportingComplex.address.city.ids.map((id) =>
+                Buffer.from(id, 'base64url')
+              )
+            )
+          }
+        }
+      };
     }
 
     // Distance
-    if (equipmentDTO.latitude && equipmentDTO.longitude) {
+    /*   if (equipmentDTO.latitude && equipmentDTO.longitude) {
       query
         .addSelect(
           'get_distance(:lat,:lon,Equipment.latitude, Equipment.longitude)',
@@ -98,62 +87,36 @@ export default class EquipmentService {
           lon: (equipmentDTO.longitude * Math.PI) / 180
         })
         .addOrderBy('Equipment_distance', 'ASC');
-    }
+    }*/
 
     // Boolean parameters
-    if (equipmentDTO.open_access)
-      query.andWhere('Equipment.open_access is :open_access', {
-        open_access: equipmentDTO.open_access
-      });
-    if (equipmentDTO.lighting)
-      query.andWhere('Equipment.lighting is :lighting', {
-        lighting: equipmentDTO.lighting
-      });
-    if (equipmentDTO.locker)
-      query.andWhere('Equipment.locker is :locker', {
-        locker: equipmentDTO.locker
-      });
-    if (equipmentDTO.shower)
-      query.andWhere('Equipment.shower is :shower', {
-        shower: equipmentDTO.shower
-      });
-    if (equipmentDTO.sportingComplex?.car_park)
-      query.andWhere('sportingComplex.car_park is :car_park', {
-        car_park: equipmentDTO.sportingComplex.car_park
-      });
-    if (equipmentDTO.sportingComplex?.disabled_access)
-      query.andWhere('sportingComplex.disabled_access is :disabled_access', {
-        disabled_access: equipmentDTO.sportingComplex.disabled_access
-      });
+    equipmentFindOptions.openAccess = BooleanOrNull(equipmentDTO.openAccess);
+    equipmentFindOptions.lighting = BooleanOrNull(equipmentDTO.lighting);
+    equipmentFindOptions.locker = BooleanOrNull(equipmentDTO.locker);
+    equipmentFindOptions.shower = BooleanOrNull(equipmentDTO.shower);
+    sportingComplexFindOptions.carPark = BooleanOrNull(equipmentDTO.sportingComplex?.carPark);
+    sportingComplexFindOptions.disabledAccess = BooleanOrNull(
+      equipmentDTO.sportingComplex?.disabledAccess
+    );
 
     // List parameters
-    if (equipmentDTO.soil_type && equipmentDTO.soil_type.length > 0) {
-      query.andWhere('soil_type.code in (:...soil_types)', {
-        soil_types: equipmentDTO.soil_type
-      });
+    if (equipmentDTO.surface && equipmentDTO.surface.length > 0) {
+      equipmentFindOptions.surface = { code: In(equipmentDTO.surface) };
     }
     if (equipmentDTO.owner && equipmentDTO.owner.length > 0) {
-      query.andWhere('owner.code in (:...owners)', {
-        owners: equipmentDTO.owner
-      });
+      equipmentFindOptions.owner = { code: In(equipmentDTO.owner) };
     }
-    if (equipmentDTO.equipment_level && equipmentDTO.equipment_level.length > 0) {
-      query.andWhere('equipment_level.code in (:...equipment_levels)', {
-        equipment_levels: equipmentDTO.equipment_level
-      });
+    if (equipmentDTO.level && equipmentDTO.level.length > 0) {
+      equipmentFindOptions.level = { code: In(equipmentDTO.level) };
     }
-    if (equipmentDTO.equipment_nature && equipmentDTO.equipment_nature.length > 0) {
-      query.andWhere('equipment_nature.code in (:...equipment_natures)', {
-        equipment_natures: equipmentDTO.equipment_nature
-      });
+    if (equipmentDTO.nature && equipmentDTO.nature.length > 0) {
+      equipmentFindOptions.surface = { code: In(equipmentDTO.nature) };
     }
-    if (equipmentDTO.equipment_type && equipmentDTO.equipment_type.length > 0) {
-      query.andWhere('equipment_type.code in (:...equipment_types)', {
-        equipment_types: equipmentDTO.equipment_type
-      });
+    if (equipmentDTO.type && equipmentDTO.type.length > 0) {
+      equipmentFindOptions.type = { code: In(equipmentDTO.type) };
     }
 
-    // Keyword research
+    /* // Keyword research
     if (equipmentDTO.name || equipmentDTO.sportingComplex?.name) {
       query.andWhere(
         new Brackets(() => {
@@ -178,18 +141,19 @@ export default class EquipmentService {
             .addOrderBy('keyword_rank', 'DESC');
         })
       );
-    }
+    }*/
 
-    return query.skip(offset).take(50).getMany();
+    equipmentFindOptions.sportingComplex = sportingComplexFindOptions;
+    return this.repo.find({ where: equipmentFindOptions, take: 50 });
   }
 
-  async findById(id: Buffer): Promise<Equipment> {
+  async findById(id: string): Promise<Equipment> {
     const equipment = await this.repo.findOneBy({ id: id });
     if (!equipment) throw new NotFoundException();
     return equipment;
   }
 
-  async loadById(id: Buffer): Promise<Equipment> {
+  async loadById(id: string): Promise<Equipment> {
     const equipment = await this.repo.findOne({
       where: { id: id },
       relations: {
@@ -210,7 +174,7 @@ export default class EquipmentService {
     return equipment;
   }
 
-  async loadSavedEquipments(userId: Buffer): Promise<Equipment[]> {
+  async loadSavedEquipments(userId: string): Promise<Equipment[]> {
     return this.repo.find({
       where: {
         savedByUsers: { id: userId }
@@ -268,7 +232,7 @@ export default class EquipmentService {
       return e;
     });
   }
-
+  /*
   private getFullObjectQuery(): SelectQueryBuilder<Equipment> {
     return this.repo
       .createQueryBuilder('Equipment')
@@ -297,5 +261,5 @@ export default class EquipmentService {
       .leftJoinAndMapMany('Equipment.sports', 'Equipment.sports', 'sports')
       .leftJoinAndMapOne('sports.category', 'sports.category', 'category')
       .leftJoinAndMapMany('Equipment.pictures', 'Equipment.pictures', 'pictures');
-  }
+  }*/
 }

@@ -61,14 +61,14 @@ export class AuthService {
     return tokens;
   }
 
-  async logout(userId: Buffer, rt: string): Promise<void> {
+  async logout(userId: string, rt: string): Promise<void> {
     const user = await this.usersService.findById(userId);
     if (await argon.verify(user.token.refreshTokenHash, rt)) {
       await this.tokenService.deleteRefreshToken(userId, user.token.refreshTokenHash);
     }
   }
 
-  async refreshTokens(userId: Buffer, rt: string): Promise<Tokens> {
+  async refreshTokens(userId: string, rt: string): Promise<Tokens> {
     const user = await this.usersService.findById(userId);
     if (await argon.verify(user.token.refreshTokenHash, rt)) throw new ForbiddenException();
 
@@ -86,16 +86,16 @@ export class AuthService {
     return tokens;
   }
 
-  async confirmEmail(userId: Buffer): Promise<void> {
+  async confirmEmail(userId: string): Promise<void> {
     await this.usersService.confirmEmail(userId);
   }
 
-  async sendConfirmationMail(userId: Buffer): Promise<void> {
+  async sendConfirmationMail(userId: string): Promise<void> {
     const user = await this.usersService.findById(userId);
     if (user.isEmailConfirmed) throw new ConflictException('Email is already confirmed');
 
     const payload: JwtPayload = {
-      sub: user.id.toString('base64url'),
+      sub: user.id,
       email: user.email
     };
     const token = await this.jwtService.signAsync(payload, {
@@ -105,9 +105,9 @@ export class AuthService {
     await this.mailService.sendUserConfirmation(user, token);
   }
 
-  private async getTokens(userId: Buffer, email: string): Promise<Tokens> {
+  private async getTokens(userId: string, email: string): Promise<Tokens> {
     const payload: JwtPayload = {
-      sub: userId.toString('base64url'),
+      sub: userId,
       email: email
     };
     const [at, rt] = await Promise.all([

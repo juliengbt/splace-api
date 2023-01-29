@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Transform, Type } from 'class-transformer';
 import Equipment from 'src/models/equipment/entities/equipment.entity';
 import Sport from 'src/models/sport/sport.entity';
+import { UUIDTransformer } from 'src/transformers/uuid';
 import {
   Column,
   CreateDateColumn,
@@ -18,9 +19,8 @@ import Token from '../../token/token.entity';
 export default class User {
   @ApiProperty({ type: String, readOnly: true })
   @Type(() => String)
-  @Transform(({ value }) => (value as Buffer).toString('base64url'))
-  @PrimaryColumn({ type: 'varbinary', length: 16 })
-  id: Buffer;
+  @PrimaryColumn({ type: 'varbinary', length: 16, transformer: new UUIDTransformer() })
+  id: string;
 
   @ApiProperty({ type: String, required: true })
   @Column({ type: 'varchar', length: 255 })

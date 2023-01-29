@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude, Transform, Type } from 'class-transformer';
+import { Exclude } from 'class-transformer';
 import User from 'src/models/user/entities/user.entity';
+import { BooleanTransformer } from 'src/transformers/boolean';
+import { ColumnDecimalTransformer } from 'src/transformers/column-decimal';
+import { UUIDTransformer } from 'src/transformers/uuid';
 import {
   Column,
   Entity,
@@ -24,13 +27,11 @@ import EquipmentType from './type.entity';
 @Entity()
 export default class Equipment {
   @ApiProperty({ type: String, readOnly: true })
-  @Type(() => String)
-  @Transform(({ value }) => (value as Buffer).toString('base64url'))
-  @PrimaryColumn({ type: 'varbinary', length: 16 })
-  id: Buffer;
+  @PrimaryColumn({ type: 'varbinary', length: 16, transformer: new UUIDTransformer() })
+  id: string;
 
   @ApiProperty()
-  @Index({ fulltext: true, parser: 'ngram' })
+  @Index({ fulltext: true })
   @Column({ type: 'varchar', length: 150 })
   name: string;
 
@@ -39,39 +40,43 @@ export default class Equipment {
   otherInfo: string | null;
 
   @ApiProperty({ type: Boolean, nullable: true })
-  @Column({ type: 'bit', nullable: true })
-  @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
+  @Column({ type: 'bit', nullable: true, transformer: new BooleanTransformer() })
   openAccess: boolean | null;
 
   @ApiProperty({ type: Boolean, nullable: true })
-  @Column({ type: 'bit', nullable: true })
-  @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
+  @Column({ type: 'bit', nullable: true, transformer: new BooleanTransformer() })
   locker: boolean | null;
 
   @ApiProperty({ type: Boolean, nullable: true })
-  @Column({ type: 'bit', nullable: true })
-  @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
+  @Column({ type: 'bit', nullable: true, transformer: new BooleanTransformer() })
   lighting: boolean | null;
 
   @ApiProperty({ type: Boolean, nullable: true })
-  @Column({ type: 'bit', nullable: true })
-  @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
+  @Column({ type: 'bit', nullable: true, transformer: new BooleanTransformer() })
   shower: boolean | null;
 
   @ApiProperty({ type: Number })
   @Column({ type: 'smallint', default: 1 })
   amount: number;
 
-  @ApiProperty({ type: Number })
-  @Column({ type: 'decimal', precision: 10, scale: 7, nullable: true })
-  @Type(() => Number)
-  @Transform(({ value: val }) => Number(val))
+  @ApiProperty({ type: Number, nullable: true })
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 7,
+    nullable: true,
+    transformer: new ColumnDecimalTransformer()
+  })
   longitude: number | null;
 
-  @ApiProperty({ type: Number })
-  @Column({ type: 'decimal', precision: 10, scale: 7, nullable: true })
-  @Type(() => Number)
-  @Transform(({ value: val }) => Number(val))
+  @ApiProperty({ type: Number, nullable: true })
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 7,
+    nullable: true,
+    transformer: new ColumnDecimalTransformer()
+  })
   latitude: number | null;
 
   @ApiProperty({ type: () => SportingComplex, nullable: true, required: true })

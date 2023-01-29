@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 import { GetCurrentUserId } from 'src/decorators/getCurrentUserID';
-import ParseBase64IDPipe from 'src/pipes/parse-base64id.pipe';
 import Equipment from '../equipment/entities/equipment.entity';
 import User from './entities/user.entity';
 import { UserService } from './user.service';
@@ -22,7 +21,7 @@ export class UserController {
   @ApiTags('User')
   @ApiOkResponse({ type: User })
   @HttpCode(HttpStatus.OK)
-  async me(@GetCurrentUserId() userId: Buffer): Promise<User> {
+  async me(@GetCurrentUserId() userId: string): Promise<User> {
     const user = await this.service.findById(userId);
     if (!user) throw new NotFoundException('User does not exists');
     return user;
@@ -34,8 +33,8 @@ export class UserController {
   @ApiParam({ type: String, name: 'id', required: true })
   @HttpCode(HttpStatus.OK)
   async saveEquipment(
-    @Param('id', new ParseBase64IDPipe()) equipmentId: Buffer,
-    @GetCurrentUserId() userId: Buffer
+    @Param('id') equipmentId: string,
+    @GetCurrentUserId() userId: string
   ): Promise<void> {
     await this.service.updateFavorite(userId, equipmentId);
   }
@@ -44,7 +43,7 @@ export class UserController {
   @ApiOkResponse({ type: Equipment, isArray: true })
   @ApiTags('SavedEquipment')
   @HttpCode(HttpStatus.OK)
-  async getSavedEquipments(@GetCurrentUserId() userId: Buffer): Promise<Equipment[]> {
+  async getSavedEquipments(@GetCurrentUserId() userId: string): Promise<Equipment[]> {
     return this.service.getSavedEquipments(userId);
   }
 }

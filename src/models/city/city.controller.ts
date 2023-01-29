@@ -18,11 +18,10 @@ import {
   ApiParam,
   ApiTags
 } from '@nestjs/swagger';
+import { Public } from 'src/decorators/public';
+import City from 'src/models/city/city.entity';
 import CityService from 'src/models/city/city.service';
 import CitySearch from 'src/models/city/dto/city.search';
-import City from 'src/models/city/city.entity';
-import { Public } from 'src/decorators/public';
-import ParseBase64IDPipe from 'src/pipes/parse-base64id.pipe';
 
 @ApiTags('City')
 @Controller('city')
@@ -37,13 +36,9 @@ export default class CityController {
   @ApiNotFoundResponse({ description: 'Not found.' })
   @ApiNotAcceptableResponse({ description: 'The parameter id must a uuid' })
   @ApiParam({ required: true, type: String, name: 'id' })
-  async getById(@Param('id', new ParseBase64IDPipe()) id: Buffer): Promise<City> {
+  async getById(@Param('id') id: string): Promise<City> {
     const city = await this.service.findById(id);
-    if (!city)
-      throw new NotFoundException(
-        undefined,
-        `No cities found with id : ${id.toString('base64url')}`
-      );
+    if (!city) throw new NotFoundException(undefined, `No cities found with id : ${id}`);
     return city;
   }
 

@@ -11,7 +11,7 @@ export default class PictureService {
     private repo: Repository<Picture>
   ) {}
 
-  async addImages(id: Buffer, files: Express.Multer.File[]): Promise<void> {
+  async addImages(id: string, files: Express.Multer.File[]): Promise<void> {
     const imgs: QueryDeepPartialEntity<Picture>[] = files.map((f) => ({
       name: f.filename,
       equipment: { id }

@@ -22,12 +22,12 @@ export default class SportingComplexSearch {
   @ApiProperty({ type: () => Boolean, required: false })
   @IsBoolean({ message: 'car_park must be a boolean value' })
   @IsOptional()
-  car_park?: boolean | null;
+  carPark?: boolean | null;
 
   @ApiProperty({ type: () => Boolean, required: false })
   @IsBoolean({ message: 'disabled_access must be a boolean value' })
   @IsOptional()
-  disabled_access?: boolean | null;
+  disabledAccess?: boolean | null;
 
   @ApiProperty({ type: () => AddressSearch, required: false })
   @ValidateNested()

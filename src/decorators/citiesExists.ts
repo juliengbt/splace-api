@@ -14,7 +14,7 @@ export class CitiesExistRule implements ValidatorConstraintInterface {
   async validate(array: string[]) {
     try {
       for (const s of array) {
-        const city = await this.cityService.findById(Buffer.from(s, 'base64url'));
+        const city = await this.cityService.findById(s);
         if (city == null) return false;
       }
       return true;

@@ -67,10 +67,10 @@ export function getArea(lat: number, lon: number, distance: number): GPSAreaSear
   const min = getOffsetPos(lat, lon, distance, degToRad(225));
 
   return {
-    max_lat: max.lat,
-    max_lon: max.lon,
-    min_lat: min.lat,
-    min_lon: min.lon
+    maxLatitude: max.lat,
+    maxLongitude: max.lon,
+    minLatitude: min.lat,
+    minLongitude: min.lon
   };
 }
 
@@ -82,6 +82,6 @@ export function randomBase64ID(): string {
   return Buffer.from(faker.datatype.uuid().replace('-', ''), 'hex').toString('base64url');
 }
 
-export function generateUUIDBuffer(): Buffer {
-  return Buffer.from(v4().replace(/-/g, ''), 'hex');
+export function generateUUIDBuffer(): string {
+  return Buffer.from(v4().replace(/-/g, ''), 'hex').toString('base64url');
 }

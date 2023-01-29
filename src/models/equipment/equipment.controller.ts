@@ -25,7 +25,6 @@ import { Public } from 'src/decorators/public';
 import EquipmentSearch from 'src/models/equipment/dto/equipment.search';
 import Equipment from 'src/models/equipment/entities/equipment.entity';
 import EquipmentService from 'src/models/equipment/equipment.service';
-import ParseBase64IDPipe from 'src/pipes/parse-base64id.pipe';
 import { distanceEarthPoints, getArea } from 'src/utils/functions';
 import EquipmentLevel from './entities/level.entity';
 import EquipmentNature from './entities/nature.entity';
@@ -47,10 +46,9 @@ export default class EquipmentController {
   @ApiParam({ type: String, required: true, name: 'id' })
   @ApiNotFoundResponse({ description: 'Not found.' })
   @ApiNotAcceptableResponse({ description: 'The parameter id must a uuid' })
-  async getById(@Param('id', new ParseBase64IDPipe()) id: Buffer): Promise<Equipment> {
+  async getById(@Param('id') id: string): Promise<Equipment> {
     const equipment = await this.service.findById(id);
-    if (!equipment)
-      throw new NotFoundException(`No equipment found with id : ${id.toString('base64url')}`);
+    if (!equipment) throw new NotFoundException(`No equipment found with id : ${id}`);
     return equipment;
   }
 
@@ -97,30 +95,30 @@ export default class EquipmentController {
 
     // Latitude && longitude are set
     if (equipmentParam.latitude && equipmentParam.longitude) {
-      if (equipmentDTO.gps_area) {
+      if (equipmentDTO.gpsArea) {
         // Big area : surface > 200 km2
         if (
           distanceEarthPoints(
-            equipmentDTO.gps_area.max_lat,
-            equipmentDTO.gps_area.max_lon,
-            equipmentDTO.gps_area.min_lat,
-            equipmentDTO.gps_area.min_lon
+            equipmentDTO.gpsArea.maxLatitude,
+            equipmentDTO.gpsArea.maxLongitude,
+            equipmentDTO.gpsArea.minLatitude,
+            equipmentDTO.gpsArea.minLongitude
           ) > 200 // 200km
         ) {
-          equipmentDTO.gps_area = getArea(equipmentParam.latitude, equipmentParam.longitude, 100);
+          equipmentDTO.gpsArea = getArea(equipmentParam.latitude, equipmentParam.longitude, 100);
           // If user is searching by name in a small area then search within an area of 200km2
         } else if (equipmentParam.name && equipmentParam.name.length > 0) {
-          equipmentDTO.gps_area = getArea(equipmentParam.latitude, equipmentParam.longitude, 100);
+          equipmentDTO.gpsArea = getArea(equipmentParam.latitude, equipmentParam.longitude, 100);
         }
       } else {
         // If user did not define an area
-        equipmentDTO.gps_area = getArea(equipmentParam.latitude, equipmentParam.longitude, 100);
+        equipmentDTO.gpsArea = getArea(equipmentParam.latitude, equipmentParam.longitude, 100);
       }
     }
 
     if (sportingComplexDTO !== undefined) equipmentParam.sportingComplex = sportingComplexDTO;
 
-    return this.service.findUsingDTO(equipmentParam, offset < 0 ? 0 : offset);
+    return this.service.findUsingDTO(equipmentParam);
   }
 
   @Public()

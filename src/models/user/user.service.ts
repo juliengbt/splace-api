@@ -15,7 +15,7 @@ export class UserService {
     private readonly equipmentService: EquipmentService
   ) {}
 
-  async findById(id: Buffer): Promise<User> {
+  async findById(id: string): Promise<User> {
     const user = await this.repo.findOne({
       where: { id: id }
     });
@@ -33,7 +33,7 @@ export class UserService {
     return user;
   }
 
-  async confirmEmail(userId: Buffer) {
+  async confirmEmail(userId: string) {
     return this.repo.update(
       {
         id: userId
@@ -56,11 +56,9 @@ export class UserService {
    * @param equipment Equipment to add/remove of favorites
    * @returns true if is equipment is a new fav of user, false otherwise
    */
-  async updateFavorite(userId: Buffer, equipmentId: Buffer): Promise<boolean> {
+  async updateFavorite(userId: string, equipmentId: string): Promise<boolean> {
     const user = await this.findById(userId);
-    const favIndex = user.savedEquipments.findIndex(
-      (e) => e.id.toString('base64url') === equipmentId.toString('base64url')
-    );
+    const favIndex = user.savedEquipments.findIndex((e) => e.id === equipmentId);
     const equipment = await this.equipmentService.findById(equipmentId);
 
     if (favIndex >= 0)
@@ -69,7 +67,7 @@ export class UserService {
     return favIndex < 0;
   }
 
-  async getSavedEquipments(userId: Buffer): Promise<Equipment[]> {
+  async getSavedEquipments(userId: string): Promise<Equipment[]> {
     return this.equipmentService.loadSavedEquipments(userId);
   }
 

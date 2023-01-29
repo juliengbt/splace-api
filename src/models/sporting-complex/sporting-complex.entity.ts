@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
+import { BooleanTransformer } from 'src/transformers/boolean';
+import { UUIDTransformer } from 'src/transformers/uuid';
 import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import Address from '../address/address.entity';
 import Equipment from '../equipment/entities/equipment.entity';
@@ -8,24 +9,20 @@ import Equipment from '../equipment/entities/equipment.entity';
 @Entity()
 export default class SportingComplex {
   @ApiProperty({ type: () => String })
-  @PrimaryColumn({ type: 'varbinary', length: 16 })
-  @Type(() => String)
-  @Transform(({ value }) => (value as Buffer).toString('base64url'))
-  id: Buffer;
+  @PrimaryColumn({ type: 'varbinary', length: 16, transformer: new UUIDTransformer() })
+  id: string;
 
   @ApiProperty()
-  @Index({ fulltext: true, parser: 'ngram' })
+  @Index({ fulltext: true })
   @Column({ type: 'varchar', length: 150 })
   public name: string;
 
   @ApiProperty({ type: Boolean, nullable: true })
-  @Column({ type: 'bit', nullable: true })
-  @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
+  @Column({ type: 'bit', nullable: true, transformer: new BooleanTransformer() })
   public carPark: boolean | null;
 
   @ApiProperty({ type: Boolean, nullable: true })
-  @Column({ type: 'bit', nullable: true })
-  @Transform(({ value: buf }) => (buf ? !!(buf as Buffer).readUIntBE(0, 1) : buf))
+  @Column({ type: 'bit', nullable: true, transformer: new BooleanTransformer() })
   public disabledAccess: boolean | null;
 
   @ApiProperty({ type: () => Address, required: true })

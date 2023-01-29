@@ -11,7 +11,7 @@ export class TokenService {
     private repo: Repository<Token>
   ) {}
 
-  async insertToken(userId: Buffer, rt: string, exp: number): Promise<Token> {
+  async insertToken(userId: string, rt: string, exp: number): Promise<Token> {
     const token = this.repo.create({
       user: { id: userId },
       exp: new Date(exp * 1000),
@@ -23,13 +23,13 @@ export class TokenService {
   }
 
   async updateRefreshToken(
-    userId: Buffer,
+    userId: string,
     rt: string,
     exp: number,
     hashedPreviousRt: string
   ): Promise<void> {
     await this.repo.update(
-      { userId: userId, refreshTokenHash: hashedPreviousRt },
+      { userId, refreshTokenHash: hashedPreviousRt },
       {
         refreshTokenHash: await hashString(rt),
         exp: new Date(exp * 1000)
@@ -37,12 +37,12 @@ export class TokenService {
     );
   }
 
-  async deleteRefreshToken(userId: Buffer, hashedRt: string): Promise<void> {
+  async deleteRefreshToken(userId: string, hashedRt: string): Promise<void> {
     await this.deleteExpriedTokens(userId);
     await this.repo.delete({ userId, refreshTokenHash: hashedRt });
   }
 
-  async deleteExpriedTokens(userId: Buffer): Promise<void> {
+  async deleteExpriedTokens(userId: string): Promise<void> {
     await this.repo.delete({ userId, exp: LessThan(new Date()) });
   }
 }

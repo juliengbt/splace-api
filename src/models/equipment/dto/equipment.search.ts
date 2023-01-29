@@ -31,7 +31,7 @@ export default class EquipmentSearch {
   @ApiProperty({ type: Boolean, required: false })
   @IsOptional()
   @IsBoolean({ message: 'open_access must be a boolean value' })
-  open_access?: boolean | null;
+  openAccess?: boolean | null;
 
   @ApiProperty({ type: Boolean, required: false })
   @IsOptional()
@@ -63,7 +63,7 @@ export default class EquipmentSearch {
   @IsNotEmptyObject()
   @Type(() => GPSAreaSearch)
   @IsOptional()
-  gps_area?: GPSAreaSearch;
+  gpsArea?: GPSAreaSearch;
 
   @ApiProperty({ type: () => SportingComplexSearch, required: false })
   @ValidateNested()
@@ -90,7 +90,7 @@ export default class EquipmentSearch {
     each: true
   })
   @IsOptional()
-  soil_type?: string[];
+  surface?: string[];
 
   @ApiProperty({ type: String, required: false, isArray: true })
   @IsArray()
@@ -100,7 +100,7 @@ export default class EquipmentSearch {
     each: true
   })
   @IsOptional()
-  equipment_nature?: string[];
+  nature?: string[];
 
   @ApiProperty({ type: String, required: false, isArray: true })
   @IsArray()
@@ -110,7 +110,7 @@ export default class EquipmentSearch {
     each: true
   })
   @IsOptional()
-  equipment_type?: string[];
+  type?: string[];
 
   @ApiProperty({ type: String, required: false, isArray: true })
   @IsArray()
@@ -120,7 +120,7 @@ export default class EquipmentSearch {
     each: true
   })
   @IsOptional()
-  equipment_level?: string[] | null;
+  level?: string[] | null;
 
   @ApiProperty({ type: String, required: false, isArray: true })
   @IsArray()

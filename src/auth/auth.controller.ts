@@ -66,7 +66,7 @@ export class AuthController {
   @ApiNoContentResponse()
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(
-    @GetCurrentUserId() userId: Buffer,
+    @GetCurrentUserId() userId: string,
     @GetCurrentUser('refreshToken') refreshToken: string,
     @Res({ passthrough: true }) res: FastifyReply
   ): Promise<void> {
@@ -80,7 +80,7 @@ export class AuthController {
   @ApiOkResponse({ type: String })
   @HttpCode(HttpStatus.OK)
   async refreshTokens(
-    @GetCurrentUserId() userId: Buffer,
+    @GetCurrentUserId() userId: string,
     @GetCurrentUser('refreshToken') refreshToken: string,
     @Res({ passthrough: true }) res: FastifyReply
   ): Promise<string> {
@@ -95,14 +95,14 @@ export class AuthController {
   @Patch('confirmEmail')
   @ApiNoContentResponse()
   @HttpCode(HttpStatus.NO_CONTENT)
-  async confirmEmail(@GetCurrentUserId() userId: Buffer): Promise<void> {
+  async confirmEmail(@GetCurrentUserId() userId: string): Promise<void> {
     await this.service.confirmEmail(userId);
   }
 
   @Post('sendConfirmationEmail')
   @ApiOkResponse()
   @HttpCode(HttpStatus.OK)
-  async sendConfirmationEmail(@GetCurrentUserId() userId: Buffer): Promise<void> {
+  async sendConfirmationEmail(@GetCurrentUserId() userId: string): Promise<void> {
     return this.service.sendConfirmationMail(userId);
   }
 }

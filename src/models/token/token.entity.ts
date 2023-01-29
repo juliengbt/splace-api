@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { UUIDTransformer } from 'src/transformers/uuid';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import User from '../user/entities/user.entity';
 
@@ -9,8 +10,13 @@ export default class Token {
   @JoinColumn({ foreignKeyConstraintName: 'fk_token_user' })
   user: User;
 
-  @PrimaryColumn({ name: 'userId', type: 'varbinary', length: 16 })
-  userId: Buffer;
+  @PrimaryColumn({
+    name: 'userId',
+    type: 'varbinary',
+    length: 16,
+    transformer: new UUIDTransformer()
+  })
+  userId: string;
 
   @Column({ type: 'datetime' })
   exp: Date;

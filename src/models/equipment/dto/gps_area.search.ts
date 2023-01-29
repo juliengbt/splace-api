@@ -1,24 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsLatitude, IsLongitude, ValidateNested } from 'class-validator';
+import { IsLatitude, IsLongitude } from 'class-validator';
 
 export default class GPSAreaSearch {
   @ApiProperty()
   @IsLongitude()
-  min_lon: number;
+  minLongitude: number;
 
   @ApiProperty()
   @IsLatitude()
-  min_lat: number;
+  minLatitude: number;
 
   @ApiProperty()
   @IsLongitude()
-  max_lon: number;
+  maxLongitude: number;
 
   @ApiProperty()
   @IsLatitude()
-  max_lat: number;
-
-  @ApiProperty({ required: false })
-  @ValidateNested()
-  previous_area?: GPSAreaSearch;
+  maxLatitude: number;
 }

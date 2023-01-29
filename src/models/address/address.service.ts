@@ -14,7 +14,7 @@ export default class AddressService {
     return this.repo.save(address);
   }
 
-  async findById(id: Buffer): Promise<Address | null> {
+  async findById(id: string): Promise<Address | null> {
     return this.getFullObjectQuery().where('Address.id = :id', { id }).getOne();
   }
 

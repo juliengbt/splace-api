@@ -1,6 +1,5 @@
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
-import ParseBase64IDPipe from 'src/pipes/parse-base64id.pipe';
 import SportingComplex from './sporting-complex.entity';
 import SportingComplexService from './sporting-complex.service';
 
@@ -17,10 +16,9 @@ export default class SportingComplexController {
   @ApiNotFoundResponse({ description: 'Not found.' })
   @ApiParam({ required: true, type: String, name: 'id' })
   @Get(':id')
-  async getById(@Param('id', new ParseBase64IDPipe()) id: Buffer): Promise<SportingComplex> {
+  async getById(@Param('id') id: string): Promise<SportingComplex> {
     const installation = await this.service.findById(id);
-    if (!installation)
-      throw new NotFoundException(`No installation found with id : ${id.toString('base64url')}`);
+    if (!installation) throw new NotFoundException(`No installation found with id : ${id}`);
     return installation;
   }
 }

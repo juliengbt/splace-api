@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import CitySearch from 'src/models/city/dto/city.search';
 import City from 'src/models/city/city.entity';
+import CitySearch from 'src/models/city/dto/city.search';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 
 @Injectable()
@@ -45,7 +45,7 @@ export default class CityService {
     return this.getFullObjectQuery().getMany();
   }
 
-  async findById(id: Buffer): Promise<City | null> {
+  async findById(id: string): Promise<City | null> {
     return this.getFullObjectQuery()
       .where('City.id = :id_city')
       .setParameters({ id_city: id })
