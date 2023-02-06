@@ -1,20 +1,14 @@
 /* eslint-disable max-len */
 import {
-  Body,
   Controller,
-  DefaultValuePipe,
   Get,
   HttpCode,
   HttpStatus,
-  NotAcceptableException,
   NotFoundException,
   Param,
-  ParseIntPipe,
-  Post,
   Query
 } from '@nestjs/common';
 import {
-  ApiBody,
   ApiNotAcceptableResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -25,7 +19,8 @@ import { Public } from 'src/decorators/public';
 import EquipmentSearch from 'src/models/equipment/dto/equipment.search';
 import Equipment from 'src/models/equipment/entities/equipment.entity';
 import EquipmentService from 'src/models/equipment/equipment.service';
-import { distanceEarthPoints, getArea } from 'src/utils/functions';
+import { distanceEarthPointsGPSArea, getArea } from 'src/utils/functions';
+import GPSAreaSearch from './dto/gpsArea.search';
 import EquipmentLevel from './entities/level.entity';
 import EquipmentNature from './entities/nature.entity';
 import EquipmentOwner from './entities/owner.entity';
@@ -52,73 +47,52 @@ export default class EquipmentController {
     return equipment;
   }
 
-  @Post()
+  @Get()
   @Public()
   @ApiOkResponse({ type: Equipment, isArray: true })
   @HttpCode(HttpStatus.OK)
-  @ApiBody({ type: EquipmentSearch })
-  @ApiQuery({ name: 'offset', required: false })
+  @ApiQuery({ type: EquipmentSearch })
   @ApiNotAcceptableResponse()
-  async getUsingDTO(
-    @Body() equipmentDTO: EquipmentSearch,
-    @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number
-  ): Promise<Equipment[]> {
-    if (offset >= 100)
-      throw new NotAcceptableException('Maximum number of object is limited to 100');
-
+  async getUsingDTO(@Query() equipmentDTO: EquipmentSearch): Promise<Equipment[]> {
     const equipmentParam = equipmentDTO;
     const sportingComplexDTO = equipmentDTO.sportingComplex;
+    let gpsArea: GPSAreaSearch | undefined;
+
+    if (sportingComplexDTO?.address?.city?.ids) {
+      sportingComplexDTO.address.city.ids = [...new Set(sportingComplexDTO.address.city.ids)];
+    }
+
+    if (
+      equipmentParam.maxLatitude &&
+      equipmentParam.maxLongitude &&
+      equipmentParam.minLatitude &&
+      equipmentParam.minLongitude
+    ) {
+      gpsArea = {
+        maxLatitude: equipmentParam.maxLatitude,
+        maxLongitude: equipmentParam.maxLongitude,
+        minLatitude: equipmentParam.minLatitude,
+        minLongitude: equipmentParam.minLongitude
+      };
+    }
 
     if (equipmentParam.name) {
-      equipmentParam.name = [...new Set(equipmentParam.name)]
-        .flatMap((x) => x.split(' '))
-        .filter((str) => str.length > 2);
+      equipmentParam.name = [
+        ...new Set(equipmentParam.name.flatMap((x) => x.split(' ')).filter((str) => str.length > 2))
+      ];
     }
 
-    if (sportingComplexDTO?.name) {
-      sportingComplexDTO.name = [...new Set(sportingComplexDTO.name)]
-        .flatMap((x) => x.split(' '))
-        .filter((str) => str.length > 2);
+    if (equipmentParam.latitude && equipmentParam.longitude && !gpsArea) {
+      gpsArea = getArea(equipmentParam.latitude, equipmentParam.longitude, 100);
+    } else if (gpsArea && equipmentDTO.name?.length && distanceEarthPointsGPSArea(gpsArea) < 200) {
+      gpsArea = getArea(
+        (gpsArea.maxLatitude + gpsArea.minLatitude) / 2,
+        (gpsArea.maxLongitude + gpsArea.minLongitude) / 2,
+        100
+      );
     }
 
-    if (sportingComplexDTO?.address?.city) {
-      if (sportingComplexDTO?.address.city.zipcode)
-        throw new NotAcceptableException('Zip code is not allowed here');
-      if (sportingComplexDTO.address.city.ids) {
-        sportingComplexDTO.address.city.ids = [...new Set(sportingComplexDTO.address.city.ids)];
-      }
-    }
-
-    /* This is important because if latitude and longitude are set then server will calculate distance from equipments
-       to user position. If the area is too large there will be a large amount of calculation, so in order to restrict this,
-       we delete the user position  but the equipments won't be sorted */
-
-    // Latitude && longitude are set
-    if (equipmentParam.latitude && equipmentParam.longitude) {
-      if (equipmentDTO.gpsArea) {
-        // Big area : surface > 200 km2
-        if (
-          distanceEarthPoints(
-            equipmentDTO.gpsArea.maxLatitude,
-            equipmentDTO.gpsArea.maxLongitude,
-            equipmentDTO.gpsArea.minLatitude,
-            equipmentDTO.gpsArea.minLongitude
-          ) > 200 // 200km
-        ) {
-          equipmentDTO.gpsArea = getArea(equipmentParam.latitude, equipmentParam.longitude, 100);
-          // If user is searching by name in a small area then search within an area of 200km2
-        } else if (equipmentParam.name && equipmentParam.name.length > 0) {
-          equipmentDTO.gpsArea = getArea(equipmentParam.latitude, equipmentParam.longitude, 100);
-        }
-      } else {
-        // If user did not define an area
-        equipmentDTO.gpsArea = getArea(equipmentParam.latitude, equipmentParam.longitude, 100);
-      }
-    }
-
-    if (sportingComplexDTO !== undefined) equipmentParam.sportingComplex = sportingComplexDTO;
-
-    return this.service.findUsingDTO(equipmentParam);
+    return this.service.findUsingDTO(equipmentParam, gpsArea);
   }
 
   @Public()

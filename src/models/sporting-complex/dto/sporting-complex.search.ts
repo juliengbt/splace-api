@@ -1,24 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  ArrayMinSize,
-  IsArray,
-  IsBoolean,
-  IsNotEmptyObject,
-  IsOptional,
-  MinLength,
-  ValidateNested
-} from 'class-validator';
+import { IsBoolean, IsNotEmptyObject, IsOptional, ValidateNested } from 'class-validator';
 import AddressSearch from '../../address/dto/address.search';
 
 export default class SportingComplexSearch {
-  @ApiProperty({ type: () => String, isArray: true, required: false })
-  @IsArray({ message: 'name must in an string array' })
-  @ArrayMinSize(1, { message: 'name must contain at least $constraint1 object' })
-  @IsOptional()
-  @MinLength(3, { each: true, message: 'Minimum length for names is $constraint1' })
-  name?: string[];
-
   @ApiProperty({ type: () => Boolean, required: false })
   @IsBoolean({ message: 'car_park must be a boolean value' })
   @IsOptional()

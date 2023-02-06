@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import argon from 'argon2';
-import GPSAreaSearch from 'src/models/equipment/dto/gps_area.search';
+import GPSAreaSearch from 'src/models/equipment/dto/gpsArea.search';
 import { v4 } from 'uuid';
 
 const { PI, sin, cos, asin, atan2, sqrt } = Math;
@@ -12,6 +12,15 @@ function radToDeg(val: number): number {
 
 function degToRad(val: number): number {
   return (val * PI) / 180;
+}
+
+export function distanceEarthPointsGPSArea(gpsArea: GPSAreaSearch) {
+  return distanceEarthPoints(
+    gpsArea.minLatitude,
+    gpsArea.minLongitude,
+    gpsArea.maxLatitude,
+    gpsArea.maxLongitude
+  );
 }
 
 export function distanceEarthPoints(lat1: number, long1: number, lat2: number, long2: number) {
@@ -84,4 +93,8 @@ export function randomBase64ID(): string {
 
 export function generateUUIDBuffer(): string {
   return Buffer.from(v4().replace(/-/g, ''), 'hex').toString('base64url');
+}
+
+export function isNotEmptyArray<T>(array?: Array<T>): array is Array<T> {
+  return !!array && array.length > 0;
 }

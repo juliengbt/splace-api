@@ -17,7 +17,6 @@ import {
   ValidateNested
 } from 'class-validator';
 import SportingComplexSearch from '../../sporting-complex/dto/sporting-complex.search';
-import GPSAreaSearch from './gps_area.search';
 
 export default class EquipmentSearch {
   @ApiProperty({ type: String, required: false, isArray: true })
@@ -58,12 +57,25 @@ export default class EquipmentSearch {
   @IsOptional()
   longitude?: number;
 
-  @ApiProperty({ type: () => GPSAreaSearch, required: false })
-  @ValidateNested()
-  @IsNotEmptyObject()
-  @Type(() => GPSAreaSearch)
+  @ApiProperty({ type: Number, required: false })
+  @IsLongitude()
   @IsOptional()
-  gpsArea?: GPSAreaSearch;
+  minLongitude: number;
+
+  @ApiProperty({ type: Number, required: false })
+  @IsLatitude()
+  @IsOptional()
+  minLatitude: number;
+
+  @ApiProperty({ type: Number, required: false })
+  @IsLongitude()
+  @IsOptional()
+  maxLongitude: number;
+
+  @ApiProperty({ type: Number, required: false })
+  @IsLatitude()
+  @IsOptional()
+  maxLatitude: number;
 
   @ApiProperty({ type: () => SportingComplexSearch, required: false })
   @ValidateNested()
@@ -120,7 +132,7 @@ export default class EquipmentSearch {
     each: true
   })
   @IsOptional()
-  level?: string[] | null;
+  level?: string[];
 
   @ApiProperty({ type: String, required: false, isArray: true })
   @IsArray()
